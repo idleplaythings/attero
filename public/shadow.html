@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Texture test</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <link href="style/tiles.css" rel="stylesheet" type="text/css">
+        <link href="style/resourceLoader.css" rel="stylesheet" type="text/css">
+        <link href="style/TextureContainer.css" rel="stylesheet" type="text/css">
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script src="js/requestAnimFrame.js"></script>
+        <script src="js/ResourceLoader.js"></script>
+        <script src="js/Loadable.js"></script>
+        <script src="js/Tile.js"></script>
+        <script src="js/GameTile.js"></script>
+        <script src="js/TileGrid.js"></script>
+        <script src="js/Texture.js"></script>
+        <script src="js/Three.js"></script>
+        <script src="js/Graphics.js"></script>
+        <script src="js/Scrolling.js"></script>
+        <script src="js/Landscaping.js"></script>
+        <script src="js/SideSlideMenu.js"></script>
+        <script src="js/TileElement.js"></script>
+        <script src="js/ImageManipulation.js"></script>
+        <script src="js/WaterLayer.js"></script>
+        <script src="js/Grid.js"></script>
+        <script src="js/FogOfWar.js"></script>
+        <script src="js/LineOfSight.js"></script>
+        <script src="js/shadow/UIEvents.js"></script>
+        
+        <script>
+            jQuery(function(){
+                function done()
+                {
+                    
+                    Graphics.init();
+                    Graphics.animate();
+                    WaterLayer.init();
+                    LineOfSight.init();
+                    FogOfWar.init();
+                    Grid.init();
+                    
+                    
+                    jQuery(".webglCanvas").on("click", TileGrid.onGridClicked);
+                    
+                    jQuery(".webglCanvas").on("mousedown", Scrolling.mousedown);
+                    jQuery(".webglCanvas").on("mouseup", Scrolling.mouseup);
+                    jQuery(".webglCanvas").on("mouseout", Scrolling.mouseout);
+                    jQuery(".webglCanvas").on("mousemove", Scrolling.mousemove);
+                    
+                    ResourceLoader.remove();
+                }
+                
+                window.availableTileElements = 
+                {
+                    1:  new TileElement(1, ResourceLoader.loadImage("textures/firtrees.png")),
+                    2:  new TileElement(2, ResourceLoader.loadImage("textures/cottage1.png")),
+                    3:  new TileElement(3, ResourceLoader.loadImage("textures/houses.png")),
+                    4:  new RoadTileElement(
+                        4, 
+                        ResourceLoader.loadImage("textures/road.png"),
+                        ResourceLoader.loadImage("textures/road_45r.png"),
+                        ResourceLoader.loadImage("textures/road_45l.png"),
+                        ResourceLoader.loadImage("textures/road_90r.png"),
+                        ResourceLoader.loadImage("textures/road_90l.png")
+                    ),
+                        
+                    
+                };
+                
+                window.textureMasks =
+                {
+                    1:  ResourceLoader.loadImage("textures/texturemask.png"),
+                    2:  ResourceLoader.loadImage("textures/shadowBrushes.png")
+                }
+                window.availableTextures = 
+                {
+                    1:  new Texture(1, ResourceLoader.loadImage("textures/grass1.png"), Array(1,2,3,4,5,6,7,8,9)),
+                    5:  new BorderTexture(5, ResourceLoader.loadImage("textures/grass2.png"), Array(10,11,12), Array(69, 35, 11)),
+                    2:  new Texture(2, ResourceLoader.loadImage("textures/grass3.png"), Array(5,6,7,8,9,10,11,12)),
+                    3:  new BorderTexture(3, ResourceLoader.loadImage("textures/rocks1.png"), Array(9,10,11,12), Array(69, 35, 11)),
+                    4:  new BorderTexture(4, ResourceLoader.loadImage("textures/dirt1.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
+                    7:  new BorderTexture(7, ResourceLoader.loadImage("textures/field.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
+                    6:  new WaterTexture(6, ResourceLoader.loadImage("textures/water.png"), Array(1,2,3,4,5,6,7,8,9), Array(69, 35, 11))
+                    
+                };
+
+                ResourceLoader.run(resourcedone);
+                
+                function resourcedone()
+                {
+                    TileGrid.initGameTiles();
+                
+                    ResourceLoader.addLoadable(new LoadTiles(window.tiles));
+                    ResourceLoader.addLoadable(new LoadTileGrid());
+                
+                    ResourceLoader.run(done);
+                    
+                }
+            });   
+        </script>
+        
+        <script id="vertexShader" type="x-shader/x-vertex">
+            varying vec2 vUv;
+
+            void main() {
+                vUv = uv;
+                
+                gl_Position =   projectionMatrix * 
+                                modelViewMatrix * 
+                                vec4(position,1.0);
+            }
+        </script>
+        
+        <script id="fragmentShader" type="x-shader/x-fragment">
+            uniform sampler2D fogtexture;
+            uniform float tilewidth;
+            uniform float tileheight;
+            uniform sampler2D tilemap;
+            uniform float opacity;
+            
+            varying vec2 vUv;
+            
+            float texcount = 4.0;
+            float texsize = 0.25;
+            
+
+            void main() {
+                vec4 tile = texture2D(tilemap, vUv);
+                
+                if(tile.x == 1.0 && tile.y == 1.0) { discard; }
+
+                float x = vUv.x/tilewidth;
+                x -= floor(x);
+                x /= texcount;
+                x += tile.x*255.0*texsize;
+                
+                float y = vUv.y / tileheight;
+                y -= floor(y);
+                y /= texcount;
+                y += tile.y*255.0*texsize;
+
+                vec2 v = vec2(x, y);
+                vec4 color = texture2D(fogtexture, v);
+                color.a *= 0.5;
+                gl_FragColor = color;
+                //gl_FragColor = texture2D(tilemap, vUv);
+            }
+        </script>
+    </head>
+    <body oncontextmenu="return false;">
+        <!-- <canvas id="testcanvas" width="40" height="40" style="position:absolute;z-index:200;border:1px solid white;"></canvas> -->
+        <div id="texturecontainer"></div>
+    </body>
+</html>

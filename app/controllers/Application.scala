@@ -10,7 +10,7 @@ object Application extends Controller {
   }
 
   def editor = Action {
-    Ok(views.html.editor("Tama on editori"))
+    Ok(views.html.editor())
   }
 
 }
