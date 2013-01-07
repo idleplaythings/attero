@@ -11,22 +11,6 @@ var Tile = function (x, y)
     this.getGameTilesRelatedToTile();
 }
 
-Tile.prototype.serialize = function()
-{
-    var data = {
-        p: this.position,
-        t: this.subTextures,
-        to: this.subTexturesOffset,
-        rm: this.subTextureMasks,
-        el: this.elevation,
-        e: this.subElements,
-        eo: this.subElementOffsets,
-        ea: this.subElementAngles
-    };
-    
-    return data;
-}
-
 Tile.prototype.getGameTilesRelatedToTile = function()
 {
     var tx = this.position.x*2;

@@ -19,7 +19,8 @@ window.UIEvents = {
     {
         
         console.log("clicked " + x +","+ y);
-        var i = Math.floor((y+10)/20)*((TileGrid.tileRowCount*2)+1) + Math.floor((x+10)/20);
+        var tileSize = 20*Graphics.zoom;
+        var i = Math.floor((y+10)/tileSize)*((TileGrid.tileRowCount*2)+1) + Math.floor((x+10)/tileSize);
         
         TileGrid.gameTiles[i].onClicked();
     },

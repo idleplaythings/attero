@@ -2,6 +2,7 @@ window.TileGrid = {
     
     context:null,
     tileRowCount: 100,
+    tileColumnCount: 100,
     subSegmentSize: 25,
     THREEMesh: null,
     THREEMeshes: null,
@@ -12,19 +13,20 @@ window.TileGrid = {
     
     serialize: function()
     {
-        var sTiles = Array();
-        for (var i in window.tiles)
+        var sTiles = '';
+        for (var i in TileGrid.gameTiles)
         {
-            sTiles.push(window.tiles[i].serialize());
+            sTiles += ';'+(TileGrid.gameTiles[i].serialize());
         }
         
         var data = 
         {
             tileRowCount: TileGrid.tileRowCount,
+            tileColumnCount: TileGrid.tileColumnCount,
             tiles: sTiles
         };
         
-        return JSON.stringify(data);
+        return data;
     },
     
     getTileGridWidht: function()

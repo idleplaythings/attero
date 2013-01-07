@@ -1,12 +1,11 @@
 var GameTile = function (x, y)
 {
     this.position = {x:x, y:y}
+
     this.subTexture = 1;
     this.subTextureOffset = 1;
     this.subTextureMask = 1;
-    
     this.elevation = 0;
-    this.hasElevationShadow = false;
     this.subElement = 0;
     this.subElementOffset = 0;
     this.subElementOffset2 = 0;
@@ -15,8 +14,22 @@ var GameTile = function (x, y)
     this.LOSfactor = 0;
     this.inLOS = false;
     this.losTexture = {x:3, y:0};
-    
+    this.hasElevationShadow = false;
     this.randomizeTile();
+}
+
+GameTile.prototype.serialize = function()
+{
+    var serialized = ''
+        + this.subTexture+','
+        + this.subTextureOffset+','
+        + this.subTextureMask+','
+        + this.elevation+','
+        + this.subElement+','
+        + this.subElementOffset+','
+        + this.subElementOffset2+','
+        + this.subElementAngle+',';
+    return serialized;
 }
 
 GameTile.prototype.randomizeTile = function()

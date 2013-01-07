@@ -4,7 +4,13 @@
 
 # Home page
 GET     /                           controllers.Application.index
+
+#Map Editor
 GET     /editor                     controllers.Application.editor
+
+#REST API for loading and saving maps
+GET 	/gamemap					controllers.Application.loadMap
+POST 	/gamemap					controllers.Application.saveMap
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
