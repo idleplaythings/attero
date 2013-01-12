@@ -96,18 +96,18 @@ Vagrant::Config.run do |config|
 
   config.vm.provision :chef_client do |chef|
     chef.chef_server_url = "https://api.opscode.com/organizations/#{orgname}"
-    chef.validation_key_path = "../.chef/#{orgname}-validator.pem"
+    chef.validation_key_path = "#{ENV['HOME']}/.chef/#{orgname}-validator.pem"
     chef.validation_client_name = "#{orgname}-validator"
-    chef.encrypted_data_bag_secret_key_path = "../.chef/attero_encrypted_data_bag_secret"
+    chef.encrypted_data_bag_secret_key_path = "#{ENV['HOME']}/.chef/attero_encrypted_data_bag_secret"
     chef.node_name = "#{node}"
     chef.provisioning_path = "/etc/chef"
-    # chef.log_level = :info
+    # chef.log_level = :debug
     chef.log_level = :info
 
     chef.environment = "dev"
     chef.add_role("base")
     chef.add_role("db_master")
-    chef.add_role("game_server")
+    chef.add_role("dev_server")
   end
   #
   # If you're using the Opscode platform, your validator client is
