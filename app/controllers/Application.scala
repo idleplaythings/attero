@@ -1,5 +1,6 @@
 package controllers
 
+import models._;
 import play.api._
 import play.api.mvc._
 import play.api.libs.json.Json._
@@ -20,13 +21,10 @@ object Application extends Controller {
 
 	def saveMap = Action(parse.json(maxLength = 1024 * 2000)) 
 	{ 
-		request => (request.body \ "name").asOpt[String].map 
-		{ 
-			name => Ok("Hello " + name)
-		}
-		.getOrElse 
-		{
-			BadRequest("Missing parameter [name]")
-		}
+		request => 
+			if (GameMap.fromJson(request.body) == true)
+				Ok("""{"status": "ok"}""")
+
+			BadRequest("""{"status": "error"}""")
 	}
 }
