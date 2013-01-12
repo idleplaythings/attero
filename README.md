@@ -24,5 +24,5 @@ Install gem bundle, create dev VM
 Usage
 =====
 
-    cd $REPO_DIR
+    cd $REPO_DIR/tools/vagrant
     bundle exec vagrant ssh
