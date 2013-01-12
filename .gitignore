@@ -1,3 +1,11 @@
+# Bundler
+.bundle/
+bin/
+
+# Vagrant
+tools/vagrant/.vagrant
+
+# Play
 logs
 project/project
 project/target
