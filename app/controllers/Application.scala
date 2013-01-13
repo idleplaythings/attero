@@ -23,8 +23,14 @@ object Application extends Controller {
 	{ 
 		request => 
 			if (GameMap.fromJson(request.body) == true)
+			{
+				println("ok!");
 				Ok("""{"status": "ok"}""")
-
-			BadRequest("""{"status": "error"}""")
+			}
+			else
+			{
+				println("bad reg!");
+				BadRequest("""{"status": "error"}""")
+			}
 	}
 }

@@ -19,8 +19,8 @@ case class GameTile(
 
 object GameTile
 {
-  def fromString(serialized: String) =
+  def fromString(serialized: String) : GameTile =
   {
-    val asArray: Array[Short] = serialized.split(",").map(_.toShort)
+    GameTile(Array[Short] = serialized.split(",").map(_.toShort))
   }
 }

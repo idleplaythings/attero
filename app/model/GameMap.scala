@@ -1,7 +1,10 @@
 package models
 import play.api.libs.json._
 
-case class GameMap(id: Long, name: String, serializedMapData: String)
+case class GameMap(id: Long, name: String, tiles: Array[GameTile])
+{
+  println("GameMap has been constructed "+ this.name);
+}
 
 object GameMap {
   
@@ -11,13 +14,21 @@ object GameMap {
   
   def delete(id: Long) {}
 
-  def fromJson(json: JsValue): Boolean =
+  def save(json: JsValue) : Boolean
   {
-  	val id = Nil
+    val map = this.fromJson(json);
+  }
+
+  def fromJson(json: JsValue) : GameMap =
+  {
+  	val id = -1
   	val name: String = (json \ "name").toString
-  	val gametiles: String = (json \ "tiles").toString
-  	println(name)
-  	true
+
+  	val gametiles: Array[GameTile] = 
+      (json \ "tiles").toString.split(";")
+        .map(GameTile.fromString(_))
+
+    GameMap(id, name, gametiles);
   }
   
 }
