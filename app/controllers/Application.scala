@@ -19,17 +19,17 @@ object Application extends Controller {
 		Ok(views.html.gamemap())
 	}
 
-	def saveMap = Action(parse.json(maxLength = 1024 * 2000)) 
-	{ 
-		request => 
-			if (GameMap.fromJson(request.body) == true)
+	def saveMap = Action(parse.json(maxLength = 1024 * 2000))
+	{
+		request =>
+			if (GameMap.save(request.body) != 0)
 			{
 				println("ok!");
 				Ok("""{"status": "ok"}""")
 			}
 			else
 			{
-				println("bad reg!");
+				println("bad req!");
 				BadRequest("""{"status": "error"}""")
 			}
 	}
