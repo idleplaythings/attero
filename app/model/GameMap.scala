@@ -14,9 +14,10 @@ object GameMap {
   
   def delete(id: Long) {}
 
-  def save(json: JsValue) : Boolean
+  def save(json: JsValue) : Boolean =
   {
-    val map = this.fromJson(json);
+    val map: GameMap = this.fromJson(json);
+    true
   }
 
   def fromJson(json: JsValue) : GameMap =
