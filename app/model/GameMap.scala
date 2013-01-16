@@ -47,25 +47,48 @@ object GameMap {
   def save(json: JsValue) =
   {
     val map: GameMap = this.fromJson(json);
-    DB.withConnection { implicit c =>
-      SQL("""INSERT INTO GameMap name, width, height
+    val mapid = DB.withConnection { implicit c =>
+      SQL("""INSERT INTO GameMap (name, width, height)
                   VALUES ({name}, {width}, {height})""")
         .on('name -> map.name,
           'width -> map.width,
           'height -> map.height)
-        .executeUpdate()
+        .executeInsert()
     }
+    println("map id: " + mapid + " inserted");
+
+      DB.withTransaction { implicit c =>
+        for (i <- 0 until map.tiles.length)
+        {
+          val tile: GameTile = map.tiles(i)
+          SQL("""INSERT INTO GameTile (mapid, tileid, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle)
+                      VALUES ({mapid}, {tileid}, {texture}, {toffset}, {tmask}, {elevation}, {element}, {eoffset}, {evariance}, {eangle})""")
+            .on('mapid -> mapid,
+              'tileid -> i,
+              'texture -> tile.texture,
+              'toffset -> tile.tOffset,
+              'tmask -> tile.tMask,
+              'elevation -> tile.elevation,
+              'element -> tile.element,
+              'eoffset -> tile.eOffset,
+              'evariance -> tile.eVariance,
+              'eangle -> tile.eAngle)
+            .execute()
+        }
+      }
+
+    1
   }
 
   def fromJson(json: JsValue) : GameMap =
   {
     val id = -1
-    val name: String = (json \ "name").toString
+    val name: String = (json \ "name").toString.replace("\"", "")
     val width: Short = (json \ "width").toString.toShort
     val height: Short = (json \ "height").toString.toShort
 
   	val gametiles: List[GameTile] =
-      (json \ "tiles").toString.split(";")
+      (json \ "tiles").toString.replace("\"", "").split(";")
         .map(GameTile.fromString(_))
         .toList
 

@@ -70,7 +70,7 @@ object GameTile
             eangle
           FROM GameTile
           WHERE mapid = {mapid}
-          ORDER BY tileid""")
+          ORDER BY tileid ASC""")
       .on('mapid -> mapid)
       .as(parserGameTiles *)
       }
