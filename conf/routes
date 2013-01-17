@@ -9,7 +9,7 @@ GET     /                           controllers.Application.index
 GET     /editor                     controllers.Application.editor
 
 #REST API for loading and saving maps
-GET 	/gamemap					controllers.Application.loadMap
+GET 	/gamemap/:id				controllers.Application.loadMap(id: Long)
 POST 	/gamemap					controllers.Application.saveMap
 
 # Map static resources from the /public folder to the /assets URL path

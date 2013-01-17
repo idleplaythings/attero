@@ -9,13 +9,13 @@ var SaveLoad =
 		var data = TileGrid.serialize();
 		data.name = name;
 		var json = JSON.stringify(data);
-		SaveLoad.submitAjax(json, "POST");
+		SaveLoad.submitSaveAjax(json);
 	},
 
-	submitAjax: function(data, method)
+	submitSaveAjax: function(data)
 	{
 		$.ajax({
-            type : method,
+            type : 'POST',
             url : '/gamemap',
             contentType: 'application/json; charset=UTF-8',
             dataType : 'json',
@@ -31,9 +31,19 @@ var SaveLoad =
         if (typeof id == "undefined")
             throw "You need to give a id for the map.";
 
-        var data = {"mapid": id};
-        var json = JSON.stringify(data);
-        SaveLoad.submitAjax(json, "GET");
+        SaveLoad.submitLoadAjax(id);
+    },
+
+    submitLoadAjax: function(id)
+    {
+        $.ajax({
+            type : 'GET',
+            url : '/gamemap/'+id,
+            dataType : 'json',
+            data: {},
+            success : SaveLoad.successSubmit,
+            error : SaveLoad.errorAjax
+        });
     },
 
 	successSubmit: function(data){

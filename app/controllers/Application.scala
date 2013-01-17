@@ -15,18 +15,20 @@ object Application extends Controller {
     Ok(views.html.editor())
   }
 
-  def loadMap = Action(parse.json) {
+  def loadMap(id: Long) = Action
+  {
     request =>
     {
-      val mapid: Long = (request.body \ "mapid").toString.toLong
-      Ok(views.html.gamemap())
+      print(id);
+      MapStorage.loadMap(id)
+      Ok("""{"status":"ok"}""")
     }
   }
 
   def saveMap = Action(parse.json(maxLength = 1024 * 2000))
   {
     request =>
-      if (GameMap.save(request.body) != 0)
+      if (MapStorage.saveMap(GameMap.fromJson(request.body)) != 0)
       {
         println("ok!");
         Ok("""{"status": "ok"}""")

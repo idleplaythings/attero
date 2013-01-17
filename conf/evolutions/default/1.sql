@@ -25,7 +25,15 @@ CREATE TABLE `GameTile` (
   PRIMARY KEY (`mapid`, `tileid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `Game` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `leftplayer` int(11) DEFAULT NULL,
+  `rightplayer` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 # --- !Downs
 
 DROP TABLE `GameMap`;
 DROP TABLE `GameTile`;
+DROP TABLE `Game`;
