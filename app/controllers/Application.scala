@@ -19,7 +19,6 @@ object Application extends Controller {
   {
     request =>
     {
-      print(id);
       MapStorage.loadMap(id)
       Ok("""{"status":"ok"}""")
     }

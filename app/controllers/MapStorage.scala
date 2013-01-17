@@ -45,8 +45,9 @@ object MapStorage
 
   def loadTiles(mapid: Long): List[GameTile] =
   {
+    val t1 = System.nanoTime
     DB.withConnection { implicit c =>
-      SQL("""SELECT
+      val s = SQL("""SELECT
             texture,
             toffset,
             tmask,
@@ -58,7 +59,9 @@ object MapStorage
           FROM GameTile
           WHERE mapid = {mapid}
           ORDER BY tileid ASC""")
-      .on('mapid -> mapid)
+
+      println(System.nanoTime -t1)
+      s.on('mapid -> mapid)
       .as(parserGameTiles *)
       }
   }
