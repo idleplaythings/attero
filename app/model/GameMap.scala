@@ -11,8 +11,22 @@ case class GameMap(
   height: Int,
   tiles: List[GameTile])
 {
-  println("GameMap has been constructed "+ this.name);
+  println("GameMap has been constructed '"+ this.name + "' x of 2: " + getXForTile(2));
 
+  def getGameTileCount(): Int =
+  {
+    ((this.width*2)+1) * ((this.height*2)+1)
+  }
+
+  def getXForTile(i:Int): Int =
+  {
+    i+1 % this.width
+  }
+
+  def getYForTile(i:Int): Int =
+  {
+    math.floor(i / this.width).toInt;
+  }
 /*
   def GetTileBatch(batchnumber: Int): List[GameTile] =
   {

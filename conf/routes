@@ -12,5 +12,7 @@ GET     /editor                     controllers.Application.editor
 GET 	/gamemap/:id				controllers.Application.loadMap(id: Long)
 POST 	/gamemap					controllers.Application.saveMap
 
+POST /creategame                    controllers.Application.createGame
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
