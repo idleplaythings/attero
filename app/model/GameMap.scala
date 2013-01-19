@@ -13,14 +13,9 @@ case class GameMap(
 {
   println("GameMap has been constructed '"+ this.name + "' x of 2: " + getXForTile(2));
 
-  def getGameTileCount(): Int =
-  {
-    ((this.width*2)+1) * ((this.height*2)+1)
-  }
-
   def getXForTile(i:Int): Int =
   {
-    i+1 % this.width
+    (i+1) % ((this.width*2)+1)
   }
 
   def getYForTile(i:Int): Int =

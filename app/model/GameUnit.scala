@@ -11,6 +11,6 @@ case class GameUnit(
     y: Int
 )
 {
-    println("GameUnit created")
+    println("GameUnit created, spot: " + spot + " hide:  " + hide)
 
 }

@@ -19,6 +19,7 @@ object GameCreator
     val map: GameMap = MapStorage.loadMap(mapid).get
     val units: List[GameUnit] = createUnits(unitcount, map)
 
+    initializeGameDatabase(units, map)
     1
   }
 
@@ -48,30 +49,29 @@ object GameCreator
     DB.withTransaction { implicit c =>
       val gameid = SQL("""
         INSERT INTO Game (leftplayer, rightplayer)
-        VALUES (1,2)""").executeInsert()
+        VALUES (1,2)""").executeInsert().get
 
-      SQL("""CREATE DATABASE Game_{gameid}""")
-        .on('gameid -> gameid)
+      val dbName = "Game_"+gameid
+      SQL("""CREATE DATABASE """+dbName)
         .execute()
 
       SQL("""
-        CREATE TABLE `Game_{gameid}.Units` (
+        CREATE TABLE """ +dbName+ """.GameUnit (
           `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
           `owner` int(11) unsigned DEFAULT NULL,
           `unittype` int(11) DEFAULT NULL,
           `amount` tinyint(4) DEFAULT NULL,
           `hide` tinyint(4) DEFAULT NULL,
           `spot` tinyint(4) DEFAULT NULL,
-          `location` tinyint(4) DEFAULT 0,
+          `location` int(11) DEFAULT 0,
           `x` int(4) DEFAULT 0,
           `y` int(4) DEFAULT 0,
           PRIMARY KEY (`id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-      """).on('gameid -> gameid)
-          .execute()
+      """).execute()
 
       SQL("""
-        CREATE TABLE `Game_{gameid}.GameTile` (
+        CREATE TABLE """ +dbName+ """.GameTile (
           `tileid` int(11) DEFAULT NULL,
           `x` int(11) DEFAULT 0,
           `y` int(11) DEFAULT 0,
@@ -87,16 +87,16 @@ object GameCreator
           `cover` tinyint(4) DEFAULT NULL,
           `terrain` tinyint(4) DEFAULT NULL,
           `hide` tinyint(4) DEFAULT NULL,
-          PRIMARY KEY (`tileid`)
+          PRIMARY KEY (`tileid`, `x`, `y`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-      """).on('gameid -> gameid)
-          .execute()
+      """).execute()
 
       for (i <- 0 until map.tiles.length)
       {
         val tile: GameTile = map.tiles(i)
-        SQL("""INSERT INTO GameTile (tileid, x, y, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle)
-                    VALUES ({tileid}, {x}, {y}, {texture}, {toffset}, {tmask}, {elevation}, {element}, {eoffset}, {evariance}, {eangle}, 0, 0, 0, 0)""")
+        SQL("""INSERT INTO """ +dbName+ """.GameTile
+          (tileid, x, y, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle, concealment, cover, terrain, hide)
+          VALUES ({tileid}, {x}, {y}, {texture}, {toffset}, {tmask}, {elevation}, {element}, {eoffset}, {evariance}, {eangle}, 0, 0, 0, 0)""")
           .on(
             'tileid -> i,
             'x -> map.getXForTile(i),
@@ -115,11 +115,11 @@ object GameCreator
       for (i <- 0 until units.length)
       {
         val unit: GameUnit = units(i)
-        SQL("""INSERT INTO GameTile (owner, unittype, amount, hide, spot, location, x ,y)
+        SQL("""INSERT INTO """ +dbName+ """.GameUnit (owner, unittype, amount, hide, spot, location, x ,y)
                     VALUES ({owner}, {unittype}, {amount}, {hide}, {spot}, {location}, {x}, {y})""")
           .on(
             'owner -> unit.owner,
-            'type -> 1,
+            'unittype -> 1,
             'amount -> unit.amount,
             'hide -> unit.hide,
             'spot -> unit.spot,
