@@ -14,16 +14,16 @@ case class GameTile(
   eAngle: Int
 )
 {
+  var id:Int = 0
+
   override def toString: String =
   {
-    this.texture + ","
-    + this.tOffset + ","
-    + this.tMask + ","
-    + this.elevation + ","
-    + this.element + ","
-    + this.eOffset + ","
-    + this.eVariance + ","
-    + this.eAngle + ""
+    texture +","+ tOffset +","+ tMask +","+ elevation +","+ element +","+ eOffset +","+ eVariance +","+ eAngle
+  }
+
+  def toSqlValue(mapid: Long): String =
+  {
+    "(" + mapid +","+this.id+","+ this.toString() + ")"
   }
 }
 

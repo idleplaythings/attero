@@ -45,58 +45,44 @@ object MapStorage
 
   def loadTiles(mapid: Long): List[GameTile] =
   {
-    val t1 = System.nanoTime
     DB.withConnection { implicit c =>
-      val s = SQL("""SELECT
-            texture,
-            toffset,
-            tmask,
-            elevation,
-            element,
-            eoffset,
-            evariance,
-            eangle
-          FROM game_tile
-          WHERE mapid = {mapid}
-          ORDER BY tileid ASC""")
-
-      println(System.nanoTime -t1)
-      s.on('mapid -> mapid)
+      SQL("""SELECT
+        texture,
+        toffset,
+        tmask,
+        elevation,
+        element,
+        eoffset,
+        evariance,
+        eangle
+      FROM game_tile
+      WHERE mapid = {mapid}
+      ORDER BY tileid ASC""")
+      .on('mapid -> mapid)
       .as(parserGameTiles *)
-      }
+    }
   }
 
   def saveMap(map: GameMap) =
   {
+    map.setTileIds
     val mapid = DB.withConnection { implicit c =>
       SQL("""INSERT INTO game_map (name, width, height)
                   VALUES ({name}, {width}, {height})""")
         .on('name -> map.name,
           'width -> map.width,
           'height -> map.height)
-        .executeInsert()
+        .executeInsert().get
     }
     println("map id: " + mapid + " inserted");
 
-      DB.withTransaction { implicit c =>
-        for (i <- 0 until map.tiles.length)
-        {
-          val tile: GameTile = map.tiles(i)
-          SQL("""INSERT INTO game_tile (mapid, tileid, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle)
-                      VALUES ({mapid}, {tileid}, {texture}, {toffset}, {tmask}, {elevation}, {element}, {eoffset}, {evariance}, {eangle})""")
-            .on('mapid -> mapid,
-              'tileid -> i,
-              'texture -> tile.texture,
-              'toffset -> tile.tOffset,
-              'tmask -> tile.tMask,
-              'elevation -> tile.elevation,
-              'element -> tile.element,
-              'eoffset -> tile.eOffset,
-              'evariance -> tile.eVariance,
-              'eangle -> tile.eAngle)
-            .execute()
-        }
-      }
+    DB.withTransaction { implicit c =>
+      val sql: String =
+        """INSERT INTO game_tile (mapid, tileid, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle) VALUES """+"\n" + map.tiles.map(_.toSqlValue(mapid)).mkString(",")
+
+      //println(sql);
+      SQL(sql).execute()
+    }
 
     1
   }

@@ -11,7 +11,17 @@ case class GameMap(
   height: Int,
   tiles: List[GameTile])
 {
-  println("GameMap has been constructed '"+ this.name + "' x of 2: " + getXForTile(2));
+  println("GameMap has been constructed '"+ this.name + "'");
+
+  def setTileIds =
+  {
+    for (i <- this.tiles.indices)
+    {
+      this.tiles(i).id = i;
+    }
+
+    println("Tileids set");
+  }
 
   def getXForTile(i:Int): Int =
   {
@@ -22,18 +32,6 @@ case class GameMap(
   {
     math.floor(i / this.width).toInt;
   }
-/*
-  def GetTileBatch(batchnumber: Int): List[GameTile] =
-  {
-    var batch: String = ""
-
-  }
-
-  def GetTileBatchForGame(batchnumber: Int): List[GameTile] =
-  {
-
-  }
-*/
 }
 
 object GameMap {
