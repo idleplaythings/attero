@@ -1,0 +1,142 @@
+ id  | owner | unittype | amount | hide | spot | location |  x  |  y
+-----+-------+----------+--------+------+------+----------+-----+-----
+   1 |     1 |        1 |      1 |   18 |   72 |    29344 | 200 | 293
+
+
+
+CREATE FUNCTION distance (x1 integer, y1 integer, x2 integer, y2 integer)
+  RETURNS real
+AS $$
+  import math
+  return math.sqrt(math.pow(x2 - x1, 2) + math.pow(y2 - y1, 2))
+$$ LANGUAGE plpythonu;
+
+
+CREATE FUNCTION raytrace (x1 integer, y1 integer, x2 integer, y2 integer)
+    RETURNS TABLE(x integer, y integer)
+AS $$
+    dx = abs(x2 - x1)
+    dy = abs(y2 - y1)
+    x = x1
+    y = y1
+    n = 1 + dx + dy
+    coords = []
+
+    if x2 > x1:
+        x_inc = 1
+    else:
+        x_inc = -1
+
+    if y2 > y1:
+        y_inc = 1
+    else:
+        y_inc = -1
+
+    error = dx - dy
+    dx = dx * 2
+    dy = dy * 2
+
+    while n > 0:
+        coords.append((x, y))
+
+        if error > 0:
+            x = x + x_inc
+            error = error - dy
+        else:
+            y = y + y_inc
+            error = error + dx
+
+        n = n - 1
+
+    return coords
+$$ LANGUAGE plpythonu;
+
+
+
+
+
+def raytrace(x1, y1, x2, y2, spotting, dismod):
+    dx = abs(x2 - x1)
+    dy = abs(y2 - y1)
+    x = x1
+    y = y1
+    n = 1 + dx + dy
+    coords = []
+
+    if x2 > x1:
+        x_inc = 1
+    else:
+        x_inc = -1
+
+    if y2 > y1:
+        y_inc = 1
+    else:
+        y_inc = -1
+
+    error = dx - dy
+    dx = dx * 2
+    dy = dy * 2
+
+    while n > 0:
+        coords.append(x, y)
+
+        if error > 0:
+            x = x + x_inc
+            error = error - dy
+        else:
+            y = y + y_inc
+            error = error + dx
+
+        n = n - 1
+
+    return coords
+
+
+x  y  weight   ---> tile
+10 12 .5      dismod
+11 12 .5      dismod
+11 13 1       dismod
+
+
+
+(spotter.spotting - raytrace(spotter.x, spotter.y, target.x, target.y, dismod) > target.hide)
+
+10, 10
+
+SELECT id, x, y FROM game_4.game_unit WHERE distance(0, 0, x, y) < MAX;
+
+
+SELECT
+    *,
+    distance(100, 100, x, y) as distance
+FROM
+    game_4.game_unit
+WHERE
+    owner = 2 AND
+    90 - distance(100, 100, x, y) * 1 > hide AND
+    (
+        (
+        SELECT
+            sum(t.concealment)
+        FROM
+            raytrace(100, 100, x, y) r
+        JOIN
+            game_4.game_tile t
+        ON
+            (r.x = t.x AND r.y = t.y)
+    ) < (55 - hide)
+        OR
+    (
+        SELECT
+            sum(t.concealment)
+        FROM
+            raytrace(100, 100, x, y) r
+        JOIN
+            game_4.game_tile t
+        ON
+            (r.x = t.x AND r.y = t.y)
+        ) < (spot - 30)
+    )
+
+
+

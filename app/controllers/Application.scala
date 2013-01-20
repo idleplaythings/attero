@@ -5,6 +5,11 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.json.Json._
 
+import anorm._
+import anorm.SqlParser._
+import play.api.db._
+import play.api.Play.current
+
 object Application extends Controller {
 
   def index = Action {
@@ -52,5 +57,57 @@ object Application extends Controller {
         println("bad req!");
         BadRequest("""{"status": "error"}""")
       }
+  }
+
+  def testCalc(x: Integer, y: Integer) = Action {
+    DB.withConnection { implicit c =>
+
+      println ("start")
+
+      val time1 = System.nanoTime
+
+      val result = SQL("""SELECT
+                id
+            FROM
+              game_4.game_unit
+            WHERE
+              owner = 2 AND
+              {spotting} - distance({x}, {y}, x, y) * 1 > hide
+              AND
+              (
+                (
+                      SELECT
+                          sum(t.concealment) as sum_concealment
+                      FROM
+                          raytrace({x}, {y}, x, y) r
+                      JOIN
+                          game_4.game_tile t
+                      ON
+                          (r.x = t.x AND r.y = t.y)
+                ) < ({spotting} - hide)
+                OR
+                (
+                      SELECT
+                          sum(t.concealment) as sum_concealment
+                      FROM
+                          raytrace({x}, {y}, x, y) r
+                      JOIN
+                          game_4.game_tile t
+                      ON
+                          (r.x = t.x AND r.y = t.y)
+                ) < (spot - {hide})
+              )
+              """)
+      .on('x -> x,
+          'y -> y,
+          'spotting -> 90,
+          'hide -> 30)
+      .as(int("id") *)
+
+      println ((System.nanoTime - time1) / 1000)
+
+
+      Ok(result.mkString(",\n"))
+    }
   }
 }
