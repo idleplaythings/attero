@@ -36,7 +36,7 @@ object MapStorage
   {
     DB.withConnection { implicit c =>
       SQL("""SELECT id, name, width, height
-               FROM GameMap
+               FROM game_map
               WHERE id = {id}""")
         .on('id -> id)
         .as(parserGameMap.singleOpt)
@@ -56,7 +56,7 @@ object MapStorage
             eoffset,
             evariance,
             eangle
-          FROM GameTile
+          FROM game_tile
           WHERE mapid = {mapid}
           ORDER BY tileid ASC""")
 
@@ -69,7 +69,7 @@ object MapStorage
   def saveMap(map: GameMap) =
   {
     val mapid = DB.withConnection { implicit c =>
-      SQL("""INSERT INTO GameMap (name, width, height)
+      SQL("""INSERT INTO game_map (name, width, height)
                   VALUES ({name}, {width}, {height})""")
         .on('name -> map.name,
           'width -> map.width,
@@ -82,7 +82,7 @@ object MapStorage
         for (i <- 0 until map.tiles.length)
         {
           val tile: GameTile = map.tiles(i)
-          SQL("""INSERT INTO GameTile (mapid, tileid, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle)
+          SQL("""INSERT INTO game_tile (mapid, tileid, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle)
                       VALUES ({mapid}, {tileid}, {texture}, {toffset}, {tmask}, {elevation}, {element}, {eoffset}, {evariance}, {eangle})""")
             .on('mapid -> mapid,
               'tileid -> i,

@@ -46,55 +46,59 @@ object GameCreator
 
   def initializeGameDatabase(units: List[GameUnit], map: GameMap)
   {
-    DB.withTransaction { implicit c =>
+    var dbName: String = ""
+
+    DB.withConnection { implicit c =>
       val gameid = SQL("""
-        INSERT INTO Game (leftplayer, rightplayer)
+        INSERT INTO game (leftplayer, rightplayer)
         VALUES (1,2)""").executeInsert().get
 
-      val dbName = "Game_"+gameid
-      SQL("""CREATE DATABASE """+dbName)
+      dbName = "game_"+gameid
+      SQL("""CREATE SCHEMA """+dbName)
         .execute()
+    }
 
+    DB.withTransaction { implicit c =>
       SQL("""
-        CREATE TABLE """ +dbName+ """.GameUnit (
-          `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-          `owner` int(11) unsigned DEFAULT NULL,
-          `unittype` int(11) DEFAULT NULL,
-          `amount` tinyint(4) DEFAULT NULL,
-          `hide` tinyint(4) DEFAULT NULL,
-          `spot` tinyint(4) DEFAULT NULL,
-          `location` int(11) DEFAULT 0,
-          `x` int(4) DEFAULT 0,
-          `y` int(4) DEFAULT 0,
-          PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        CREATE TABLE """ +dbName+ """.game_unit (
+          "id" serial,
+          "owner" integer DEFAULT NULL,
+          "unittype" integer DEFAULT NULL,
+          "amount" smallint DEFAULT NULL,
+          "hide" smallint DEFAULT NULL,
+          "spot" smallint DEFAULT NULL,
+          "location" integer DEFAULT 0,
+          "x" integer DEFAULT 0,
+          "y" integer DEFAULT 0,
+          PRIMARY KEY ("id")
+        )
       """).execute()
 
       SQL("""
-        CREATE TABLE """ +dbName+ """.GameTile (
-          `tileid` int(11) DEFAULT NULL,
-          `x` int(11) DEFAULT 0,
-          `y` int(11) DEFAULT 0,
-          `texture` tinyint(4) DEFAULT NULL,
-          `toffset` tinyint(4) DEFAULT NULL,
-          `tmask` tinyint(4) DEFAULT NULL,
-          `elevation` tinyint(4) DEFAULT NULL,
-          `element` tinyint(4) DEFAULT NULL,
-          `eoffset` tinyint(4) DEFAULT NULL,
-          `evariance` tinyint(4) DEFAULT NULL,
-          `eangle` tinyint(4) DEFAULT NULL,
-          `concealment` tinyint(4) DEFAULT NULL,
-          `cover` tinyint(4) DEFAULT NULL,
-          `terrain` tinyint(4) DEFAULT NULL,
-          `hide` tinyint(4) DEFAULT NULL,
-          PRIMARY KEY (`tileid`, `x`, `y`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        CREATE TABLE """ +dbName+ """.game_tile (
+          "tileid" integer DEFAULT NULL,
+          "x" integer DEFAULT 0,
+          "y" integer DEFAULT 0,
+          "texture" smallint DEFAULT NULL,
+          "toffset" smallint DEFAULT NULL,
+          "tmask" smallint DEFAULT NULL,
+          "elevation" smallint DEFAULT NULL,
+          "element" smallint DEFAULT NULL,
+          "eoffset" smallint DEFAULT NULL,
+          "evariance" smallint DEFAULT NULL,
+          "eangle" smallint DEFAULT NULL,
+          "concealment" smallint DEFAULT NULL,
+          "cover" smallint DEFAULT NULL,
+          "terrain" smallint DEFAULT NULL,
+          "hide" smallint DEFAULT NULL,
+          PRIMARY KEY ("tileid", "x", "y")
+        )
       """).execute()
 
       for (i <- 0 until map.tiles.length)
       {
         val tile: GameTile = map.tiles(i)
-        SQL("""INSERT INTO """ +dbName+ """.GameTile
+        SQL("""INSERT INTO """ +dbName+ """.game_tile
           (tileid, x, y, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle, concealment, cover, terrain, hide)
           VALUES ({tileid}, {x}, {y}, {texture}, {toffset}, {tmask}, {elevation}, {element}, {eoffset}, {evariance}, {eangle}, 0, 0, 0, 0)""")
           .on(
@@ -115,7 +119,7 @@ object GameCreator
       for (i <- 0 until units.length)
       {
         val unit: GameUnit = units(i)
-        SQL("""INSERT INTO """ +dbName+ """.GameUnit (owner, unittype, amount, hide, spot, location, x ,y)
+        SQL("""INSERT INTO """ +dbName+ """.game_unit (owner, unittype, amount, hide, spot, location, x ,y)
                     VALUES ({owner}, {unittype}, {amount}, {hide}, {spot}, {location}, {x}, {y})""")
           .on(
             'owner -> unit.owner,
