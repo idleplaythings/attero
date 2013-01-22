@@ -106,6 +106,26 @@ x  y  weight   ---> tile
 SELECT id, x, y FROM game_4.game_unit WHERE distance(0, 0, x, y) < MAX;
 
 
+CREATE FUNCTION min_value(a integer, b integer)
+  RETURNS integer
+AS $$
+  if (a <= b):
+    return a
+  else:
+    return b
+$$ LANGUAGE plpythonu IMMUTABLE;
+
+CREATE FUNCTION max_value(a integer, b integer)
+  RETURNS integer
+AS $$
+  if (a >= b):
+    return a
+  else:
+    return b
+$$ LANGUAGE plpythonu IMMUTABLE;
+
+
+
 SELECT
     *,
     distance(100, 100, x, y) as distance
@@ -124,6 +144,9 @@ WHERE
             game_4.game_tile t
         ON
             (r.x = t.x AND r.y = t.y)
+        WHERE
+            (t.x between min_value(100, r.x) AND max_value(100, r.x)) AND
+            (t.y between min_value(100, r.y) AND max_value(100, r.y))
     ) < (55 - hide)
         OR
     (
@@ -135,8 +158,57 @@ WHERE
             game_4.game_tile t
         ON
             (r.x = t.x AND r.y = t.y)
+        WHERE
+            (t.x between min_value(100, r.x) AND max_value(100, r.x)) AND
+            (t.y between min_value(100, r.y) AND max_value(100, r.y))
         ) < (spot - 30)
-    )
+    );
+
+
+
+
+
+SELECT
+    *,
+    distance(100, 100, x, y) as distance
+FROM
+    game_4.game_unit u
+WHERE
+    owner = 2 AND
+    90 - distance(100, 100, x, y) * 2 > hide AND
+    (
+      (
+        SELECT
+            sum(t.concealment)
+        FROM
+            raytrace(100, 100, x, y) r
+        JOIN
+            game_4.game_tile t
+        ON
+            (r.y = t.y AND r.x = t.x)
+      ) < (55 - hide)
+        OR
+      (
+        SELECT
+            sum(t.concealment)
+        FROM
+            raytrace(100, 100, x, y) r
+        JOIN
+            game_4.game_tile t
+        ON
+            (r.y = t.y AND r.x = t.x)
+      ) < (spot - 30)
+    );
+
+
+
+
+
+
+
+
+
+
 
 
 
