@@ -1,14 +1,19 @@
 package controllers
 
-import models._;
+import models._
 import play.api._
 import play.api.mvc._
+import play.api.libs.json._
 import play.api.libs.json.Json._
 
 import anorm._
 import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
+
+import play.api.libs.iteratee._
+import akka.actor._
+import scala.concurrent.duration._
 
 object Application extends Controller {
 
@@ -59,6 +64,12 @@ object Application extends Controller {
       }
   }
 
+  def game(userid: Int, gameid: Int) = WebSocket.async[JsValue] { request  =>
+
+    GameServer.join(userid, gameid)
+
+  }
+
   def testCalc(x: Integer, y: Integer) = Action {
     DB.withConnection { implicit c =>
 
@@ -66,38 +77,28 @@ object Application extends Controller {
 
       val time1 = System.nanoTime
 
-      val result = SQL("""SELECT
-                id
-            FROM
-              game_4.game_unit
-            WHERE
-              owner = 2 AND
-              {spotting} - distance({x}, {y}, x, y) * 1 > hide
-              AND
-              (
-                (
-                      SELECT
-                          sum(t.concealment) as sum_concealment
-                      FROM
-                          raytrace({x}, {y}, x, y) r
-                      JOIN
-                          game_4.game_tile t
-                      ON
-                          (r.x = t.x AND r.y = t.y)
-                ) < ({spotting} - hide)
-                OR
-                (
-                      SELECT
-                          sum(t.concealment) as sum_concealment
-                      FROM
-                          raytrace({x}, {y}, x, y) r
-                      JOIN
-                          game_4.game_tile t
-                      ON
-                          (r.x = t.x AND r.y = t.y)
-                ) < (spot - {hide})
-              )
-              """)
+      val result = SQL("""
+        SELECT
+            id
+        FROM
+          game_4.game_unit
+        WHERE
+          owner = 2 AND
+          {spotting} - distance({x}, {y}, x, y) * 1 > hide
+          AND
+          (
+            (
+              SELECT
+                  sum(t.concealment) as sum_concealment
+              FROM
+                  raytrace({x}, {y}, x, y) r
+              JOIN
+                  game_4.game_tile t
+              ON
+                  (r.x = t.x AND r.y = t.y)
+            ) < MAX( (({spotting} - hide), (spot - {hide}))
+          )
+        """)
       .on('x -> x,
           'y -> y,
           'spotting -> 90,
