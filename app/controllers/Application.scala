@@ -64,10 +64,12 @@ object Application extends Controller {
       }
   }
 
-  def game(userid: Int, gameid: Int) = WebSocket.async[JsValue] { request  =>
+  def websockettest = Action { implicit request =>
+    Ok(views.html.websocket(1, 1))
+  }
 
+  def gameserver(userid: Int, gameid: Int) = WebSocket.async[JsValue] { request  =>
     GameServer.join(userid, gameid)
-
   }
 
   def testCalc(x: Integer, y: Integer) = Action {

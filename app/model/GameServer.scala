@@ -62,7 +62,7 @@ class GameServer extends Actor {
 
         if ( ! games.contains(gameid) )
         {
-            games += (gameid -> new ActiveGame(userid))
+            games += (gameid -> new ActiveGame(gameid))
         }
 
         if (games(gameid).canJoin(userid))
@@ -75,8 +75,9 @@ class GameServer extends Actor {
         }
     }
 
-    case GameMessage(userid, gameid, json) => {
-      notifyAll("talk", "test", "text")
+    case GameMessage(userid: Int, gameid: Int, json: JsValue) => {
+      println(json.toString)
+      games(gameid).event(userid, json);
     }
 
     case Quit(userid, gameid) => {
@@ -91,21 +92,6 @@ class GameServer extends Actor {
       }
     }
 
-  }
-
-  def notifyAll(kind: String, user: String, text: String) {
-    /*
-    val msg = JsObject(
-      Seq(
-        "kind" -> JsString(kind),
-        "user" -> JsString(user),
-        "message" -> JsString(text),
-        "members" -> JsArray(
-        )
-      )
-    )
-    chatChannel.push(msg)
-    */
   }
 
 }

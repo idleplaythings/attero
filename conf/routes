@@ -14,7 +14,10 @@ POST 	/gamemap					controllers.Application.saveMap
 
 POST /creategame                    controllers.Application.createGame
 
-GET /testCalc/:x/:y                controllers.Application.testCalc(x: Integer, y: Integer)
+GET /testCalc/:x/:y                 controllers.Application.testCalc(x: Integer, y: Integer)
+
+GET     /websockettest              controllers.Application.websockettest
+GET     /gameserver                 controllers.Application.gameserver(userid: Int, gameid: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

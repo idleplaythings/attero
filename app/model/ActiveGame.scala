@@ -20,7 +20,7 @@ class ActiveGame(val gameid: Int)
     //var tileCaE: Array[Tuple2[Byte, Byte] = GameStorage.getTileConcealmentAndElevation(gameid)
     var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
 
-    def canJoin(userid: Int): Boolean = this.players.contains(userid)
+    def canJoin(userid: Int): Boolean = ! this.players.contains(userid)
 
     def isEmpty(): Boolean = this.players.isEmpty
 
@@ -38,6 +38,16 @@ class ActiveGame(val gameid: Int)
         {
             this.players -= userid
         }
+    }
+
+    def event(userid: Int, json: JsValue) =
+    {
+        this.players(userid).channel.push(JsObject(
+          Seq(
+            "text" -> JsString("vastaus")
+            )
+          )
+        )
     }
 }
 

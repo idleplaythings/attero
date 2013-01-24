@@ -1,0 +1,49 @@
+@(userid: Int, gameid: Int)(implicit request: RequestHeader)
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Websocket test</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
+
+    <script type="text/javascript" charset="utf-8">
+
+        $(function() {
+
+            var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket
+            var gameSocket = new WS("@routes.Application.gameserver(userid, gameid).webSocketURL()")
+
+            window.sendMessage = function() {
+                gameSocket.send(JSON.stringify(
+                    {text: "mörmylä"}
+                ))
+            }
+
+            window.receiveEvent = function(event) {
+                var data = JSON.parse(event.data)
+
+                // Handle errors
+                if(data.error) {
+                    gameSocket.close()
+                    console.log(data.error);
+                    return
+                } else {
+                    console.dir(data);
+                }
+
+            }
+
+
+            $("#talk").keypress(handleReturnKey)
+
+            gameSocket.onmessage = window.receiveEvent
+
+        })
+
+    </script>
+    </head>
+    <body>
+    </body>
+</html>
