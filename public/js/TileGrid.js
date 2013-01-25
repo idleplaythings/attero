@@ -196,8 +196,25 @@ window.TileGrid = {
 
     },
 
+    removeTileGrid: function()
+    {
+        var meshes = TileGrid.getTileGridMesh();
+        for (var i in meshes)
+        {
+            Graphics.scene.remove(meshes[i]);
+        }
+
+        TileGrid.THREEMesh = null;
+        TileGrid.THREEMeshes = null;
+        TileGrid.THREETextures = null;
+        TileGrid.textureDatas = [];
+        TileGrid.tilesBySubSegments = [];
+    },
+
     init: function()
     {
+
+        TileGrid.removeTileGrid();
         TileGrid.createTexture();
         console.log("TG init");
         var meshes = TileGrid.getTileGridMesh();
@@ -207,8 +224,51 @@ window.TileGrid = {
         }
     },
 
-    initGameTiles: function()
+    createFromJson: function(json)
     {
+        TileGrid.width = json.width;
+        TileGrid.height = json.height;
+
+        TileGrid.createGametilesFromJson(json.tiles);
+    },
+
+    createGametilesFromJson: function(tiles)
+    {
+        var tiles = tiles.split(";");
+        TileGrid.gameTiles = Array();
+
+        var gameTileCount = TileGrid.getGameTileCount();
+        var gameTileRowCount = (TileGrid.tileRowCount*2)+1;
+        for ( var i in tiles )
+        {
+            var details = tiles[i].split(",");
+
+            var x = (i+1) % gameTileRowCount;
+            var y = Math.floor(i / gameTileRowCount);
+
+            args =
+            {
+                position:{x:x, y:y},
+                subTexture: details[0],
+                subTextureOffset: details[1],
+                subTextureMask: details[2],
+                elevation: details[3],
+                subElement: details[4],
+                subElementOffset: details[5],
+                subElementVariance: details[6],
+                subElementAngle: details[7]
+            };
+
+
+            TileGrid.gameTiles[i] = new GameTile(args);
+        }
+
+    },
+
+    createDefaultGameTiles: function()
+    {
+        TileGrid.gameTiles = Array();
+
         var gameTileCount = TileGrid.getGameTileCount();
         var gameTileRowCount = (TileGrid.tileRowCount*2)+1;
         while( gameTileCount-- )
@@ -217,11 +277,12 @@ window.TileGrid = {
             var y = Math.floor(gameTileCount / gameTileRowCount);
             var i = y*gameTileRowCount + x;
 
-            TileGrid.gameTiles[i] = new GameTile(x, y);
+            TileGrid.gameTiles[i] = new GameTile({position:{x:x, y:y}});
         }
+    },
 
-        console.dir(TileGrid.gameTiles);
-
+    initTiles: function()
+    {
         window.tiles = Array();
 
         var tileCount = TileGrid.getTileCount();

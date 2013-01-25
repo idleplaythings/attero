@@ -17,7 +17,7 @@ TileElement.prototype = {
         var l = this.img.width / 40;
         return Math.floor(Math.random()*l);
     },
-    
+
     getImageData: function(offset)
     {
         if (this.imageDataArrays[offset])
@@ -33,26 +33,23 @@ TileElement.prototype = {
 
         this.imageDataArrays[offset] = finalContext.getImageData(0, 0, 40, 40);
         return this.imageDataArrays[offset];
-        
+
     },
-    
+
     addToTile: function(tile, offset)
     {
         tile.subElement = this.id;
         tile.subElementOffset = offset;
     },
-    
+
     addToTexture: function(tile, targetData, segment, offset, undershadow)
     {
-        console.log("undershadow: " + undershadow );
-        console.log("this.underShadow: " + this.underShadow );
-    
         if (this.underShadow != undershadow)
             return;
-        
+
         var pos = tile.getTextureSegmentLocation(segment);
         ImageManipulation.addImageDataToGridTexture(
-            targetData, 
+            targetData,
             this.getImageData(offset),
             pos.x,
             pos.y,
@@ -77,19 +74,19 @@ var RoadTileElement = function(id, img)
 
 RoadTileElement.prototype = Object.create( TileElement.prototype );
 
-RoadTileElement.prototype.addToTexture = 
+RoadTileElement.prototype.addToTexture =
     function(tile, targetData, segment, offset, undershadow)
 {
     //console.log("undershadow: " + undershadow );
     //console.log("this.underShadow: " + this.underShadow );
     if (this.underShadow != undershadow)
         return;
-        
+
     var angle = tile.subTiles[segment].subElementAngle;
     var pos = tile.getTextureSegmentLocation(segment);
-    
+
     ImageManipulation.addImageDataToGridTexture(
-        targetData, 
+        targetData,
         this.getImageData(offset, angle),
         pos.x,
         pos.y,
@@ -105,7 +102,7 @@ RoadTileElement.prototype.addToTile = function(tile, offset)
     tile.subElementAngle = 0;
     tile.subElement = this.id;
     tile.subElementOffset = 0;
-    
+
     this.updateAdjacentTiles(tile);
     this.updateTile(tile);
 }
@@ -115,15 +112,15 @@ RoadTileElement.prototype.updateTile = function(tile)
     var tiles = tile.getAdjacentGameTilesInArrayClockwise();
     tiles = this.ignoreRoads(tiles);
     var roadcount = 0;
-    
+
     for (var i in tiles)
     {
         if (tiles[i] != null)
             roadcount++;
     }
-    
+
     if (roadcount == 0)
-    {   
+    {
     }
     else if (roadcount < 3)
     {
@@ -135,7 +132,7 @@ RoadTileElement.prototype.updateTile = function(tile)
     {
         //tile.subElementOffset = this.many;
     }
-    
+
     Landscaping.addTileToBeUpdated(tile);
 }
 
@@ -143,7 +140,7 @@ RoadTileElement.prototype.getRoadsMeetType = function(tiles)
 {
     var first = null;
     var second = null;
-    
+
     for (var i in tiles)
     {
         if (tiles[i] != null)
@@ -153,14 +150,14 @@ RoadTileElement.prototype.getRoadsMeetType = function(tiles)
                 second = i;
                 break;
             }
-            
+
             first = i;
         }
     }
-    
-    
+
+
     var offset = 0;
-    
+
     if (second !== null)
     {
         var diff = second - first;
@@ -180,12 +177,12 @@ RoadTileElement.prototype.getRoadsMeetType = function(tiles)
                 +second+", diff: "+diff;
         }
     }
-    
+
     var angle = TileGrid.getAdjacentTilesArrayAngle(first);
     var details =  {offset:offset, angle:angle};
-    
+
     console.dir(details);
-    
+
     return details;
 }
 
@@ -194,12 +191,12 @@ RoadTileElement.prototype.updateAdjacentTiles = function(tile)
 {
     var tiles = tile.getAdjacentGameTilesInArray();
     tiles = this.ignoreRoads(tiles);
-    
+
     for (var i in tiles){
         if (tiles[i] != null)
             this.updateTile(tiles[i]);
     }
-   
+
 }
 
 RoadTileElement.prototype.ignoreRoads = function(tiles)
@@ -208,32 +205,32 @@ RoadTileElement.prototype.ignoreRoads = function(tiles)
         tiles[0] = null;
         tiles[2] = null;
     }
-    
+
     if (tiles[3] && tiles[3].subElement == this.id){
         tiles[2] = null;
         tiles[4] = null;
     }
-    
+
     if (tiles[5] && tiles[5].subElement == this.id){
         tiles[4] = null;
         tiles[6] = null;
     }
-    
+
     if (tiles[7] && tiles[7].subElement == this.id){
         tiles[0] = null;
         tiles[6] = null;
     }
-    
+
     for (var i in tiles)
     {
         var tile = tiles[i];
         if (!tile)
             continue;
-        
+
         if (tile.subElement != this.id)
             tiles[i] = null;
     }
-    
+
     return tiles;
 }
 
@@ -246,9 +243,9 @@ RoadTileElement.prototype.getImageData = function(offset, angle)
 
     //finalContext.drawImage(this.img, t , 0, 40, 40, 0, 0, 40, 40);
     var t = offset*40;
-    
+
     ImageManipulation.drawAndRotate(context, t, 0, 40, 40, 40, 40, angle, this.img, false);
-    
+
     return context.getImageData(0, 0, 40, 40);
 
 }

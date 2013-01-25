@@ -1,15 +1,26 @@
-var GameTile = function (x, y)
+var GameTile = function (args)
 {
-    this.position = {x:x, y:y}
 
-    this.subTexture = 1;
-    this.subTextureOffset = 1;
-    this.subTextureMask = 1;
-    this.elevation = 0;
-    this.subElement = 0;
-    this.subElementOffset = 0;
-    this.subElementOffset2 = 0;
-    this.subElementAngle = 0;
+    if (!args.position)
+        throw "GameTile has to have position defined"
+
+    this.position = args.position;
+
+    this.subTexture = (args.subTexture) ? args.subTexture : 1;
+
+    this.subTextureOffset = (args.subTextureOffset) ? args.subTextureOffset : 1;
+
+    this.subTextureMask = (args.subTextureMask) ? args.subTextureMask : 1;
+
+    this.elevation = (args.elevation) ? args.elevation : 0;
+
+    this.subElement = (args.subElement) ? args.subElement : 0;
+
+    this.subElementOffset = (args.subElementOffset) ? args.subElementOffset : 0;
+
+    this.subElementOffset2 = (args.subElementVariance) ? args.subElementVariance : 0;
+
+    this.subElementAngle = (args.subElementAngle) ? args.subElementAngle : 0;
 
     this.LOSfactor = 0;
     this.inLOS = false;

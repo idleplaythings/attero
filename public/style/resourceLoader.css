@@ -1,7 +1,7 @@
 #resourceLoaderOverlay{
     position:fixed;
+    top:0px;
     left:0px;
-    right:0px;
     background-color:#272F36;
     font: 13px Helvetica, arial, freesans, clean, sans-serif;
     color:#7D858A;

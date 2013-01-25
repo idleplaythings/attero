@@ -52,7 +52,6 @@ var SaveLoad =
 
     loadMap: function(id)
     {
-
         if (typeof id == "undefined")
             throw "You need to give a id for the map.";
 
@@ -66,9 +65,21 @@ var SaveLoad =
             url : '/gamemap/'+id,
             dataType : 'json',
             data: {},
-            success : SaveLoad.successSubmit,
+            success : SaveLoad.successLoad,
             error : SaveLoad.errorAjax
         });
+    },
+
+    successLoad: function(data){
+        console.dir(data);
+        TileGrid.createFromJson(data);
+        ResourceLoader.loadTiles(SaveLoad.onLoaded);
+    },
+
+    onLoaded: function()
+    {
+      ResourceLoader.remove();
+      console.log("loaded");
     },
 
     successSubmit: function(data){
