@@ -149,6 +149,8 @@ window.TileGrid = {
 
     updateTexture: function(tile)
     {
+        console.log("update texture for tile:");
+        console.dir(tile);
         var subSegmentSize = TileGrid.subSegmentSize;
         var subSegmentsPerLine = TileGrid.tileRowCount/subSegmentSize;
 
@@ -162,7 +164,7 @@ window.TileGrid = {
 
         x -= subx*subSegmentSize;
         y -= suby*subSegmentSize;
-
+        console.log("sub: "+sub+" "+x+","+y);
         ImageManipulation.addImageDataToGridTexture(
             TileGrid.textureDatas[sub],
             tile.textureData,
@@ -239,12 +241,11 @@ window.TileGrid = {
 
         var gameTileCount = TileGrid.getGameTileCount();
         var gameTileRowCount = (TileGrid.tileRowCount*2)+1;
-        for ( var i in tiles )
+        for (var i =0; i<gameTileCount;i++)
         {
-            var details = tiles[i].split(",");
-
-            var x = (i+1) % gameTileRowCount;
+            var x = i % gameTileRowCount;
             var y = Math.floor(i / gameTileRowCount);
+            var details = tiles[i].split(",");
 
             args =
             {
@@ -271,11 +272,10 @@ window.TileGrid = {
 
         var gameTileCount = TileGrid.getGameTileCount();
         var gameTileRowCount = (TileGrid.tileRowCount*2)+1;
-        while( gameTileCount-- )
+        for (var i =0; i<gameTileCount;i++)
         {
-            var x = (gameTileCount+1) % gameTileRowCount;
-            var y = Math.floor(gameTileCount / gameTileRowCount);
-            var i = y*gameTileRowCount + x;
+            var x = i % gameTileRowCount;
+            var y = Math.floor(i / gameTileRowCount);
 
             TileGrid.gameTiles[i] = new GameTile({position:{x:x, y:y}});
         }

@@ -25,7 +25,7 @@ case class GameMap(
 
   def getXForTile(i:Int): Int =
   {
-    (i+1) % ((this.width*2)+1)
+    i % ((this.width*2)+1)
   }
 
   def getYForTile(i:Int): Int =
