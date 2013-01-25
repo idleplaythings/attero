@@ -27,11 +27,10 @@ object Application extends Controller {
 
   def loadMap(id: Long) = Action
   {
-    request =>
-    {
-      MapStorage.loadMap(id)
-      Ok("""{"status":"ok"}""")
-    }
+      MapStorage.loadMap(id) match {
+        case None =>  Ok("""{"status":"error", "info": "map not found"}""")
+        case Some(map) => Ok(map.toJSON)
+      }
   }
 
   def saveMap = Action(parse.json(maxLength = 1024 * 2000))

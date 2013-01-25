@@ -32,6 +32,17 @@ case class GameMap(
   {
     math.floor(i / this.width).toInt;
   }
+
+  def toJSON(): JsObject =
+  {
+    JsObject(
+      Seq(
+        "width" -> JsNumber(this.width),
+        "height" -> JsNumber(this.height),
+        "tiles" -> JsString(GameTile.serialize(this.tiles))
+      )
+    )
+  }
 }
 
 object GameMap {

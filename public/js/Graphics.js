@@ -7,7 +7,7 @@
     cameraPos: {x:0,y:0},
     scene: new THREE.Scene(),
     renderer: null,
-    zoom: 3,
+    zoom: 1,
     ambientLightColor: 0xffffff,
     light: null,
 

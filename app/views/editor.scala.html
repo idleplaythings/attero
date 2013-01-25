@@ -1,15 +1,14 @@
-
 <!DOCTYPE html>
 <html>
     <head>
         <title>Texture test</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        
+
         <link href="@routes.Assets.at("style/tiles.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/confirm.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/resourceLoader.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/TextureContainer.css")" rel="stylesheet" type="text/css">
-        
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script src="@routes.Assets.at("js/requestAnimFrame.js")"></script>
         <script src="@routes.Assets.at("js/ResourceLoader.js")"></script>
@@ -32,34 +31,34 @@
         <script src="@routes.Assets.at("js/ContourShadowDefinitions.js")"></script>
         <script src="@routes.Assets.at("js/confirm.js")"></script>
         <script src="@routes.Assets.at("js/SaveLoad.js")"></script>
-        
+
         <script>
             jQuery(function(){
                 function done()
                 {
-                    
+
                     window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:100px', 'auto', window.availableTextures);
                     window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:100px', 'auto');
                     window.brushMenu = new SideSlideMenuBrushSize('left', 0, 'top:180px', 'auto');
                     window.tileElementMenu = new SideSlideMenuTileElements('right', 0, 'top:350px', 'auto', window.availableTileElements);
-                    
-                    
+
+
                     Graphics.init();
                     Graphics.animate();
                     WaterLayer.init();
                     Grid.init();
 
                     jQuery(".webglCanvas").on("click", TileGrid.onGridClicked);
-                    
+
                     jQuery(".webglCanvas").on("mousedown", Scrolling.mousedown);
                     jQuery(".webglCanvas").on("mouseup", Scrolling.mouseup);
                     jQuery(".webglCanvas").on("mouseout", Scrolling.mouseout);
                     jQuery(".webglCanvas").on("mousemove", Scrolling.mousemove);
-                    
+
                     ResourceLoader.remove();
                 }
-                
-                window.availableTileElements = 
+
+                window.availableTileElements =
                 {
                     1:  new TileElement(1, ResourceLoader.loadImage("/assets/textures/firtreesmany4.png")),
                     2:  new TileElement(2, ResourceLoader.loadImage("/assets/textures/cottage1.png")),
@@ -67,13 +66,13 @@
                     4:  new RoadTileElement(4, ResourceLoader.loadImage("/assets/textures/road1.png")),
                     5:  new RoadTileElement(5, ResourceLoader.loadImage("/assets/textures/road2.png")),
                 };
-                
+
                 window.textureMasks =
                 {
                     1:  ResourceLoader.loadImage("/assets/textures/texturemask.png"),
                     2:  ResourceLoader.loadImage("/assets/textures/shadowBrushes.png")
                 }
-                window.availableTextures = 
+                window.availableTextures =
                 {
                     1:  new Texture(1, ResourceLoader.loadImage("/assets/textures/grass1.png"), Array(1,2,3,4,5,6,7,8,9)),
                     5:  new BorderTexture(5, ResourceLoader.loadImage("/assets/textures/grass2.png"), Array(10,11,12), Array(69, 35, 11)),
@@ -82,32 +81,32 @@
                     4:  new BorderTexture(4, ResourceLoader.loadImage("/assets/textures/dirt1.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
                     7:  new BorderTexture(7, ResourceLoader.loadImage("/assets/textures/field.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
                     6:  new WaterTexture(6, ResourceLoader.loadImage("/assets/textures/water.png"), Array(1,2,3,4,5,6,7,8,9), Array(69, 35, 11))
-                    
+
                 };
 
                 ResourceLoader.run(resourcedone);
-                
+
                 function resourcedone()
                 {
                     TileGrid.initGameTiles();
-                
+
                     ResourceLoader.addLoadable(new LoadTiles(window.tiles));
                     ResourceLoader.addLoadable(new LoadTileGrid());
-                
+
                     ResourceLoader.run(done);
-                    
+
                 }
-                
-            });   
+
+            });
         </script>
-        
+
     </head>
     <body oncontextmenu="return false;">
 		<div class="menubar top">
 			<table>
 				<tr>
 					<td class="left">
-					
+
 					</td>
 					<td class="center">
 						<h2>MAP EDITOR</h2><span id="mapname">Unnamed</span><span id="savestatus">(Unsaved)</span>
