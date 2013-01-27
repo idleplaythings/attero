@@ -26,7 +26,6 @@ var GameTile = function (args)
     this.inLOS = false;
     this.losTexture = {x:3, y:0};
     this.hasElevationShadow = false;
-    this.randomizeTile();
 }
 
 GameTile.prototype.serialize = function()

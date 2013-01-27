@@ -1,10 +1,10 @@
-window.Grid = 
+window.Grid =
 {
     scene: new THREE.Scene(),
     mesh:null,
     material:null,
     opacity:0.05,
-    
+
     init: function()
     {
         var tileRowCount = TileGrid.tileRowCount;
@@ -16,10 +16,10 @@ window.Grid =
         var x = (tileRowCount/2 - subSegmentSize/2);//
 
         var count = (tileRowCount*2)+1;
-        var geometry = new THREE.PlaneGeometry( 
+        var geometry = new THREE.PlaneGeometry(
                     tileRowCount+0.5, tileRowCount+0.5, count, count );
-                    
-        Grid.material = new THREE.MeshBasicMaterial( 
+
+        Grid.material = new THREE.MeshBasicMaterial(
         {
             transparent:true,
             wireframe:true,
@@ -29,13 +29,13 @@ window.Grid =
             depthWrite:false
         });
 
-        Grid.mesh = new THREE.Mesh( 
-            geometry, 
+        Grid.mesh = new THREE.Mesh(
+            geometry,
             Grid.material);
 
         Grid.mesh.position = new THREE.Vector3(x, -y, 2);
 
         Grid.scene.add(Grid.mesh);
-        
+
     }
 };

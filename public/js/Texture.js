@@ -29,7 +29,7 @@ Texture.prototype = {
     {
         return;
     },
-    
+
     getImageData: function(offset)
     {
         if (this.imageDataArrays[offset])
@@ -45,16 +45,16 @@ Texture.prototype = {
 
         this.imageDataArrays[offset] = finalContext.getImageData(0, 0, 40, 40);
         return this.imageDataArrays[offset];
-        
+
     },
-    
+
     addToTile: function(tile, maskid, offset)
     {
         tile.subTextureMask = maskid;
         tile.subTexture = this.id;
         tile.subTextureOffset = offset;
     },
-    
+
     addToTileTexture: function(tile, targetData)
     {
         var added = false;
@@ -81,14 +81,14 @@ Texture.prototype = {
         //window.maskContext.putImageData(textureImageData, 0, 0);
         //$(window.maskContext).appendTo("body");
     },
-    
+
     drawTextureSegment: function (textureImageData, segment, tile)
     {
         //get location
         var pos = tile.getTextureSegmentLocation(segment);
         var x = pos.x;
         var y = pos.y;
-        
+
         //create mask
         var context = window.maskContext;
         context.clearRect(0, 0, 40, 40);
@@ -96,10 +96,10 @@ Texture.prototype = {
         context.drawImage(window.textureMasks[this.maskGroup], v , 0, 40, 40, x, y, 40, 40);
 
         var mask = context.getImageData(0, 0, 40, 40);
-        
+
         //get texture imagedata
         var texture = this.getImageData(tile.subTiles[segment].subTextureOffset);
-        
+
         ImageManipulation.addMaskedImageDataToTileTexture(textureImageData, mask, texture);
     }
 };
@@ -115,27 +115,27 @@ BorderTexture.prototype = Object.create( Texture.prototype );
 BorderTexture.prototype.specialEffects = function (imagedata, tile)
 {
     var data = imagedata.data;
-    
+
     var pixels = 6400;
-    
+
     while (pixels) {
         var r = pixels-4;
         var g = pixels-3;
         var b = pixels-2;
         var a = pixels-1;
-        
+
         if (data[a] == 0 || data[a] > 250)
         {
             pixels -= 4;
             continue;
         }
-        
+
         //69, 35, 11
         var m = data[a] / 255;
         data[r] = data[r] * (m) + this.borderRGB[0]*(1-m);
         data[g] = data[g] * (m) + this.borderRGB[1]*(1-m);
         data[b] = data[b] * (m) + this.borderRGB[2]*(1-m);
-        
+
         pixels -= 4;
     }
     imagedata.data = data;
@@ -153,27 +153,27 @@ WaterTexture.prototype = Object.create( Texture.prototype );
 WaterTexture.prototype.specialEffects = function (imagedata, tile)
 {
     var data = imagedata.data;
-    
+
     var pixels = 6400;
-    
+
     while (pixels) {
         var r = pixels-4;
         var g = pixels-3;
         var b = pixels-2;
         var a = pixels-1;
-        
+
         if (data[a] == 0 || data[a] > 250)
         {
             pixels -= 4;
             continue;
         }
-        
+
         //69, 35, 11
         var m = data[a] / 255;
         data[r] = data[r] * (m) + this.borderRGB[0]*(1-m);
         data[g] = data[g] * (m) + this.borderRGB[1]*(1-m);
         data[b] = data[b] * (m) + this.borderRGB[2]*(1-m);
-        
+
         pixels -= 4;
     }
     imagedata.data = data;

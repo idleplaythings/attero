@@ -25,6 +25,10 @@ object Application extends Controller {
     Ok(views.html.editor())
   }
 
+  def game = Action {
+    Ok(views.html.game())
+  }
+
   def loadMap(id: Long) = Action
   {
       MapStorage.loadMap(id) match {

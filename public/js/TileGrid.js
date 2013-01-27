@@ -277,7 +277,9 @@ window.TileGrid = {
             var x = i % gameTileRowCount;
             var y = Math.floor(i / gameTileRowCount);
 
-            TileGrid.gameTiles[i] = new GameTile({position:{x:x, y:y}});
+            var tile = new GameTile({position:{x:x, y:y}});
+            tile.randomizeTile();
+            TileGrid.gameTiles[i] = tile;
         }
     },
 

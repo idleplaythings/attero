@@ -28,21 +28,16 @@
         <script src="@routes.Assets.at("js/WaterLayer.js")"></script>
         <script src="@routes.Assets.at("js/Grid.js")"></script>
         <script src="@routes.Assets.at("js/FogOfWar.js")"></script>
-        <script src="@routes.Assets.at("js/editor/UIEvents.js")"></script>
+        <script src="@routes.Assets.at("js/game/UIEvents.js")"></script>
         <script src="@routes.Assets.at("js/ContourShadowDefinitions.js")"></script>
         <script src="@routes.Assets.at("js/confirm.js")"></script>
         <script src="@routes.Assets.at("js/SaveLoad.js")"></script>
+        <script src="@routes.Assets.at("js/Unit.js")"></script>
         <script src="@routes.Assets.at("js/MathLib.js")"></script>
 
         <script>
             function dynamicResourcesLoaded()
             {
-
-                window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:100px', 'auto', window.availableTextures);
-                window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:100px', 'auto');
-                window.brushMenu = new SideSlideMenuBrushSize('left', 0, 'top:180px', 'auto');
-                window.tileElementMenu = new SideSlideMenuTileElements('right', 0, 'top:350px', 'auto', window.availableTileElements);
-
 
                 Graphics.init();
                 Graphics.animate();
@@ -55,6 +50,57 @@
                 jQuery(".webglCanvas").on("mouseup", Scrolling.mouseup);
                 jQuery(".webglCanvas").on("mouseout", Scrolling.mouseout);
                 jQuery(".webglCanvas").on("mousemove", Scrolling.mousemove);
+
+
+                var unitcount = 200;
+                while (unitcount--)
+                {
+                    var x = (Math.random()*100)+1;
+                    var y = (Math.random()*100)+1;
+
+                    if (Math.random() > 0.5)
+                    {
+                        var unit = new StugIII({position:{x:x, y:y}});
+                        unit.createIcon();
+                    }
+                    else
+                    {
+                        var membertypes = Array();
+                        var l = Math.floor(Math.random()*10)+1;
+
+                        for (var i = 0; i<l; i++)
+                        {
+                            membertypes[i] = Math.floor(Math.random()*9);
+                        }
+
+                        var unit = new GeInfantry({
+                            position:{x:x, y:y},
+                            membertypes:membertypes
+                        });
+                        unit.createIcon();
+                    }
+                }
+
+
+                var stug = new StugIII({position:{x:0, y:0}});
+                stug.createIcon();
+
+                var memberTypes = Array();
+                //var l = Math.floor(Math.random()*9)+1;
+                var l = 10;
+
+                for (var i = 0; i<l; i++)
+                {
+                    memberTypes[i] = Math.floor(Math.random()*9);
+                }
+
+                var inf = new GeInfantry({
+                    position:{x:4, y:0},
+                    membertypes:memberTypes
+                });
+
+                inf.createIcon();
+
 
                 ResourceLoader.remove();
             }
@@ -70,25 +116,50 @@
 
         </script>
 
+        <script id="vertexShader" type="x-shader/x-vertex">
+            varying vec2 vUv;
+
+            void main() {
+                vUv = uv;
+
+                gl_Position =   projectionMatrix *
+                                modelViewMatrix *
+                                vec4(position,1.0);
+            }
+        </script>
+
+        <script id="fragmentShader" type="x-shader/x-fragment">
+            uniform sampler2D texture;
+
+            varying vec2 vUv;
+
+            void main() {
+                vec4 color = texture2D(texture, vUv);
+                //color.a *= 0.5;
+                gl_FragColor = color;
+                //gl_FragColor = texture2D(tilemap, vUv);
+            }
+        </script>
+
     </head>
     <body oncontextmenu="return false;">
-		<div class="menubar top">
-			<table>
-				<tr>
-					<td class="left">
+        <div class="menubar top">
+            <table>
+                <tr>
+                    <td class="left">
 
-					</td>
-					<td class="center">
-						<h2>MAP EDITOR</h2><span id="mapname">Unnamed</span><span id="savestatus">(Unsaved)</span>
-					</td>
-					<td class="right">
-						<div class="icon" id="loadicon" style="background-image:url(/assets/resource/loadicon.png)"></div>
-						<div class="icon" id="saveicon" style="background-image:url(/assets/resource/saveicon.png)"></div>
-						<div class="icon" id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)"></div>
-					</td>
-				</tr>
-			</table>
-		</div>
+                    </td>
+                    <td class="center">
+                        <h2>MAP EDITOR</h2><span id="mapname">Unnamed</span><span id="savestatus">(Unsaved)</span>
+                    </td>
+                    <td class="right">
+                        <div class="icon" id="loadicon" style="background-image:url(/assets/resource/loadicon.png)"></div>
+                        <div class="icon" id="saveicon" style="background-image:url(/assets/resource/saveicon.png)"></div>
+                        <div class="icon" id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
         <!-- <canvas id="testcanvas" width="40" height="40" style="position:absolute;z-index:200;border:1px solid white;"></canvas> -->
         <div id="texturecontainer"></div>
         <div class="menubar bottom"></div>

@@ -26,6 +26,12 @@ jQuery(function(){
 
     };
 
+    window.unitTilesets =
+    {
+        "ge_tanks": ResourceLoader.loadImage("/assets/units/stug_III.png"),
+        "ge_infantry": ResourceLoader.loadImage("/assets/units/ge_infantry.png")
+    }
+
     ResourceLoader.run(staticResourcesLoaded);
 
 
