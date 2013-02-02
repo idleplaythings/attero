@@ -59,12 +59,26 @@
         Graphics.renderer.render( Grid.scene, Graphics.camera );
     },
 
+    zoomCamera: function(zoom)
+    {
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+        Graphics.zoom = parseFloat(zoom.toFixed(1));
+
+        Graphics.camera.left = width / (-80*zoom);
+        Graphics.camera.right = width / (80*zoom);
+        Graphics.camera.top = height / (80*zoom);
+        Graphics.camera.bottom = height / (-80*zoom);
+
+        Graphics.camera.updateProjectionMatrix();
+    },
+
     moveCamera: function (pos){
 
-        Graphics.camera.position.x = Graphics.cameraPos.x - pos.x/80/Graphics.zoom;
-        Graphics.camera.position.y = Graphics.cameraPos.y + pos.y/80/Graphics.zoom;
+        Graphics.camera.position.x = Graphics.cameraPos.x - pos.x/80;
+        Graphics.camera.position.y = Graphics.cameraPos.y + pos.y/80;
 
-        WaterLayer.light.position.x = Graphics.cameraPos.x - pos.x/80/Graphics.zoom;
-        WaterLayer.light.position.y = Graphics.cameraPos.y + pos.y/80/Graphics.zoom;
+        WaterLayer.light.position.x = Graphics.cameraPos.x - pos.x/80;
+        WaterLayer.light.position.y = Graphics.cameraPos.y + pos.y/80;
     },
 };

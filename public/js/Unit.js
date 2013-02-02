@@ -40,10 +40,9 @@ Unit.prototype.createModel = function()
         this.THREEgeometry,
         this.THREEmaterial);
 
-    var x = 0;
-    var y = 0;
+    var pos = TileGrid.gameCordinatesTo3d(this.position);
 
-    this.THREEmesh.position = new THREE.Vector3(this.position.x, -this.position.y, 3);
+    this.THREEmesh.position = new THREE.Vector3(pos.x, -pos.y, 3);
 }
 
 Unit.prototype.createIcon = function()
@@ -96,9 +95,6 @@ Unit.prototype.createUniforms = function()
 var InfantryUnit = function(args)
 {
     Unit.call( this, args);
-
-    console.dir(args);
-
     if (! args.membertypes)
         throw "InfantryUnit needs args.membertypes";
 

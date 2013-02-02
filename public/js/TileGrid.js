@@ -31,6 +31,20 @@ window.TileGrid = {
         return data;
     },
 
+    gameCordinatesTo3d: function(pos)
+    {
+        var tileRowCount = TileGrid.tileRowCount;
+        var subSegmentSize = TileGrid.subSegmentSize;
+
+        var y = subSegmentSize/2;//
+        var x = subSegmentSize/2;//
+
+        pos.x = (pos.x / 2) - x;
+        pos.y = (pos.y / 2) - y;
+
+        return pos;
+    },
+
     getTileGridWidht: function()
     {
         return TileGrid.tileRowCount*40;

@@ -20,6 +20,7 @@
         <script src="@routes.Assets.at("js/Three.js")"></script>
         <script src="@routes.Assets.at("js/Graphics.js")"></script>
         <script src="@routes.Assets.at("js/Scrolling.js")"></script>
+        <script src="@routes.Assets.at("js/MouseWheel.js")"></script>
         <script src="@routes.Assets.at("js/Zooming.js")"></script>
         <script src="@routes.Assets.at("js/Landscaping.js")"></script>
         <script src="@routes.Assets.at("js/SideSlideMenu.js")"></script>
@@ -51,16 +52,19 @@
                 jQuery(".webglCanvas").on("mouseout", Scrolling.mouseout);
                 jQuery(".webglCanvas").on("mousemove", Scrolling.mousemove);
 
+                MouseWheel.hookEvent(jQuery(".webglCanvas").get(0), 'mousewheel', Zooming.mouseWheel);
 
-                var unitcount = 200;
+                var unitcount = 400;
                 while (unitcount--)
                 {
-                    var x = (Math.random()*100)+1;
-                    var y = (Math.random()*100)+1;
+                    var pos = {
+                        x: Math.floor((Math.random()*200)+1),
+                        y: Math.floor((Math.random()*200)+1)
+                    };
 
                     if (Math.random() > 0.5)
                     {
-                        var unit = new StugIII({position:{x:x, y:y}});
+                        var unit = new StugIII({position:pos});
                         unit.createIcon();
                     }
                     else
@@ -74,15 +78,15 @@
                         }
 
                         var unit = new GeInfantry({
-                            position:{x:x, y:y},
+                            position:pos,
                             membertypes:membertypes
                         });
                         unit.createIcon();
                     }
                 }
 
-
-                var stug = new StugIII({position:{x:0, y:0}});
+                /*
+                var stug = new StugIII({position:TileGrid.gameCordinatesTo3d({x:0, y:0})});
                 stug.createIcon();
 
                 var memberTypes = Array();
@@ -95,12 +99,12 @@
                 }
 
                 var inf = new GeInfantry({
-                    position:{x:4, y:0},
+                    position:{x:0, y:0},
                     membertypes:memberTypes
                 });
 
                 inf.createIcon();
-
+                */
 
                 ResourceLoader.remove();
             }
