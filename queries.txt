@@ -165,7 +165,29 @@ WHERE
     );
 
 
-
+SELECT
+  *
+FROM
+  (
+    SELECT
+        *,
+        distance(100, 100, x, y) as distance
+    FROM
+        game_4.game_unit u
+    WHERE
+        owner = 2 AND
+        distance(100, 100, x, y) < 20 AND
+        90 - distance(100, 100, x, y) * 2 > hide
+  ) t
+WHERE
+  (
+    SELECT
+        sum(t.concealment)
+    FROM
+        game_4.game_tile t
+    WHERE
+        (tileid IN (SELECT * FROM raytrace_tileids(100, 100, x, y)))
+  ) < (55 - hide);
 
 
 SELECT
@@ -175,6 +197,7 @@ FROM
     game_4.game_unit u
 WHERE
     owner = 2 AND
+    distance(100, 100, x, y) < 20 AND
     90 - distance(100, 100, x, y) * 2 > hide AND
     (
       (
@@ -186,6 +209,8 @@ WHERE
             game_4.game_tile t
         ON
             (r.y = t.y AND r.x = t.x)
+        WHERE
+            t.y between min_value(100, r.y) and max_value(100, r.y)
       ) < (55 - hide)
         OR
       (
@@ -197,6 +222,8 @@ WHERE
             game_4.game_tile t
         ON
             (r.y = t.y AND r.x = t.x)
+        WHERE
+            t.y between min_value(100, r.y) and max_value(100, r.y)
       ) < (spot - 30)
     );
 

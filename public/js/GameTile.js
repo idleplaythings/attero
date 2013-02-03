@@ -1,25 +1,17 @@
 var GameTile = function (args)
 {
-
-    if (!args.position)
-        throw "GameTile has to have position defined"
+    if (!args.position) {
+        throw "GameTile has to have position defined";
+    }
 
     this.position = args.position;
-
     this.subTexture = (args.subTexture) ? args.subTexture : 1;
-
     this.subTextureOffset = (args.subTextureOffset) ? args.subTextureOffset : 1;
-
     this.subTextureMask = (args.subTextureMask) ? args.subTextureMask : 1;
-
     this.elevation = (args.elevation) ? args.elevation : 0;
-
     this.subElement = (args.subElement) ? args.subElement : 0;
-
     this.subElementOffset = (args.subElementOffset) ? args.subElementOffset : 0;
-
     this.subElementOffset2 = (args.subElementVariance) ? args.subElementVariance : 0;
-
     this.subElementAngle = (args.subElementAngle) ? args.subElementAngle : 0;
 
     this.LOSfactor = 0;
@@ -30,14 +22,14 @@ var GameTile = function (args)
 GameTile.prototype.serialize = function()
 {
     var serialized = ''
-        + this.subTexture+','
-        + this.subTextureOffset+','
-        + this.subTextureMask+','
-        + this.elevation+','
-        + this.subElement+','
-        + this.subElementOffset+','
-        + this.subElementOffset2+','
-        + this.subElementAngle+'';
+        + this.subTexture + ','
+        + this.subTextureOffset + ','
+        + this.subTextureMask + ','
+        + this.elevation + ','
+        + this.subElement + ','
+        + this.subElementOffset + ','
+        + this.subElementOffset2 + ','
+        + this.subElementAngle + '';
     return serialized;
 }
 
