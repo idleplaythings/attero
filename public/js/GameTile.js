@@ -25,7 +25,6 @@ var GameTile = function (args)
     this.LOSfactor = 0;
     this.inLOS = false;
     this.losTexture = {x:3, y:0};
-    this.hasElevationShadow = false;
 }
 
 GameTile.prototype.serialize = function()
@@ -52,8 +51,7 @@ GameTile.prototype.randomizeTile = function()
 
 GameTile.prototype.onClicked = function()
 {
-    var has = this.hasElevationShadow ? " has elevation shadow" : "";
-    console.log("clicked gameTile " + this.position.x + "," + this.position.y + " elevation: "+this.elevation + has + " elevationString: " + this.getElevationDifferenceString());
+    console.log("clicked gameTile " + this.position.x + "," + this.position.y + " elevation: "+this.elevation + " elevationString: " + this.getElevationDifferenceString());
 
     UIEvents.onGameTileClicked(this);
 }
@@ -177,14 +175,16 @@ GameTile.prototype.getShadowData = function(pos, highlight)
         return false;
     }
 
-    details.maskData = this.getShadowMaskData(details.s, pos);
+    details.maskData = this.getShadowMaskData(details, pos);
 
     return details;
 }
 
 
-GameTile.prototype.getShadowMaskData = function(segment, pos)
+GameTile.prototype.getShadowMaskData = function(details, pos)
 {
+    var segment = details.s;
+    var offset = details.offset || 0;
     var context = window.maskContext;
     var shadowpos = this.getShadowSegmentPosition(segment);
     pos.x += shadowpos.x;
@@ -194,8 +194,7 @@ GameTile.prototype.getShadowMaskData = function(segment, pos)
 
     //var v = this.subTextureMasks[segment]*40;
     var l = window.textureMasks[2].width / 40;
-    var v = Math.floor(Math.random()*l)*40;
-    v = 80;
+    v = offset * 40;
     context.drawImage(window.textureMasks[2], v , 0, 40, 40, pos.x, pos.y, 40, 40);
 
     var mask = context.getImageData(0, 0, 40, 40);

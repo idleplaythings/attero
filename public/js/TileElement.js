@@ -237,7 +237,6 @@ RoadTileElement.prototype.ignoreRoads = function(tiles)
 
 RoadTileElement.prototype.getImageData = function(offset, angle)
 {
-    console.log("offset: " + offset + " angle: " + angle);
     var canvas = $('<canvas width="40" height="40"></canvas>').get(0);
     var context = canvas.getContext("2d");
 

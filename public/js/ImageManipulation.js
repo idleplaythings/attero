@@ -1,4 +1,4 @@
-ImageManipulation = 
+ImageManipulation =
 {
     addImageDataToTileTexture: function(targetData, imageData )
     {
@@ -38,7 +38,7 @@ ImageManipulation =
         }
         targetData.data = data;
     },
-    
+
     addImageDataToTileTextureAsTransparent: function(targetData, imageData )
     {
         var data = targetData.data;
@@ -48,17 +48,17 @@ ImageManipulation =
 
         while (pixels) {
             var a = pixels-1;
-            
+
             if (textureData[a] > 0)
             {
                 data[a] = 255-textureData[a];
             }
             pixels -= 4;
-            
+
         }
         targetData.data = data;
     },
-    
+
     addImageDataToGridTexture: function( targetData, imageData, x, y, targetsize, imgsize, append )
     {
         var data = targetData.data;
@@ -68,21 +68,21 @@ ImageManipulation =
         {
             if (y+i > targetsize || y+i < 0)
                 continue;
-            
+
             for (var a=1;a<=imgsize;a++)
             {
                 if (x+a > targetsize || x+a < 1)
                     continue;
-            
+
                 var pixel = (i*imgsize+a)*4;
                 var bigPixel = ((targetsize*(i+y))+x+a)*4;
-                
+
                 if (append)
                 {
                     var m = (textureData[pixel-1] / 255);
                     data[bigPixel-4] = data[bigPixel-4] * (1-m) + textureData[pixel-4] * m;
                     data[bigPixel-3] = data[bigPixel-3] * (1-m) + textureData[pixel-3] * m;
-                    data[bigPixel-2] = data[bigPixel-2] * (1-m) + textureData[pixel-2] * m;     
+                    data[bigPixel-2] = data[bigPixel-2] * (1-m) + textureData[pixel-2] * m;
                 }
                 else
                 {
@@ -95,7 +95,7 @@ ImageManipulation =
         }
         targetData.data = data;
     },
-    
+
     addMaskedImageDataToTileTexture: function(textureImageData, mask, texture)
     {
         var maskData =  mask.data;
@@ -138,7 +138,7 @@ ImageManipulation =
         }
         textureImageData.data = finalData;
     },
-    
+
     drawBordersForTile: function( targetData )
     {
         var data = targetData.data;
@@ -151,23 +151,23 @@ ImageManipulation =
                     var pixel = (i*40+a)*4;
                     data[pixel-4] = 0;
                     data[pixel-3] = 0;
-                    data[pixel-2] = 0; 
+                    data[pixel-2] = 0;
                 }
             }
         }
-        
+
         targetData.data = data;
     },
-    
+
     drawAndRotate: function(canvas, ix, iy, w, h, width, height, angle, img, rolled){
-		
+
         var x = Math.round(w/2);
         var y = Math.round(h/2);
-        
+
         if (rolled)
             angle = 360 - angle;
-        
-        angle = angle * Math.PI / 180;              
+
+        angle = angle * Math.PI / 180;
         canvas.save();
         canvas.translate(x, y);
         if (rolled)
@@ -175,8 +175,8 @@ ImageManipulation =
         canvas.rotate(angle);
         canvas.drawImage(img, ix, iy, width, height, -width / 2, -height / 2, width, height);
         canvas.rotate(-angle);
-        canvas.translate(-x, -y);               
+        canvas.translate(-x, -y);
         canvas.restore();
-    
+
     }
 }

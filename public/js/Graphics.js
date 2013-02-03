@@ -4,7 +4,6 @@
     width: 1000,
     height: 800,
     camera: null,
-    cameraPos: {x:0,y:0},
     scene: new THREE.Scene(),
     renderer: null,
     zoom: 1,
@@ -27,10 +26,9 @@
         var y = (height - gridWidth);
 
         camera.position.z = 200;
-        camera.position.x = x/80;//width/160 - 0.5;//4.5;
-        camera.position.y = -y/80;//-height/160 + 0.5;//-4.5;
+        camera.position.x = (width/2)/40;
+        camera.position.y = (-height/2)/40;
 
-        Graphics.cameraPos = {x:camera.position.x, y:camera.position.y};
         Graphics.camera = camera;
         Graphics.scene.add( camera );
 
@@ -75,10 +73,16 @@
 
     moveCamera: function (pos){
 
-        Graphics.camera.position.x = Graphics.cameraPos.x - pos.x/80;
-        Graphics.camera.position.y = Graphics.cameraPos.y + pos.y/80;
+        Graphics.camera.position.x -= pos.x/40;
+        Graphics.camera.position.y += pos.y/40;
 
-        WaterLayer.light.position.x = Graphics.cameraPos.x - pos.x/80;
-        WaterLayer.light.position.y = Graphics.cameraPos.y + pos.y/80;
+        WaterLayer.light.position.x = Graphics.camera.position.x;
+        WaterLayer.light.position.y = Graphics.camera.position.y;
     },
+
+    camPos: function()
+    {
+        //TODO: add zoom multipliers
+        return {x: Graphics.camera.position.x*40, y:Graphics.camera.position.y*40};
+    }
 };

@@ -31,16 +31,42 @@ window.TileGrid = {
         return data;
     },
 
+    onGridClicked: function( event )
+    {
+        var x = event.pageX - this.offsetLeft;
+        var y = event.pageY - this.offsetTop;
+        var width = window.innerWidth/2;
+        var height = window.innerHeight/2;
+
+        var camPos = Graphics.camPos();
+
+        x -= width - (camPos.x*Graphics.zoom);
+        y -= height + (camPos.y*Graphics.zoom);
+
+        x /= Graphics.zoom;
+        y /= Graphics.zoom;
+
+        UIEvents.onGridClicked(x,y);
+    },
+
+    gridCordinatesToTile: function(pos)
+    {
+        var x = pos.x;
+        var y = pos.y;
+
+        //console.log("clicked " + x +","+ y);
+        var tileSize = 20;
+        var width = (TileGrid.tileRowCount*2)+1;
+
+        var i = Math.floor((y+10)/tileSize)*(width) + Math.floor((x+10)/tileSize);
+
+        return TileGrid.gameTiles[i];
+    },
+
     gameCordinatesTo3d: function(pos)
     {
-        var tileRowCount = TileGrid.tileRowCount;
-        var subSegmentSize = TileGrid.subSegmentSize;
-
-        var y = subSegmentSize/2;//
-        var x = subSegmentSize/2;//
-
-        pos.x = (pos.x / 2) - x;
-        pos.y = (pos.y / 2) - y;
+        pos.x = (pos.x / 2);
+        pos.y = (pos.y / 2);
 
         return pos;
     },
@@ -82,8 +108,8 @@ window.TileGrid = {
 
             for (var a in this.textureDatas)
             {
-                var y = Math.floor(a/subSegmentsPerLine)*subSegmentSize;
-                var x = (a % subSegmentsPerLine)*subSegmentSize;
+                var y = Math.floor(a/subSegmentsPerLine)*subSegmentSize + subSegmentSize/2;
+                var x = (a % subSegmentsPerLine)*subSegmentSize + subSegmentSize/2;
                 var mesh;
                 var geometry = new THREE.PlaneGeometry(
                     subSegmentSize, subSegmentSize, 1, 1 );
@@ -163,8 +189,6 @@ window.TileGrid = {
 
     updateTexture: function(tile)
     {
-        console.log("update texture for tile:");
-        console.dir(tile);
         var subSegmentSize = TileGrid.subSegmentSize;
         var subSegmentsPerLine = TileGrid.tileRowCount/subSegmentSize;
 
@@ -178,7 +202,7 @@ window.TileGrid = {
 
         x -= subx*subSegmentSize;
         y -= suby*subSegmentSize;
-        console.log("sub: "+sub+" "+x+","+y);
+
         ImageManipulation.addImageDataToGridTexture(
             TileGrid.textureDatas[sub],
             tile.textureData,
@@ -267,7 +291,7 @@ window.TileGrid = {
                 subTexture: details[0],
                 subTextureOffset: details[1],
                 subTextureMask: details[2],
-                elevation: details[3],
+                elevation: parseInt(details[3]),
                 subElement: details[4],
                 subElementOffset: details[5],
                 subElementVariance: details[6],
@@ -365,15 +389,6 @@ window.TileGrid = {
 
         return a;
 
-    },
-
-    onGridClicked: function( event )
-    {
-        var x = event.pageX - this.offsetLeft;
-        var y = event.pageY - this.offsetTop;
-        x -= Scrolling.scrollingPos.x/Scrolling.scrollingSpeed;
-        y -= Scrolling.scrollingPos.y/Scrolling.scrollingSpeed;
-        UIEvents.onGridClicked(x,y);
     },
 
     getSegmentTiles: function(tile, segment)

@@ -4,33 +4,28 @@ $(function(){
 
 
 window.UIEvents = {
-    
+
     onTileClicked: function(tile, x, y)
     {
         Landscaping.onTileClicked(tile, x, y);
     },
-    
+
     onGameTileClicked: function(tile)
     {
         Landscaping.onTileClicked(tile);
     },
-    
+
     onGridClicked: function(x,y)
     {
-        
-        console.log("clicked " + x +","+ y);
-        var tileSize = 20*Graphics.zoom;
-        var i = Math.floor((y+10)/tileSize)*((TileGrid.tileRowCount*2)+1) + Math.floor((x+10)/tileSize);
-        
-        TileGrid.gameTiles[i].onClicked();
+        TileGrid.gridCordinatesToTile({x:x, y:y}).onClicked();
     },
-    
+
     onSave: function(event)
     {
 		confirm.confirm('hi', null);
 		console.log('event');
 	},
-	
+
 	onLoad: function(event)
     {
 		confirm.confirm('hi', null);

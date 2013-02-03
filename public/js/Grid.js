@@ -3,21 +3,24 @@ window.Grid =
     scene: new THREE.Scene(),
     mesh:null,
     material:null,
-    opacity:0.05,
+    opacity:0.00,
 
     init: function()
     {
-        var tileRowCount = TileGrid.tileRowCount;
+        var width = TileGrid.tileRowCount +0.5;
+        var height = TileGrid.tileColumnCount + 0.5;
+
         var subSegments = TileGrid.getSubTextureCount();
         var subSegmentSize = TileGrid.subSegmentSize;
         var subSegmentsPerLine = TileGrid.tileRowCount/subSegmentSize;
 
-        var y = (tileRowCount/2 - subSegmentSize/2);//
-        var x = (tileRowCount/2 - subSegmentSize/2);//
+        var y =width/2 - 0.25;//
+        var x =height/2 - 0.25;//
 
-        var count = (tileRowCount*2)+1;
+        var wcount = (TileGrid.tileRowCount*2)+1;
+        var hcount = (TileGrid.tileColumnCount*2)+1;
         var geometry = new THREE.PlaneGeometry(
-                    tileRowCount+0.5, tileRowCount+0.5, count, count );
+                    width, height, wcount, hcount );
 
         Grid.material = new THREE.MeshBasicMaterial(
         {

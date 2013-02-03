@@ -4,12 +4,12 @@ window.Scrolling = {
     Scrollingstarted: 0,
     Scrolling: false,
     lastpos: {x:0, y:0},
-    scrollingPos: {x:0, y:0},
-    scrollingSpeed: 2,
+    scrollingSpeed: 1,
+    mouseRightButton: 3,
 
     mousedown: function(event){
 
-		if (!event || event.which !== 3)
+		if (!event || event.which !== Scrolling.mouseRightButton)
             return;
 
         event.stopPropagation(event);
@@ -65,10 +65,7 @@ window.Scrolling = {
     scroll: function (dx, dy){
         //console.log("dx: " + dx + ", dy: " + dy);
         var speed = Scrolling.getScrollingSpeed();
-        Scrolling.scrollingPos.x += dx*speed;
-        Scrolling.scrollingPos.y += dy*speed;
-
-        Graphics.moveCamera(Scrolling.scrollingPos);
+        Graphics.moveCamera({x:dx*speed, y:dy*speed});
     },
 
 }

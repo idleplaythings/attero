@@ -2,11 +2,21 @@ jQuery(function(){
 
     window.availableTileElements =
     {
-        1:  new TileElement(1, ResourceLoader.loadImage("/assets/textures/firtreesmany4.png")),
-        2:  new TileElement(2, ResourceLoader.loadImage("/assets/textures/cottage1.png")),
-        3:  new TileElement(3, ResourceLoader.loadImage("/assets/textures/houses.png")),
-        4:  new RoadTileElement(4, ResourceLoader.loadImage("/assets/textures/road1.png")),
-        5:  new RoadTileElement(5, ResourceLoader.loadImage("/assets/textures/road2.png")),
+        //1-20 trees
+        1:  new TileElement(1, ResourceLoader.loadImage("/assets/textures/firtreessmall.png")),
+        2:  new TileElement(2, ResourceLoader.loadImage("/assets/textures/firtreesmany.png")),
+        4:  new TileElement(4, ResourceLoader.loadImage("/assets/textures/bushesmany.png")),
+        //21-30 small houses
+        21:  new TileElement(21, ResourceLoader.loadImage("/assets/textures/cottage1.png")),
+        //31-40 large houses
+        31:  new TileElement(31, ResourceLoader.loadImage("/assets/textures/houses.png")),
+        //41-50 roads
+        41:  new RoadTileElement(41, ResourceLoader.loadImage("/assets/textures/road1.png")),
+        42:  new RoadTileElement(42, ResourceLoader.loadImage("/assets/textures/road2.png")),
+        //51-60 fences
+        51:  new RoadTileElement(51, ResourceLoader.loadImage("/assets/textures/rockwalls.png")),
+        52:  new RoadTileElement(52, ResourceLoader.loadImage("/assets/textures/rockwalls2.png")),
+
     };
 
     window.textureMasks =
@@ -16,13 +26,21 @@ jQuery(function(){
     }
     window.availableTextures =
     {
+        //1-20 grasses
         1:  new Texture(1, ResourceLoader.loadImage("/assets/textures/grass1.png"), Array(1,2,3,4,5,6,7,8,9)),
         5:  new BorderTexture(5, ResourceLoader.loadImage("/assets/textures/grass2.png"), Array(10,11,12), Array(69, 35, 11)),
         2:  new Texture(2, ResourceLoader.loadImage("/assets/textures/grass3.png"), Array(5,6,7,8,9,10,11,12)),
-        3:  new BorderTexture(3, ResourceLoader.loadImage("/assets/textures/rocks1.png"), Array(9,10,11,12), Array(69, 35, 11)),
-        4:  new BorderTexture(4, ResourceLoader.loadImage("/assets/textures/dirt1.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
-        7:  new BorderTexture(7, ResourceLoader.loadImage("/assets/textures/field.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
-        6:  new WaterTexture(6, ResourceLoader.loadImage("/assets/textures/water.png"), Array(1,2,3,4,5,6,7,8,9), Array(69, 35, 11))
+        //21-30 rocks
+        21:  new BorderTexture(21, ResourceLoader.loadImage("/assets/textures/rocks1.png"), Array(9,10,11,12), Array(69, 35, 11)),
+        //31-40 dirts
+        31:  new BorderTexture(31, ResourceLoader.loadImage("/assets/textures/dirt1.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
+        //41-50 fields
+        41:  new BorderTexture(41, ResourceLoader.loadImage("/assets/textures/field.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
+        42:  new BorderTexture(42, ResourceLoader.loadImage("/assets/textures/field2.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
+        43:  new BorderTexture(43, ResourceLoader.loadImage("/assets/textures/field3.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
+        44:  new BorderTexture(44, ResourceLoader.loadImage("/assets/textures/field4.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11)),
+        //51-60
+        51:  new WaterTexture(51, ResourceLoader.loadImage("/assets/textures/water.png"), Array(1,2,3,4,5,6,7,8,9), Array(69, 35, 11))
 
     };
 
