@@ -10,6 +10,7 @@
         <link href="@routes.Assets.at("style/TextureContainer.css")" rel="stylesheet" type="text/css">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script src="@routes.Assets.at("js/lib/jquery.ba-throttle-debounce.min.js")"></script>
         <script src="@routes.Assets.at("js/requestAnimFrame.js")"></script>
         <script src="@routes.Assets.at("js/ResourceLoader.js")"></script>
         <script src="@routes.Assets.at("js/Loadable.js")"></script>
@@ -34,6 +35,8 @@
         <script src="@routes.Assets.at("js/confirm.js")"></script>
         <script src="@routes.Assets.at("js/SaveLoad.js")"></script>
         <script src="@routes.Assets.at("js/MathLib.js")"></script>
+        <script src="@routes.Assets.at("js/Interface.js")"></script>
+        <script src="@routes.Assets.at("js/Coordinates.js")"></script>
 
         <script>
             function dynamicResourcesLoaded()
@@ -50,14 +53,21 @@
                 WaterLayer.init();
                 Grid.init();
 
-                MouseWheel.hookEvent(jQuery(".webglCanvas").get(0), 'mousewheel', Zooming.mouseWheel);
+                var canvas = jQuery(".webglCanvas");
 
-                jQuery(".webglCanvas").on("click", TileGrid.onGridClicked);
+                MouseWheel.hookEvent(canvas.get(0), 'mousewheel', Zooming.mouseWheel);
 
-                jQuery(".webglCanvas").on("mousedown", Scrolling.mousedown);
-                jQuery(".webglCanvas").on("mouseup", Scrolling.mouseup);
-                jQuery(".webglCanvas").on("mouseout", Scrolling.mouseout);
-                jQuery(".webglCanvas").on("mousemove", Scrolling.mousemove);
+                canvas.on("click", TileGrid.onGridClicked);
+                canvas.on("mousedown", Scrolling.mousedown);
+                canvas.on("mouseup", Scrolling.mouseup);
+                canvas.on("mouseout", Scrolling.mouseout);
+                canvas.on("mousemove", Scrolling.mousemove);
+
+                var tileSize = 20; // this doesn't belong here
+                var coordinasService = new Coordinates(tileSize, TileGrid.tileRowCount);
+
+                window.interface = new Interface(coordinasService, TileGrid, canvas, Graphics);
+                window.interface.init();
 
                 ResourceLoader.remove();
             }
