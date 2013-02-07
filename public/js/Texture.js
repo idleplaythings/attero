@@ -1,8 +1,9 @@
 
-var Texture = function(id, img, allowedMasks )
+var Texture = function(id, img, allowedMasks, concealment )
 {
     this.id = id;
     this.allowedMasks = allowedMasks;
+    this.concealment = concealment;
     this.img = img;
     this.imageDataArrays = Array();
     this.drawOrder = Array(4,1,3,5,7,0,2,6,8);
@@ -104,9 +105,9 @@ Texture.prototype = {
     }
 };
 
-var BorderTexture = function(id, img, allowedMasks, borderRGB)
+var BorderTexture = function(id, img, allowedMasks, borderRGB, concealment)
 {
-    Texture.call( this, id, img, allowedMasks );
+    Texture.call( this, id, img, allowedMasks, concealment);
     this.borderRGB = borderRGB;
 }
 

@@ -35,6 +35,8 @@
         <script src="@routes.Assets.at("js/SaveLoad.js")"></script>
         <script src="@routes.Assets.at("js/Unit.js")"></script>
         <script src="@routes.Assets.at("js/MathLib.js")"></script>
+        <script src="@routes.Assets.at("js/FogOfWar.js")"></script>
+        <script src="@routes.Assets.at("js/LineOfSight.js")"></script>
 
         <script>
             function dynamicResourcesLoaded()
@@ -44,6 +46,7 @@
                 Graphics.animate();
                 WaterLayer.init();
                 Grid.init();
+                FogOfWar.init();
 
                 jQuery(".webglCanvas").on("click", TileGrid.onGridClicked);
 
@@ -54,40 +57,42 @@
 
                 MouseWheel.hookEvent(jQuery(".webglCanvas").get(0), 'mousewheel', Zooming.mouseWheel);
 
-                var unitcount = 400;
-                while (unitcount--)
+                var pos = {
+                    x: 20,
+                    y: 20
+                };
+
+                if (Math.random() > 0.5)
                 {
-                    var pos = {
-                        x: Math.floor((Math.random()*200)+1),
-                        y: Math.floor((Math.random()*200)+1)
-                    };
+                    var unit = new StugIII({
+                        id:1,
+                        position:pos
+                    });
+                    unit.createIcon();
+                    window.units[1] = unit;
+                }
+                else
+                {
+                    var membertypes = Array();
+                    var l = Math.floor(Math.random()*10)+1;
 
-                    if (Math.random() > 0.5)
+                    for (var i = 0; i<l; i++)
                     {
-                        var unit = new StugIII({position:pos});
-                        unit.createIcon();
+                        membertypes[i] = Math.floor(Math.random()*9);
                     }
-                    else
-                    {
-                        var membertypes = Array();
-                        var l = Math.floor(Math.random()*10)+1;
 
-                        for (var i = 0; i<l; i++)
-                        {
-                            membertypes[i] = Math.floor(Math.random()*9);
-                        }
-
-                        var unit = new GeInfantry({
-                            position:pos,
-                            membertypes:membertypes
-                        });
-                        unit.createIcon();
-                    }
+                    var unit = new GeInfantry({
+                        id: 1,
+                        position:pos,
+                        membertypes:membertypes
+                    });
+                    unit.createIcon();
+                    window.units[1] = unit;
                 }
 
 
-                var stug = new StugIII({position:TileGrid.gameCordinatesTo3d({x:0, y:0})});
-                stug.createIcon();
+                //var stug = new StugIII({position:TileGrid.gameCordinatesTo3d({x:0, y:0})});
+                //stug.createIcon();
 
                 /*
                 var memberTypes = Array();
@@ -113,12 +118,63 @@
 
             function staticResourcesLoaded()
             {
+                console.log("static loaded");
                 TileGrid.width = 100;
                 TileGrid.height = 100;
                 TileGrid.createDefaultGameTiles();
                 ResourceLoader.loadTiles(dynamicResourcesLoaded);
             }
 
+        </script>
+
+        <script id="fogvertexShader" type="x-shader/x-vertex">
+            varying vec2 vUv;
+
+            void main() {
+                vUv = uv;
+
+                gl_Position =   projectionMatrix *
+                                modelViewMatrix *
+                                vec4(position,1.0);
+            }
+        </script>
+
+        <script id="fogfragmentShader" type="x-shader/x-fragment">
+            uniform sampler2D fogtexture;
+            uniform float tilewidth;
+            uniform float tileheight;
+            uniform sampler2D tilemap;
+            uniform float opacity;
+
+            varying vec2 vUv;
+
+            float texcount = 4.0;
+            float texsize = 0.25;
+
+
+            void main() {
+                vec4 tile = texture2D(tilemap, vUv);
+
+                if(tile.x == 1.0 && tile.y == 1.0) { discard; }
+
+                float x = vUv.x/tilewidth;
+                x -= floor(x);
+                x /= texcount;
+                x += tile.x*255.0*texsize;
+
+                float y = vUv.y / tileheight;
+                y -= floor(y);
+                y /= texcount;
+                y += tile.y*255.0*texsize;
+
+                vec2 v = vec2(x, y);
+                vec4 color = texture2D(fogtexture, v);
+                //color.a *= 1.5;
+                gl_FragColor = color;
+
+                //gl_FragColor = texture2D(tilemap, vUv);
+
+            }
         </script>
 
         <script id="vertexShader" type="x-shader/x-vertex">

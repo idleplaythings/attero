@@ -8,15 +8,47 @@ var GameTile = function (args)
     this.subTexture = (args.subTexture) ? args.subTexture : 1;
     this.subTextureOffset = (args.subTextureOffset) ? args.subTextureOffset : 1;
     this.subTextureMask = (args.subTextureMask) ? args.subTextureMask : 1;
-    this.elevation = (args.elevation) ? args.elevation : 0;
-    this.subElement = (args.subElement) ? args.subElement : 0;
+    this.elevation = (args.elevation) ? parseInt(args.elevation) : 0;
+    this.subElement = (args.subElement) ? parseInt(args.subElement) : 0;
     this.subElementOffset = (args.subElementOffset) ? args.subElementOffset : 0;
     this.subElementOffset2 = (args.subElementVariance) ? args.subElementVariance : 0;
     this.subElementAngle = (args.subElementAngle) ? args.subElementAngle : 0;
 
+    this.concealment = this.calculateConcealment();
+
+    this.subscribedUnit = null;
     this.LOSfactor = 0;
-    this.inLOS = false;
-    this.losTexture = {x:3, y:0};
+    this.inLOS = true;
+    this.losTexture = {x:255, y:255};
+}
+
+GameTile.prototype.calculateConcealment = function()
+{
+    if (window.availableTileElements[this.subElement])
+    {
+        return window.availableTileElements[this.subElement].concealment;
+        console.log("tile concealment: " +  this.concealment );
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+GameTile.prototype.unSubscribeUnitToTile = function(unit)
+{
+    this.subscribedUnit = null;
+}
+
+GameTile.prototype.subscribeUnitToTile = function(unit)
+{
+    if (this.subscribedUnit != null && this.subscribedUnit.id == unit.id)
+        throw "Can't subscribe same unit to same tile more than once";
+
+    if (this.subscribedUnit != null)
+        throw "Can't subscribe more than one unit per tile";
+
+    this.subscribedUnit = unit;
 }
 
 GameTile.prototype.serialize = function()
@@ -39,13 +71,6 @@ GameTile.prototype.randomizeTile = function()
     this.subTextureOffset = texture.getRandomOffset();
     //console.log(this.subTextureOffset);
     this.subTextureMask = texture.getRandomMask();
-}
-
-GameTile.prototype.onClicked = function()
-{
-    console.log("clicked gameTile " + this.position.x + "," + this.position.y + " elevation: "+this.elevation + " elevationString: " + this.getElevationDifferenceString());
-
-    UIEvents.onGameTileClicked(this);
 }
 
 GameTile.prototype.getTilesTouchedByGameTile = function()

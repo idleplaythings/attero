@@ -2,18 +2,64 @@ window.UnitHelper = {
     textureSize: 128,
 }
 
+window.units = Array();
 
 var Unit = function(args)
 {
+    if (!args.id)
+        throw "Unit must have an Id"
+
     if (!args.position)
         throw "Unit has to have position defined"
 
-    this.position = args.position;
+    this.id = args.id;
+    this.setPosition(args.position);
+    this.azimuth = args.azimuth || 0;
+
     this.THREEgeometry = null;
     this.THREEmaterial = null;
     this.THREEmesh = null;
     this.THREEtexture = null;
     this.texturedata = null;
+}
+
+Unit.prototype.lookAt = function(target)
+{
+    var azimuth;
+    if (target.x && target.y)
+    {
+        azimuth = MathLib.getAzimuthFromTarget(this.position, target);
+    }
+    else
+    {
+        azimuth = target;
+    }
+
+    this.setAzimuth(azimuth);
+}
+
+Unit.prototype.setAzimuth = function(azimuth)
+{
+    this.azimuth = azimuth;
+    if (this.THREEmesh)
+    {
+        this.THREEmesh.rotation.z = MathLib.degreeToRadian(MathLib.addToAzimuth(360, -this.azimuth));
+    }
+}
+
+Unit.prototype.setPosition = function(position)
+{
+    if (this.position)
+        TileGrid.getGameTileByXY(this.position.x, this.position.y).unSubscribeUnitToTile(this);
+
+    this.position = position;
+    TileGrid.getGameTileByXY(this.position.x, this.position.y).subscribeUnitToTile(this);
+
+    if (this.THREEmesh)
+    {
+        var pos = TileGrid.gameCordinatesTo3d(this.position);
+        this.THREEmesh.position = new THREE.Vector3(pos.x, -pos.y, 3);
+    }
 }
 
 Unit.prototype.createModel = function()
@@ -139,12 +185,13 @@ InfantryUnit.prototype.getTextureOffsetForMember = function(memberType)
 {
     return memberType*40;
 }
+
 InfantryUnit.prototype.getMemberPosition = function(index)
 {
     var origo = Math.floor(UnitHelper.textureSize/2);
     if (index < 2)
     {
-        var angle =  (index*180);
+        var angle =  ((index*180)+90);
         return MathLib.getPointInDirection(8, angle, origo, origo);
     }
     else if ( index < 11)
