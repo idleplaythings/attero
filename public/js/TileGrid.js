@@ -306,7 +306,6 @@ window.TileGrid = {
 
             TileGrid.gameTiles[i] = new GameTile(args);
         }
-
     },
 
     createDefaultGameTiles: function()

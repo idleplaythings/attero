@@ -7,15 +7,15 @@ jQuery(function(){
         2:  new TileElement(2, ResourceLoader.loadImage("/assets/textures/firtreesmany.png"),20),
         4:  new TileElement(4, ResourceLoader.loadImage("/assets/textures/bushesmany.png"),10),
         //21-30 small houses
-        21:  new TileElement(21, ResourceLoader.loadImage("/assets/textures/cottage1.png"),100),
+        21:  new TileElement(21, ResourceLoader.loadImage("/assets/textures/cottage1.png"),150),
         //31-40 large houses
-        31:  new TileElement(31, ResourceLoader.loadImage("/assets/textures/houses.png"),100),
+        31:  new TileElement(31, ResourceLoader.loadImage("/assets/textures/houses.png"),300),
         //41-50 roads
         41:  new RoadTileElement(41, ResourceLoader.loadImage("/assets/textures/road1.png")),
         42:  new RoadTileElement(42, ResourceLoader.loadImage("/assets/textures/road2.png")),
         //51-60 fences
-        51:  new RoadTileElement(51, ResourceLoader.loadImage("/assets/textures/rockwalls.png"), 100),
-        52:  new RoadTileElement(52, ResourceLoader.loadImage("/assets/textures/rockwalls2.png"), 100),
+        51:  new RoadTileElement(51, ResourceLoader.loadImage("/assets/textures/rockwalls.png"), 200),
+        52:  new RoadTileElement(52, ResourceLoader.loadImage("/assets/textures/rockwalls2.png"), 200),
 
     };
 

@@ -15,11 +15,9 @@ var GameTile = function (args)
     this.subElementAngle = (args.subElementAngle) ? args.subElementAngle : 0;
 
     this.concealment = this.calculateConcealment();
+    this.losConcealment = 0;
 
     this.subscribedUnit = null;
-    this.LOSfactor = 0;
-    this.inLOS = true;
-    this.losTexture = {x:255, y:255};
 }
 
 GameTile.prototype.calculateConcealment = function()
@@ -33,6 +31,35 @@ GameTile.prototype.calculateConcealment = function()
     {
         return 0;
     }
+}
+
+GameTile.prototype.setLosConcealment = function(conc)
+{
+    if (conc > 100)
+        conc = 100;
+
+    if (conc < this.losConcealment)
+        this.losConcealment = conc;
+
+}
+
+GameTile.prototype.getLosConcealmentInByteScale = function(conc)
+{
+    conc = this.losConcealment;
+
+    if (conc < 25)
+        return 0;
+
+    if (conc >= 25 && conc < 50)
+        return 50;
+
+    if (conc >= 50 && conc < 75)
+        return 100;
+
+    if (conc >= 75 && conc < 100)
+        return 150;
+
+    return 180;
 }
 
 GameTile.prototype.unSubscribeUnitToTile = function(unit)

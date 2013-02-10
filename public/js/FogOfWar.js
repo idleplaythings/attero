@@ -18,7 +18,7 @@ window.FogOfWar =
 
 
         var vertShader = document.getElementById('fogvertexShader').innerHTML;
-        var fragShader = document.getElementById('fogfragmentShader').innerHTML;
+        var fragShader = document.getElementById('fogfragmentShader2').innerHTML;
 
         FogOfWar.setUniforms();
 
@@ -50,13 +50,20 @@ window.FogOfWar =
 
     setUniforms: function()
     {
-        var fogtexture = THREE.ImageUtils.loadTexture("/assets/resource/fogofwar16inverse.png");
-        fogtexture.magFilter = THREE.NearestFilter;
-        fogtexture.minFilter = THREE.NearestMipMapNearestFilter;
+        //var fogtexture = THREE.ImageUtils.loadTexture("/assets/resource/fogofwar16inverse.png");
+        //fogtexture.magFilter = THREE.NearestFilter;
+        //fogtexture.minFilter = THREE.NearestMipMapNearestFilter;
 
         var width = (TileGrid.tileRowCount*2)+1;
         var height = (TileGrid.tileColumnCount*2)+1;
 
+        FogOfWar.uniforms = {
+            xStep: {type: "f", value: 1/width/20},
+            yStep: {type: "f", value: 1/height/20},
+            tilemap: {type: "t", value: LineOfSight.getTilemap()},
+
+        };
+    /*
         FogOfWar.uniforms = {
             fogtexture: { type: "t", value: fogtexture },
             tilewidth: {type: "f", value: 1/width},
@@ -66,6 +73,8 @@ window.FogOfWar =
             opacity: {type: "f", value: FogOfWar.opacity}
 
         };
+
+        */
     },
 
     updateLosStatus: function()

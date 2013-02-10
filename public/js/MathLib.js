@@ -1,5 +1,12 @@
 window.MathLib =
 {
+    // a: vastakkainen kateetti, b: viereinen kateetti
+    calculateAngle: function(a, b)
+    {
+        return MathLib.radianToDegree(Math.atan(a/b));
+
+    },
+
     getPointInDirection: function( r, a, cx, cy){
 
         a = MathLib.addToAzimuth(a, -90);
@@ -27,6 +34,49 @@ window.MathLib =
 
     distance: function(start, end){
         return Math.sqrt((end.x-start.x)*(end.x-start.x) + (end.y-start.y)*(end.y-start.y));
+    },
+
+    bresenhamRaytrace: function(start, end, weight, visitfunction)
+    {
+        var x0 = start.x;
+        var x1 = end.x;
+        var y0 = start.y;
+        var y1 = end.y;
+
+        var dx = Math.abs(x1-x0);
+        var dy = Math.abs(y1-y0);
+        var sx = (x0 < x1) ? 1 : -1;
+        var sy = (y0 < y1) ? 1 : -1;
+        var err = dx-dy;
+
+        while(true)
+        {
+            var e2 = 2*err;
+
+            if (e2 >-dy && e2 < dx)
+            {
+                //console.log("nolla");
+                visitfunction(x0+sx,y0, weight);
+                visitfunction(x0,y0+sy, weight);
+            }
+
+            if (e2 >-dy)
+            {
+                err -= dy;
+                x0  += sx;
+            }
+
+            if (e2 < dx)
+            {
+                err += dx;
+                y0  += sy;
+            }
+
+            visitfunction(x0,y0, 1);
+
+            if ((x0==x1) && (y0==y1))
+                break;
+        }
     },
 
     raytrace: function(start, end, visitfunction)
@@ -78,6 +128,7 @@ window.MathLib =
             if (visitfunction(x,y,1) === false)
                 return;
 
+            console.log(error);
             n--;
         }
     },

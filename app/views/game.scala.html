@@ -122,6 +122,7 @@
                 TileGrid.width = 100;
                 TileGrid.height = 100;
                 TileGrid.createDefaultGameTiles();
+                console.log("tiles created");
                 ResourceLoader.loadTiles(dynamicResourcesLoaded);
             }
 
@@ -138,6 +139,27 @@
                                 vec4(position,1.0);
             }
         </script>
+
+        <script id="fogfragmentShader2" type="x-shader/x-fragment">
+            uniform float xStep;
+            uniform float yStep;
+            uniform sampler2D tilemap;
+
+            varying vec2 vUv;
+
+            void main() {
+                vec4 tile = texture2D(tilemap, vUv);
+
+                if(tile.b == 0.0) { discard; }
+
+                float oAlpha = tile.b;
+                float alpha = tile.b;
+
+                gl_FragColor = vec4(0.0, 0.0, 0.0, alpha);
+
+            }
+        </script>
+
 
         <script id="fogfragmentShader" type="x-shader/x-fragment">
             uniform sampler2D fogtexture;
@@ -168,12 +190,7 @@
                 y += tile.y*255.0*texsize;
 
                 vec2 v = vec2(x, y);
-                vec4 color = texture2D(fogtexture, v);
-                //color.a *= 1.5;
-                gl_FragColor = color;
-
-                //gl_FragColor = texture2D(tilemap, vUv);
-
+                gl_FragColor = texture2D(fogtexture, v);
             }
         </script>
 

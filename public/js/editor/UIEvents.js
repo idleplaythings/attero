@@ -5,19 +5,22 @@ $(function(){
 
 window.UIEvents = {
 
-    onTileClicked: function(tile, x, y)
+    onGameTileClicked: function(tile, right)
     {
-        Landscaping.onTileClicked(tile, x, y);
-    },
+        if (right)
+            return;
 
-    onGameTileClicked: function(tile)
-    {
         Landscaping.onTileClicked(tile);
     },
 
-    onGridClicked: function(x,y)
+    onGridClicked: function(x,y, right)
     {
-        TileGrid.gridCordinatesToTile({x:x, y:y}).onClicked();
+        var tile = TileGrid.gridCordinatesToTile({x:x, y:y});
+
+        if (!tile)
+            return;
+
+        UIEvents.onGameTileClicked(tile, right);
     },
 
     onSave: function(event)

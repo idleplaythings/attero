@@ -3,14 +3,15 @@ window.LineOfSight =
     visibilityDegradationPerTile: 1,
     distance: 200,
     degreeIncrement: 0.25,
+    unitheight: 0.5,
+    cornerWeight: 0.3,
 
     clearLineOfSight: function()
     {
         for (var i in TileGrid.gameTiles)
         {
             var tile = TileGrid.gameTiles[i];
-            tile.inLOS = true;
-            tile.losTexture= {x:255, y:255};
+            tile.losConcealment = 0;
         }
         FogOfWar.updateLosStatus();
     },
@@ -20,20 +21,22 @@ window.LineOfSight =
         for (var i in TileGrid.gameTiles)
         {
             var tile = TileGrid.gameTiles[i];
-            tile.inLOS = false;
-            tile.losTexture= {x:3, y:0};
+            tile.losConcealment = 100;
         }
 
         LineOfSight.raytraceAround(unit);
-        LineOfSight.calculateTileTypes();
         FogOfWar.updateLosStatus();
     },
 
     raytraceAround: function(unit)
     {
+        var startTime = (new Date()).getTime();
         var targets = Array();
 
-        TileGrid.getGameTileByXY(unit.position.x,unit.position.y).inLOS = true;
+        var unittile = TileGrid.getGameTileByXY(unit.position.x,unit.position.y);
+        unittile.losConcealment = 0;
+        var startElevation = unittile.elevation;
+        var unitheight = LineOfSight.unitheight;
 
         for (var i = 0; i < 360; i += LineOfSight.degreeIncrement)
         {
@@ -42,69 +45,50 @@ window.LineOfSight =
 
             var sumConcealment = 0;
             var degradation = 0;
+            var angleTreshold = null;
+            var currentElevation = startElevation;
 
-            MathLib.raytrace(unit.position, pos,
-                function(x,y,weight)
+            MathLib.bresenhamRaytrace(unit.position, pos, LineOfSight.cornerWeight,
+                function(x, y, weight)
                 {
                     var tile = TileGrid.getGameTileByXY(x,y);
                     if (!tile)
                         return;
 
-                    if (weight == 1 && (sumConcealment+degradation) < 90)
-                        tile.inLOS = true;
+                    var distance = Math.floor(MathLib.distance(unit.position, {x:x, y:y}));
 
                     if (weight == 1)
-                        degradation = MathLib.distance(unit.position, {x:x, y:y}) * LineOfSight.visibilityDegradationPerTile;
+                    {
+                        tile.setLosConcealment(sumConcealment+degradation);
+
+                        var elevationDifference = tile.elevation - (startElevation+unitheight);
+                        var newangleTreshold = MathLib.calculateAngle(elevationDifference, distance);
+                        if (angleTreshold === null || newangleTreshold > angleTreshold)
+                        {
+                            angleTreshold = newangleTreshold;
+                            //console.log("new angletreshold: " + angleTreshold + " distance: " + distance + "elevation diffrence: " + elevationDifference);
+                        }
+
+                        if (tile.losConcealment < 100)
+                        {
+                            var elevationDifference = tile.elevation - startElevation;
+                            //console.log(+ MathLib.calculateAngle(elevationDifference, distance)+ " distance: " + distance+ "elevation diffrence: " + elevationDifference);
+
+                            if (MathLib.calculateAngle(elevationDifference, distance)<angleTreshold)
+                                tile.losConcealment = 100;
+                        }
+
+                        degradation = distance * LineOfSight.visibilityDegradationPerTile;
+                    }
 
                     sumConcealment += tile.concealment*weight;
+
                 });
         }
 
+        var endTime = (new Date()).getTime();
+        console.log("LOS TOOK: " + (endTime - startTime) );
 
-    },
-
-    calculateTileTypes: function()
-    {
-        for (var i in TileGrid.gameTiles)
-        {
-            var tile = TileGrid.gameTiles[i];
-
-            if ( ! tile.inLOS)
-            {
-                tile.losTexture= {x:3, y:0};
-                continue;
-            }
-
-            var number = LineOfSight.getDirectNeighbours(i);
-            number = number.join("");
-            //console.log(number);
-            number = parseInt(number, 2)
-            tile.losTexture = LineOfSight.getShadowCoordinates(number);
-        }
-    },
-
-    getDirectNeighbours: function(count)
-    {
-        var tiles = Array(4);
-        var rowcount = (TileGrid.tileRowCount*2)+1
-        tiles[0] = LineOfSight.getGameTileLosByCount(count, -rowcount);
-        tiles[1] = LineOfSight.getGameTileLosByCount(count, -1);
-        tiles[2] = LineOfSight.getGameTileLosByCount(count, +1);
-        tiles[3] = LineOfSight.getGameTileLosByCount(count, +rowcount);
-
-        return tiles;
-    },
-
-    getGameTileLosByCount: function(count, add)
-    {
-        var i = parseInt(count)+add;
-
-        //console.log("i: " + i +" count: " + count + " add: " + add);
-        if (TileGrid.gameTiles[i])
-        {
-            return TileGrid.gameTiles[i].inLOS ? 1 : 0;
-        }
-        return 0;
     },
 
     getTilemap: function()
@@ -129,9 +113,9 @@ window.LineOfSight =
             var b = pixels+2;
             var a = pixels+3;
 
-            imageData.data[r] = tile.losTexture.x;
-            imageData.data[g] = tile.losTexture.y;
-            imageData.data[b] = 0;
+            imageData.data[r] = 0;
+            imageData.data[g] = 0;
+            imageData.data[b] = tile.getLosConcealmentInByteScale();
             imageData.data[a] = 255;
         }
         //console.dir(imageData.data);
@@ -140,23 +124,11 @@ window.LineOfSight =
 
 
         //var tilemap = THREE.ImageUtils.loadTexture("/assets/resource/tilemap.png");
-        tilemap.magFilter = THREE.NearestFilter;
-        tilemap.minFilter = THREE.NearestMipMapNearestFilter;
+        //tilemap.magFilter = THREE.NearestFilter;
+        //tilemap.minFilter = THREE.NearestMipMapNearestFilter;
         tilemap.needsUpdate = true;
 
         return tilemap;
     },
-
-    getShadowCoordinates: function(number)
-    {
-        if (number === 15)
-            return {x:255, y:255};
-
-        var x = number % 4;
-        var y = 3-Math.floor(number / 4);
-        //if (number != 15)
-        //console.log("returning "+x+","+y );
-        return {x:x, y:y};
-    }
 }
 
