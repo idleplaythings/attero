@@ -14,33 +14,28 @@ var GameTile = function (args)
     this.subElementOffset2 = (args.subElementVariance) ? args.subElementVariance : 0;
     this.subElementAngle = (args.subElementAngle) ? args.subElementAngle : 0;
 
-    this.concealment = this.calculateConcealment();
+    this.concealment = 0;
+    this.elementHeight = 0;
+
+    this.calculateLosProperties();
     this.losConcealment = 0;
 
     this.subscribedUnit = null;
 }
 
-GameTile.prototype.calculateConcealment = function()
+GameTile.prototype.calculateLosProperties = function()
 {
-    if (window.availableTileElements[this.subElement])
+    var element = window.availableTileElements[this.subElement]
+
+    if (element)
     {
-        return window.availableTileElements[this.subElement].concealment;
-        console.log("tile concealment: " +  this.concealment );
+        this.elementHeight = element.height;
+        this.concealment = element.concealment;
     }
     else
     {
         return 0;
     }
-}
-
-GameTile.prototype.setLosConcealment = function(conc)
-{
-    if (conc > 100)
-        conc = 100;
-
-    if (conc < this.losConcealment)
-        this.losConcealment = conc;
-
 }
 
 GameTile.prototype.getLosConcealmentInByteScale = function(conc)
@@ -54,10 +49,10 @@ GameTile.prototype.getLosConcealmentInByteScale = function(conc)
         return 50;
 
     if (conc >= 50 && conc < 75)
-        return 100;
+        return 90;
 
     if (conc >= 75 && conc < 100)
-        return 150;
+        return 130;
 
     return 180;
 }

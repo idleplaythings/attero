@@ -9,7 +9,6 @@ window.UIEvents = {
         {
             unit.lookAt(tile.position);
             LineOfSight.calculateLosForUnit(unit);
-            console.log("losConcealment: " + tile.losConcealment);
         }
         else if (unit && !right)
         {

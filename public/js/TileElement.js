@@ -1,10 +1,12 @@
 
-var TileElement = function(id, img, concealment )
+var TileElement = function(id, img, concealment, height )
 {
     this.id = id;
     this.img = img;
     this.underShadow = false;
     this.concealment = concealment || 0;
+    this.height = height || 1;
+
     this.imageDataArrays = Array();
 }
 
@@ -61,9 +63,9 @@ TileElement.prototype = {
     }
 };
 
-var RoadTileElement = function(id, img, concealment)
+var RoadTileElement = function(id, img, concealment, height)
 {
-    TileElement.call( this, id, img, concealment);
+    TileElement.call( this, id, img, concealment, height);
     this.underShadow = true;
     this.straight = 0;
     this.left90 = 2;
