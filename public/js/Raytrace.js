@@ -95,12 +95,14 @@ Raytrace.prototype.calculateCornerConcealment = function(coords)
         && corner2
         && window.availableTileElements[corner1.subElement] instanceof RoadTileElement
         && corner2.subElement == corner1.subElement
-        && ((!end || end.subElement != corner1.subElement) && (!start || start.subElement != corner1.subElement))
         )
     {
         //console.log("continious");
-        var elevationMul = (this.getElevationMultiplier(corner1) + this.getElevationMultiplier(corner2))/2
-        this.sumConcealment += corner1.concealment * elevationMul;
+        if (((!end || end.subElement != corner1.subElement) && (!start || start.subElement != corner1.subElement)))
+        {
+            var elevationMul = (this.getElevationMultiplier(corner1) + this.getElevationMultiplier(corner2))/2
+            this.sumConcealment += corner1.concealment * elevationMul;
+        }
     }
     else
     {
