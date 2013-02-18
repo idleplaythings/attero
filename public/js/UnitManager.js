@@ -2,8 +2,6 @@ window.UnitManager =
 {
     createFromString: function(units)
     {
-        return;
-
         var units = units.split(";");
         window.units = Array();
 
@@ -18,8 +16,9 @@ window.UnitManager =
                 position:{x:details[7], y:details[8]}
             };
 
-
-            window.units[id] = new window[className](args);
+            var unit = new window[className](args);
+            unit.createIcon();
+            window.units[id] = unit;
         }
     },
 

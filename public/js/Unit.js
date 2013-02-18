@@ -49,6 +49,9 @@ Unit.prototype.setAzimuth = function(azimuth)
 
 Unit.prototype.setPosition = function(position)
 {
+    position.x = parseInt(position.x);
+    position.y = parseInt(position.y);
+
     if (this.position)
         TileGrid.getGameTileByXY(this.position.x, this.position.y).unSubscribeUnitToTile(this);
 
