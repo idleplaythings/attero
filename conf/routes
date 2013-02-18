@@ -9,7 +9,7 @@ GET     /                           controllers.Application.index
 GET     /editor                     controllers.Application.editor
 
 #Game
-GET     /game                       controllers.Application.game
+GET     /game/:gameid               controllers.Application.game(gameid: Long)
 
 #REST API for loading and saving maps
 GET 	/gamemap/:id				controllers.Application.loadMap(id: Long)

@@ -53,7 +53,7 @@ Raytrace.prototype.getElevationMultiplier = function(tile)
     {
         return 0;
     }
-        return 1;
+    return 1;
 }
 
 Raytrace.prototype.visitCorner = function(coords)

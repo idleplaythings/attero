@@ -25,8 +25,17 @@ object Application extends Controller {
     Ok(views.html.editor())
   }
 
-  def game = Action {
-    Ok(views.html.game())
+  def game(gameid: Long) = Action { implicit request =>
+
+    GameManager.loadMap(gameid) match {
+        case None =>  Ok("""{"status":"error", "info": "game not found"}""")
+        case Some(map) => Ok(views.html.game(
+          1,
+          gameid,
+          Json.stringify(map.toJSON),
+          GameManager.loadUnitsForOwner(gameid, 1).map(_.toString).mkString(";"))
+        )
+      }
   }
 
   def loadMap(id: Long) = Action
@@ -55,9 +64,8 @@ object Application extends Controller {
   def createGame = Action(parse.json(maxLength = 1024 * 2000))
   {
     request =>
-      if (GameCreator.create((request.body)) != 0)
+      if (GameManager.create((request.body)) != 0)
       {
-        println("Game created, maybe!");
         Ok("""{"status": "ok"}""")
       }
       else
