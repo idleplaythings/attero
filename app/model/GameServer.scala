@@ -14,6 +14,9 @@ import akka.pattern.ask
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
 
+import models.events.EventListener
+import models.events.MoveEventListener
+
 object GameServer {
 
   implicit val timeout = Timeout(1 second)
@@ -62,7 +65,10 @@ class GameServer extends Actor {
 
         if ( ! games.contains(gameid) )
         {
-            games += (gameid -> new ActiveGame(gameid))
+            val newGame: ActiveGame = new ActiveGame(gameid)
+            newGame.attach(new MoveEventListener())
+
+            games += (gameid -> newGame)
         }
 
         if (games(gameid).canJoin(userid))

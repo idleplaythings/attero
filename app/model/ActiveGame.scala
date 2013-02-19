@@ -15,16 +15,39 @@ import akka.pattern.ask
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
 
-import models.events.GameEventHandler
+import models.events.EventListener
+import models.events.MoveEventListener
 
-class ActiveGame(val gameid: Long)
-{
+
+
+class Event(val name: String) {
+}
+
+trait EventDispatcher {
+  def attach(eventHandler: EventListener);
+  def dispatch(event: Event);
+}
+
+class ActiveGame(val gameid: Long) extends EventDispatcher {
   //var tileCaE: Array[Tuple2[Byte, Byte] = GameStorage.getTileConcealmentAndElevation(gameid)
   var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
+
+  var eventListeners: List[EventListener] = List();
 
   def canJoin(userid: Int): Boolean = ! this.players.contains(userid)
 
   def isEmpty(): Boolean = this.players.isEmpty
+
+  def attach(eventListener: EventListener) = {
+    if (!eventListeners.contains(eventListener)) {
+      eventListeners ::: List(eventListener);
+    }
+  }
+
+  def dispatch(event: Event) = {
+    eventListeners.filter(_.respondsTo(event.name)).map(_.handle(event))
+  }
+
 
   def join(userid: Int): (Enumerator[JsValue]) =
   {
@@ -60,9 +83,11 @@ class ActiveGame(val gameid: Long)
   {
     try
     {
-      Class.forName("models.events."+messageType).newInstance match {
-        case handler: GameEventHandler => handler.handle(userid, json, this);
-      }
+      dispatch(new Event(messageType + "Event"))
+      // Class.forName("models.events." + messageType + "Event").newInstance match {
+
+      //   // case handler: GameEventHandler => handler.handle(userid, json, this);
+      // }
     }
     catch
     {
