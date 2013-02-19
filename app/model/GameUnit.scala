@@ -12,7 +12,7 @@ case class GameUnit(
   y: Int
 )
 {
-  println("GameUnit created, position: loc("+location+")("+x+","+y+")");
+  //println("GameUnit created, position: loc("+location+")("+x+","+y+")");
 
   override def toString: String =
   {

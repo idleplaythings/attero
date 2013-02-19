@@ -20,7 +20,7 @@ object GameServer {
 
   lazy val default = Akka.system.actorOf(Props[GameServer])
 
-  def join(userid: Int, gameid: Int): scala.concurrent.Future[(Iteratee[JsValue,_],Enumerator[JsValue])] = {
+  def join(userid: Int, gameid: Long): scala.concurrent.Future[(Iteratee[JsValue,_],Enumerator[JsValue])] = {
 
     (default ? Join(userid, gameid)).map {
 
@@ -54,11 +54,11 @@ object GameServer {
 
 class GameServer extends Actor {
 
-  var games: Map[Int, ActiveGame] = Map.empty[Int, ActiveGame];
+  var games: Map[Long, ActiveGame] = Map.empty[Long, ActiveGame];
 
   def receive = {
 
-    case Join(userid: Int, gameid: Int) => {
+    case Join(userid: Int, gameid: Long) => {
 
         if ( ! games.contains(gameid) )
         {
@@ -75,7 +75,7 @@ class GameServer extends Actor {
         }
     }
 
-    case GameMessage(userid: Int, gameid: Int, json: JsValue) => {
+    case GameMessage(userid: Int, gameid: Long, json: JsValue) => {
       println(json.toString)
       games(gameid).event(userid, json);
     }
@@ -96,9 +96,9 @@ class GameServer extends Actor {
 
 }
 
-case class Join(userid: Int, gameid: Int)
-case class Quit(userid: Int, gameid: Int)
-case class GameMessage(userid: Int, gameid: Int, json: JsValue)
+case class Join(userid: Int, gameid: Long)
+case class Quit(userid: Int, gameid: Long)
+case class GameMessage(userid: Int, gameid: Long, json: JsValue)
 
 case class Connected(enumerator:Enumerator[JsValue])
 case class CannotConnect(msg: String)

@@ -25,12 +25,12 @@ object Application extends Controller {
     Ok(views.html.editor())
   }
 
-  def game(gameid: Long) = Action { implicit request =>
+  def game(gameid: Long, userid: Int) = Action { implicit request =>
 
     GameManager.loadMap(gameid) match {
         case None =>  Ok("""{"status":"error", "info": "game not found"}""")
         case Some(map) => Ok(views.html.game(
-          1,
+          userid,
           gameid,
           Json.stringify(map.toJSON),
           GameManager.loadUnitsForOwner(gameid, 1).map(_.toString).mkString(";"))
@@ -79,7 +79,7 @@ object Application extends Controller {
     Ok(views.html.websocket(1, 1))
   }
 
-  def gameserver(userid: Int, gameid: Int) = WebSocket.async[JsValue] { request  =>
+  def gameserver(userid: Int, gameid: Long) = WebSocket.async[JsValue] { request  =>
     GameServer.join(userid, gameid)
   }
 

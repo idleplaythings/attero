@@ -56,7 +56,6 @@ Unit.prototype.setPosition = function(position)
         TileGrid.getGameTileByXY(this.position.x, this.position.y).unSubscribeUnitToTile(this);
 
     this.position = position;
-    console.log(position);
     TileGrid.getGameTileByXY(this.position.x, this.position.y).subscribeUnitToTile(this);
 
     if (this.THREEmesh)

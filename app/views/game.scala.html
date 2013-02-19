@@ -41,6 +41,7 @@
         <script src="@routes.Assets.at("js/LineOfSight.js")"></script>
         <script src="@routes.Assets.at("js/Raytrace.js")"></script>
         <script src="@routes.Assets.at("js/UnitManager.js")"></script>
+        <script src="@routes.Assets.at("js/ServerConnection.js")"></script>
 
         <script>
             function dynamicResourcesLoaded()
@@ -62,61 +63,8 @@
                 MouseWheel.hookEvent(jQuery(".webglCanvas").get(0), 'mousewheel', Zooming.mouseWheel);
 
                 UnitManager.createFromString("@units");
-                /*
-                var pos = {
-                    x: 20,
-                    y: 20
-                };
 
-                if (Math.random() > 0.5)
-                {
-                    var unit = new StugIII({
-                        id:1,
-                        position:pos
-                    });
-                    unit.createIcon();
-                    window.units[1] = unit;
-                }
-                else
-                {
-                    var membertypes = Array();
-                    var l = Math.floor(Math.random()*10)+1;
-
-                    for (var i = 0; i<l; i++)
-                    {
-                        membertypes[i] = Math.floor(Math.random()*9);
-                    }
-
-                    var unit = new GeInfantry({
-                        id: 1,
-                        position:pos,
-                        membertypes:membertypes
-                    });
-                    unit.createIcon();
-                    window.units[1] = unit;
-                }
-
-
-                //var stug = new StugIII({position:TileGrid.gameCordinatesTo3d({x:0, y:0})});
-                //stug.createIcon();
-
-                /*
-                var memberTypes = Array();
-                //var l = Math.floor(Math.random()*9)+1;
-                var l = 10;
-
-                for (var i = 0; i<l; i++)
-                {
-                    memberTypes[i] = Math.floor(Math.random()*9);
-                }
-
-                var inf = new GeInfantry({
-                    position:{x:0, y:0},
-                    membertypes:memberTypes
-                });
-
-                inf.createIcon();
-                */
+                ServerConnection.connect("@routes.Application.gameserver(userid, gameid).webSocketURL()");
 
                 ResourceLoader.remove();
             }
@@ -130,7 +78,7 @@
                 var mapString = "@map";
                 mapString = mapString.replace(/&quot;/g, '"');
 
-                TileGrid.createFromJson(jQuery.parseJSON(mapString));
+                TileGrid.createFromJson(JSON.parse(mapString));
                 console.log("tiles created");
                 ResourceLoader.loadTiles(dynamicResourcesLoaded);
             }
