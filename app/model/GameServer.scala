@@ -57,7 +57,7 @@ object GameServer {
 
 class GameServer extends Actor {
 
-  var games: Map[Long, ActiveGame] = Map.empty[Long, ActiveGame];
+  var games: Map[Long, Game] = Map.empty[Long, Game];
 
   def receive = {
 
@@ -65,7 +65,7 @@ class GameServer extends Actor {
 
         if ( ! games.contains(gameid) )
         {
-            val newGame: ActiveGame = new ActiveGame(gameid)
+            val newGame: Game = new Game(gameid)
             newGame.attach(new MoveEventListener());
 
             games += (gameid -> newGame)
