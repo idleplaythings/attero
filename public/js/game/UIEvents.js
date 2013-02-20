@@ -12,8 +12,8 @@ window.UIEvents = {
         }
         else if (unit && !right)
         {
-            unit.setPosition(tile.position);
-            LineOfSight.calculateLosForUnit(unit);
+            // unit.setPosition(tile.position);
+            unit.moveTo(tile.position);
         }
     },
 

@@ -1,16 +1,18 @@
 window.UnitHelper = {
-    textureSize: 128,
-}
+    textureSize: 128
+};
 
 window.units = Array();
 
 var Unit = function(args)
 {
-    if (!args.id)
-        throw "Unit must have an Id"
+    if (!args.id) {
+        throw "Unit must have an Id";
+    }
 
-    if (!args.position)
-        throw "Unit has to have position defined"
+    if (!args.position) {
+        throw "Unit has to have position defined";
+    }
 
     this.id = args.id;
     this.setPosition(args.position);
@@ -21,7 +23,7 @@ var Unit = function(args)
     this.THREEmesh = null;
     this.THREEtexture = null;
     this.texturedata = null;
-}
+};
 
 Unit.prototype.lookAt = function(target)
 {
@@ -36,7 +38,7 @@ Unit.prototype.lookAt = function(target)
     }
 
     this.setAzimuth(azimuth);
-}
+};
 
 Unit.prototype.setAzimuth = function(azimuth)
 {
@@ -45,12 +47,32 @@ Unit.prototype.setAzimuth = function(azimuth)
     {
         this.THREEmesh.rotation.z = MathLib.degreeToRadian(MathLib.addToAzimuth(360, -this.azimuth));
     }
-}
+};
+
+Unit.prototype.moveTo = function(position)
+{
+    console.log(this);
+    ServerConnection.sendMessage({
+        type: "Move",
+        payload: {
+            unitId: this.id,
+            currentPosition: {
+                x: this.position.x,
+                y: this.position.y
+            },
+            targetPosition: {
+                x: position.x,
+                y: position.y
+            }
+        }
+    });
+    // this.setPosition(position);
+};
 
 Unit.prototype.setPosition = function(position)
 {
-    position.x = parseInt(position.x);
-    position.y = parseInt(position.y);
+    position.x = parseInt(position.x, 10);
+    position.y = parseInt(position.y, 10);
 
     if (this.position)
         TileGrid.getGameTileByXY(this.position.x, this.position.y).unSubscribeUnitToTile(this);
@@ -63,14 +85,14 @@ Unit.prototype.setPosition = function(position)
         var pos = TileGrid.gameCordinatesTo3d(this.position);
         this.THREEmesh.position = new THREE.Vector3(pos.x, -pos.y, 3);
     }
-}
+};
 
 Unit.prototype.createModel = function()
 {
     this.THREEgeometry  = new THREE.PlaneGeometry(
         1.6, 1.6, 1, 1 );
 
-    this.THREEgeometry.dynamic = true
+    this.THREEgeometry.dynamic = true;
 
     vertShader = document.getElementById('vertexShader').innerHTML;
     fragShader = document.getElementById('fragmentShader').innerHTML;
@@ -81,7 +103,7 @@ Unit.prototype.createModel = function()
         fragmentShader: fragShader,
         transparent:true,
         depthTest:false,
-        depthWrite:false,
+        depthWrite:false
         //wireframe:true
     });
 
@@ -92,14 +114,14 @@ Unit.prototype.createModel = function()
     var pos = TileGrid.gameCordinatesTo3d(this.position);
 
     this.THREEmesh.position = new THREE.Vector3(pos.x, -pos.y, 3);
-}
+};
 
 Unit.prototype.createIcon = function()
 {
     this.createTexture();
     this.createModel();
     Grid.scene.add(this.THREEmesh);
-}
+};
 
 
 Unit.prototype.createTexture = function()
@@ -128,7 +150,7 @@ Unit.prototype.createTexture = function()
     tex.needsUpdate = true;
     this.THREEtexture = tex;
 
-}
+};
 
 Unit.prototype.createUniforms = function()
 {
@@ -137,9 +159,9 @@ Unit.prototype.createUniforms = function()
     texture.minFilter = THREE.NearestMipMapNearestFilter;
 
     return {
-        texture: { type: "t", value: texture },
+        texture: { type: "t", value: texture }
     };
-}
+};
 
 var InfantryUnit = function(args)
 {
@@ -148,7 +170,7 @@ var InfantryUnit = function(args)
         throw "InfantryUnit needs args.membertypes";
 
     this.membertypes = args.membertypes;
-}
+};
 
 InfantryUnit.prototype = Object.create( Unit.prototype );
 
@@ -182,12 +204,12 @@ InfantryUnit.prototype.createTexture = function()
     tex.needsUpdate = true;
     this.THREEtexture = tex;
 
-}
+};
 
 InfantryUnit.prototype.getTextureOffsetForMember = function(memberType)
 {
     return memberType*40;
-}
+};
 
 InfantryUnit.prototype.getMemberPosition = function(index)
 {
@@ -204,12 +226,12 @@ InfantryUnit.prototype.getMemberPosition = function(index)
     }
 
     return null;
-}
+};
 
 var VehicleUnit = function(args)
 {
     Unit.call( this, args);
-}
+};
 
 VehicleUnit.prototype = Object.create( Unit.prototype );
 
@@ -238,14 +260,14 @@ VehicleUnit.prototype.createTexture = function()
     tex.needsUpdate = true;
     this.THREEtexture = tex;
 
-}
+};
 
 var GeInfantry = function(args)
 {
     InfantryUnit.call( this, args);
     this.textureImg = window.unitTilesets["ge_infantry"];
     this.offset = 0;
-}
+};
 
 GeInfantry.prototype = Object.create( InfantryUnit.prototype );
 
@@ -254,6 +276,6 @@ var StugIII = function(args)
     VehicleUnit.call( this, args);
     this.textureImg = window.unitTilesets["ge_tanks"];
     this.offset = 0;
-}
+};
 
 StugIII.prototype = Object.create( VehicleUnit.prototype );

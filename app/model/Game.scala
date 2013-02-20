@@ -19,7 +19,6 @@ import play.api.libs.concurrent.Execution.Implicits._
 import models.events._
 import scala.collection.mutable
 
-
 class Game(val gameid: Long) extends EventDispatcher {
 
     var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
@@ -46,13 +45,20 @@ class Game(val gameid: Long) extends EventDispatcher {
         breakable {
             eventListeners(event.name).foreach({ listener =>
                 listener.handle(event)
-
                 if (event.isStopped()) {
                     println("Event propagation stopped")
                     break
                 }
             });
         }
+
+        event.UiEventStream.foreach({ value =>
+            println(value)
+            this.players.foreach({ item =>
+                val (id, player) = item
+                player.channel.push(value)
+            })
+        })
     }
 
     def join(userid: Int): (Enumerator[JsValue]) =
