@@ -5,7 +5,7 @@ import models._
 
 trait EventListener
 {
-    def respondsTo(eventName: String): Boolean;
+    def respondsTo: String;
     def handle(event: Event): Unit;
     // def handle(userid: Int, json: JsValue, game: ActiveGame): Unit;
 }

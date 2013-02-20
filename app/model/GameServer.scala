@@ -66,7 +66,7 @@ class GameServer extends Actor {
         if ( ! games.contains(gameid) )
         {
             val newGame: ActiveGame = new ActiveGame(gameid)
-            newGame.attach(new MoveEventListener())
+            newGame.attach(new MoveEventListener());
 
             games += (gameid -> newGame)
         }

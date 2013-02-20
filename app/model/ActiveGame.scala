@@ -17,7 +17,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 import models.events.EventListener
 import models.events.MoveEventListener
-
+import scala.collection.mutable
 
 
 class Event(val name: String) {
@@ -29,25 +29,29 @@ trait EventDispatcher {
 }
 
 class ActiveGame(val gameid: Long) extends EventDispatcher {
-  //var tileCaE: Array[Tuple2[Byte, Byte] = GameStorage.getTileConcealmentAndElevation(gameid)
+
   var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
 
-  var eventListeners: List[EventListener] = List();
+  var eventListeners: mutable.Map[String, List[EventListener]] = mutable.Map.empty[String, List[EventListener]];
 
   def canJoin(userid: Int): Boolean = ! this.players.contains(userid)
 
   def isEmpty(): Boolean = this.players.isEmpty
 
-  def attach(eventListener: EventListener) = {
-    if (!eventListeners.contains(eventListener)) {
-      eventListeners ::: List(eventListener);
-    }
+  def attach(eventListener: EventListener) =
+  {
+    val eventname: String = eventListener.respondsTo;
+
+    if ( ! eventListeners.contains(eventname))
+      eventListeners += (eventname -> List(eventListener))
+    else
+      eventListeners(eventname) = eventListener +: eventListeners(eventname)
   }
 
-  def dispatch(event: Event) = {
-    eventListeners.filter(_.respondsTo(event.name)).map(_.handle(event))
+  def dispatch(event: Event) =
+  {
+    eventListeners(event.name).map(_.handle(event));
   }
-
 
   def join(userid: Int): (Enumerator[JsValue]) =
   {
@@ -74,26 +78,8 @@ class ActiveGame(val gameid: Long) extends EventDispatcher {
   {
     (json \ "type").asOpt[String] match
     {
-      case Some(messageType) => handleEvent(userid, messageType, json);
+      case Some(messageType) => dispatch(new Event(messageType + "Event"));
       case None => sendErrorMessage(userid, "Message type omitted");
-    }
-  }
-
-  def handleEvent(userid: Int, messageType: String, json: JsValue) =
-  {
-    try
-    {
-      dispatch(new Event(messageType + "Event"))
-      // Class.forName("models.events." + messageType + "Event").newInstance match {
-
-      //   // case handler: GameEventHandler => handler.handle(userid, json, this);
-      // }
-    }
-    catch
-    {
-      case e: Exception => sendErrorMessage(
-        userid,
-        "Handler not found for message type: '"+messageType+"'");
     }
   }
 

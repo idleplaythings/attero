@@ -5,11 +5,7 @@ import models._
 
 class MoveEventListener() extends EventListener
 {
-    val event = "MoveEvent";
-
-    def respondsTo(eventName: String): Boolean = {
-        return eventName == event;
-    }
+    def respondsTo: String = "MoveEvent";
 
     // def handle(userid: Int, json: JsValue, game: ActiveGame): Unit = {
     def handle(event: Event): Unit = {
