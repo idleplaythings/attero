@@ -7,8 +7,12 @@ class MoveEventListener() extends EventListener
 {
     def respondsTo: String = "MoveEvent";
 
-    // def handle(userid: Int, json: JsValue, game: ActiveGame): Unit = {
-    def handle(event: Event): Unit = {
+    def handle(event: Event): Unit =
+    {
+
+        if (event.stopPropagation)
+            return
+
         println("Move event received for handling");
     }
 }

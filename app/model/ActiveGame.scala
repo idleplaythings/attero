@@ -20,7 +20,9 @@ import models.events.MoveEventListener
 import scala.collection.mutable
 
 
-class Event(val name: String) {
+class Event(val name: String, userid: Int, json: JsValue)
+{
+  var stopPropagation = false;
 }
 
 trait EventDispatcher {
@@ -41,6 +43,7 @@ class ActiveGame(val gameid: Long) extends EventDispatcher {
   def attach(eventListener: EventListener) =
   {
     val eventname: String = eventListener.respondsTo;
+    eventListener.game = this;
 
     if ( ! eventListeners.contains(eventname))
       eventListeners += (eventname -> List(eventListener))
@@ -78,7 +81,7 @@ class ActiveGame(val gameid: Long) extends EventDispatcher {
   {
     (json \ "type").asOpt[String] match
     {
-      case Some(messageType) => dispatch(new Event(messageType + "Event"));
+      case Some(messageType) => dispatch(new Event(messageType + "Event", userid, json));
       case None => sendErrorMessage(userid, "Message type omitted");
     }
   }
