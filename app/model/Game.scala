@@ -40,6 +40,13 @@ class Game(val gameid: Long) extends EventDispatcher {
         }
     }
 
+    def dispatchEvents(events: List[Event]) =
+    {
+        events.foreach({ event =>
+            dispatch(event)
+        });
+    }
+
     def dispatch(event: Event) =
     {
         breakable {
@@ -86,7 +93,7 @@ class Game(val gameid: Long) extends EventDispatcher {
     {
         (json \ "type").asOpt[String] match
         {
-            case Some(messageType) => dispatch(new Event(messageType + "Event", userid, json));
+            case Some(messageType) => dispatchEvents(EventFactory.makeEvent(messageType + "Event", userid, json));
             case None => sendErrorMessage(userid, "Message type omitted");
         }
     }

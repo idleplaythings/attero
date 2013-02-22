@@ -51,19 +51,15 @@ Unit.prototype.setAzimuth = function(azimuth)
 
 Unit.prototype.moveTo = function(position)
 {
+    var move = new MoveOrder(this, position);
+    var moveRoute = move.execute();
+
     console.log(this);
     ServerConnection.sendMessage({
         type: "Move",
         payload: {
             unitId: this.id,
-            currentPosition: {
-                x: this.position.x,
-                y: this.position.y
-            },
-            targetPosition: {
-                x: position.x,
-                y: position.y
-            }
+            moveroute: moveRoute
         }
     });
     // this.setPosition(position);
@@ -85,7 +81,7 @@ Unit.prototype.setPosition = function(position)
         var pos = TileGrid.gameCordinatesTo3d(this.position);
         this.THREEmesh.position = new THREE.Vector3(pos.x, -pos.y, 3);
     }
-};
+}
 
 Unit.prototype.createModel = function()
 {
