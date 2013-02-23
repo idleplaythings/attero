@@ -1,0 +1,38 @@
+.sideSlideMenucontainer {
+    background-color:black;
+    opacity:0.7;
+    position:absolute;
+    padding:10px;
+    -webkit-transition: all 0.1s linear;
+	-moz-transition: all 0.1s linear;
+	-o-transition: all 0.1s linear;
+	transition: all 0.1s linear;
+}
+
+.sideSlideMenucontainer.right{
+     border-radius: 7px 0px 0px 7px;
+    -moz-border-radius: 7px 0px 0px 7px;
+    -webkit-border-radius: 7px 0px 0px 7px;
+}
+
+.sideSlideMenucontainer.left{
+     border-radius: 0px 7px 7px 0px;
+    -moz-border-radius: 0px 7px 7px 0px;
+    -webkit-border-radius: 0px 7px 7px 0px;
+}
+
+.sideSlideMenucontainer .slideEntry
+{
+    opacity:1;
+    width:40px;
+    height:40px;
+    margin:2px;
+    border:1px solid black;
+    display:inline-block;
+    opacity:0.3;
+}
+
+.sideSlideMenucontainer .slideEntry.selected
+{
+    opacity:1.0;
+}

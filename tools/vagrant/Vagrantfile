@@ -34,8 +34,8 @@ Vagrant::Config.run do |config|
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
   # folder, and the third is the path on the host to the actual folder.
-  config.vm.share_folder "attero", "/opt/attero", "../../back", :nfs => true
-  config.vm.share_folder "attero", "/var/www/dev.front.attero.local/current", "../../front", :nfs => true
+  config.vm.share_folder "attero-back", "/opt/attero", "../../back", :nfs => true
+  config.vm.share_folder "attero-front", "/var/www/dev.attero.local/current", "../../front", :nfs => true
 
   config.vm.customize do |vm|
     vm.memory_size = 2048
@@ -106,11 +106,11 @@ Vagrant::Config.run do |config|
     chef.log_level = :info
 
     chef.json.merge!({
-      :set_fqdn => "dev.front.attero.local",
+      :set_fqdn => "dev.attero.local",
       :symfony2 => {
         :sites => [
           {
-            :site => "dev.front.attero.local",
+            :site => "dev.attero.local",
             :base_path => "/var/www",
             :fastcgi_params => {
               :ENVIRONMENT => "dev",

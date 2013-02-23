@@ -1,0 +1,109 @@
+body{
+    margin:0px;
+    padding:0px;
+    overflow:hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+}
+
+.webglCanvas{
+    background-color: black;
+    margin:0px;
+    padding:0px;
+    z-index:0;
+}
+
+.menubar
+{
+	height:60px;
+	width:100%;
+	background-image:url(../bundles/atterogame/images/raster.jpg);
+	position:absolute;
+	z-index:1;
+	left:0px;
+	font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	color:#8f8f8f;
+}
+
+.menubar.top
+{
+	top:0px;
+	border-bottom:5px solid #202020;
+}
+
+.menubar.bottom
+{
+	bottom:0px;
+	border-top:5px solid #202020;
+}
+
+.menubar table
+{
+	width:100%;
+	height:40px;
+	padding:0;
+	margin:8px 0px;
+}
+
+.menubar td
+{
+	height:40px;
+}
+
+.menubar tr
+{
+	height:40px;
+}
+
+.menubar .left
+{
+	width:25%;
+	text-align:left;
+}
+
+.menubar .center
+{
+	width:50%;
+	text-align:center;
+}
+
+.menubar .right
+{
+	width:25%;
+	text-align:right;
+}
+
+.menubar span
+{
+	font-weight:bold;
+	vertical-align:middle;
+	margin: 0px 0px 0px 10px;
+}
+
+.menubar h2
+{
+	display:inline;
+	vertical-align:middle;
+	padding-top:5px;
+}
+
+.menubar .icon
+{
+	width:40px;
+	height:40px;
+	display:inline-block;
+	cursor:pointer;
+	margin: 0px 2px;
+}
+
+.menubar .icon:hover
+{
+	background-position:100% 0%;
+}
+
+
