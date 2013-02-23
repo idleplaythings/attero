@@ -11,8 +11,8 @@ class Event(val name: String, userid: Int)
     def isStopped() : Boolean = stopped;
 }
 
-class MoveEvent(userid: Int, unitid: String, val position: String)
+class MoveEvent(userid: Int, unitid: Int, val x: Int, val y: Int, val turretFacing: Int, val unitFacing: Int)
 extends Event( "MoveEvent", userid)
 {
-    println("MoveEvent created, unit:" +unitid+ " position: " + position);
+    println("MoveEvent created, unit:" +unitid+ " position: " + x + "," + y);
 }
