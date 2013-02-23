@@ -9,7 +9,6 @@ var MoveOrder = function(unit, end)
 MoveOrder.prototype.execute = function()
 {
     this.bresenhamRaytrace(this.start, this.end, this.visit);
-    return this.routeToMessage();
 }
 
 MoveOrder.prototype.routeToMessage = function()

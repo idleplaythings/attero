@@ -16,6 +16,7 @@ var Unit = function(args)
 
     this.id = args.id;
     this.setPosition(args.position);
+    this.setIconPosition(this.position);
     this.azimuth = args.azimuth || 0;
 
     this.THREEgeometry = null;
@@ -40,6 +41,11 @@ Unit.prototype.lookAt = function(target)
     this.setAzimuth(azimuth);
 };
 
+Unit.prototype.faceTurretAt = function(target)
+{
+    //TODO: need turrets
+};
+
 Unit.prototype.setAzimuth = function(azimuth)
 {
     this.azimuth = azimuth;
@@ -51,18 +57,22 @@ Unit.prototype.setAzimuth = function(azimuth)
 
 Unit.prototype.moveTo = function(position)
 {
+    var azimuth = MathLib.getAzimuthFromTarget(this.position, position);
     var move = new MoveOrder(this, position);
-    var moveRoute = move.execute();
+    move.execute();
 
-    console.log(this);
     ServerConnection.sendMessage({
         type: "Move",
+        id: 1,
         payload: {
+            azimuth: azimuth,
+            turretFacing: azimuth,
             unitId: this.id,
-            moveroute: moveRoute
+            moveroute: move.routeToMessage()
         }
     });
-    // this.setPosition(position);
+
+    EventDispatcher.dispatch(new MoveEvent(this, move.route, azimuth, azimuth));
 };
 
 Unit.prototype.setPosition = function(position)
@@ -75,10 +85,13 @@ Unit.prototype.setPosition = function(position)
 
     this.position = position;
     TileGrid.getGameTileByXY(this.position.x, this.position.y).subscribeUnitToTile(this);
+}
 
+Unit.prototype.setIconPosition = function(position)
+{
     if (this.THREEmesh)
     {
-        var pos = TileGrid.gameCordinatesTo3d(this.position);
+        var pos = TileGrid.gameCordinatesTo3d(position);
         this.THREEmesh.position = new THREE.Vector3(pos.x, -pos.y, 3);
     }
 }
@@ -122,30 +135,6 @@ Unit.prototype.createIcon = function()
 
 Unit.prototype.createTexture = function()
 {
-    var size = UnitHelper.textureSize;
-    var finalCanvas =
-        $('<canvas width="'+size+'" height="'+size+'"></canvas>').get(0);
-    //$(finalCanvas).appendTo('#texturecontainer');
-    var finalContext = finalCanvas.getContext("2d");
-
-    var offset = 0;
-    var t = offset*size;
-    finalContext.drawImage(window.unitTilesets[1], t , 0, size, size, 0, 0, size, size);
-
-    //TileGrid.textureDatas[i] = finalContext.getImageData(0, 0, size, size);
-    //console.dir(finalContext.getImageData(0,0,size, size).data.buffer);
-    this.texturedata = {
-        data : new Uint8Array(
-            finalContext.getImageData(0,0,size, size).data.buffer),
-        height: size,
-        width: size
-    };
-
-    var tex = new THREE.DataTexture(null, size, size);
-    tex.image = this.texturedata;
-    tex.needsUpdate = true;
-    this.THREEtexture = tex;
-
 };
 
 Unit.prototype.createUniforms = function()
@@ -252,7 +241,11 @@ VehicleUnit.prototype.createTexture = function()
     };
 
     var tex = new THREE.DataTexture(null, size, size);
+    //tex.premultiplyAlpha = true;
     tex.image = this.texturedata;
+
+    tex.magFilter = THREE.LinearFilter; //THREE.NearestFilter;
+    tex.minFilter = THREE.LinearFilter; //THREE.NearestMipMapNearestFilter;
     tex.needsUpdate = true;
     this.THREEtexture = tex;
 

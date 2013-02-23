@@ -19,7 +19,11 @@ import play.api.libs.concurrent.Execution.Implicits._
 import models.events._
 import scala.collection.mutable
 
+import models.repositories._
+
 class Game(val gameid: Long) extends EventDispatcher {
+
+    val playerRepository = new PlayerRepository(gameid);
 
     var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
 
@@ -40,13 +44,6 @@ class Game(val gameid: Long) extends EventDispatcher {
         }
     }
 
-    def dispatchEvents(events: List[Event]) =
-    {
-        events.foreach({ event =>
-            dispatch(event)
-        });
-    }
-
     def dispatch(event: Event) =
     {
         breakable {
@@ -59,13 +56,16 @@ class Game(val gameid: Long) extends EventDispatcher {
             });
         }
 
-        event.UiEventStream.foreach({ value =>
-            println(value)
-            this.players.foreach({ item =>
-                val (id, player) = item
-                player.channel.push(value)
-            })
-        })
+        event.UiEventStream.foreach{
+            case (userid:Int, messages:List[JsValue]) =>
+            {
+                if (this.players.contains(userid))
+                {
+                    val player = this.players(userid);
+                    messages.foreach(player.channel.push(_))
+                }
+            }
+        }
     }
 
     def join(userid: Int): (Enumerator[JsValue]) =
@@ -93,7 +93,7 @@ class Game(val gameid: Long) extends EventDispatcher {
     {
         (json \ "type").asOpt[String] match
         {
-            case Some(messageType) => dispatchEvents(EventFactory.makeEvent(messageType + "Event", userid, json));
+            case Some(messageType) => dispatch(EventFactory.makeEvent(messageType + "Event", userid, json));
             case None => sendErrorMessage(userid, "Message type omitted");
         }
     }

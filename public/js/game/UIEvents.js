@@ -13,6 +13,7 @@ window.UIEvents = {
         else if (unit && !right)
         {
             // unit.setPosition(tile.position);
+            LineOfSight.clearLineOfSight();
             unit.moveTo(tile.position);
         }
     },

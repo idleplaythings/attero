@@ -11,17 +11,35 @@ class MoveEventListener() extends EventListener
         event match {
           case move: MoveEvent => processMoveEvent(move)
         }
-        /*
-        val json = event.getJson()
-        var unitId: String = (json \ "payload" \ "unitId").as[String]
-        var xPos: Int = (json \ "payload" \ "targetPosition" \ "x").as[Int]
-        var yPos: Int = (json \ "payload" \ "targetPosition" \ "y").as[Int]
-        event.UiEventStream = Json.parse("{ \"unitId\": \"" + unitId + "\", \"x\": " + xPos + ", \"y\": " + yPos + " }") +: event.UiEventStream
-        */
     }
 
     private def processMoveEvent(event: MoveEvent) =
     {
-        event.UiEventStream = Json.parse("{ \"unitId\": \"" + event.unitid + "\", \"x\": " + event.x + ", \"y\": " + event.y + " }") +: event.UiEventStream
+        println("processing move event");
+        if (canMoveTo(event.unitid, event.x, event.y, event.unitFacing))
+        {
+            moveTo(event.unitid, event.x, event.y, event.turretFacing, event.unitFacing);
+        }
+        else
+        {
+            event.stopPropagation();
+            event.interruptRoute();
+            event.addMessageForUser(event.userid, Json.parse("{ \"id\": \"" + event.eventid + "\", \"interrupted\": \"cant reach target\"}"))
+            //since nothing happened the enemy doesn't need to be notified
+        }
+        //event.UiEventStream = Json.parse("{ \"unitId\": \"" + event.unitid + "\", \"x\": " + event.x + ", \"y\": " + event.y + " }") +: event.UiEventStream
+    }
+
+    private def canMoveTo(unitid: Int, x: Int, y: Int, facing: Int): Boolean =
+    {
+        //TODO: Check that target is one adjacent to last unit position (no teleporting)
+        //TODO: Check that target is passable terrain for target
+        //TODO: Check that unit has enough movement left to reach the target
+        return true;
+    }
+
+    private def moveTo(unitid: Int, x: Int, y: Int, turretFacing: Int, facing: Int) : Unit =
+    {
+        //TODO: change unit position
     }
 }

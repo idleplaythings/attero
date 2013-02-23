@@ -8,6 +8,7 @@ import play.api.Play.current
 import collection.mutable.ListBuffer
 import util.Random
 import play.api.libs.json._
+import scala.collection.mutable
 
 object GameManager
 {
@@ -16,10 +17,11 @@ object GameManager
     val mapid: Long = (json \ "mapid").toString.toLong
     val unitcount: Int = (json \ "unitcount").toString.toInt
 
+    val players: Map[Int, Int] = Map(1 -> 1, 2 -> 2);
     val map: GameMap = MapStorage.loadMap(mapid).get
     val units: List[GameUnit] = createUnits(unitcount, map)
 
-    initializeGameDatabase(units, map)
+    initializeGameDatabase(players, units, map)
     1
   }
 
@@ -46,7 +48,7 @@ object GameManager
     units.toList
   }
 
-  def initializeGameDatabase(units: List[GameUnit], map: GameMap)
+  def initializeGameDatabase(players: Map[Int, Int], units: List[GameUnit], map: GameMap)
   {
     var gameid: Long = 0;
     var dbName: String = ""
@@ -89,6 +91,14 @@ object GameManager
       """).execute();
 
       SQL("""
+        CREATE TABLE """ +dbName+ """.game_player (
+          "playerid" integer,
+          "team" smallint,
+          PRIMARY KEY ("playerid")
+        );
+      """).execute();
+
+      SQL("""
         CREATE TABLE """ +dbName+ """.game_tile (
           "tileid" integer DEFAULT NULL,
           "x" integer DEFAULT 0,
@@ -109,6 +119,16 @@ object GameManager
         )
       """).execute();
 
+      players.foreach {
+        case(team: Int, playerid: Int) => {
+          SQL("""INSERT INTO """ +dbName+ """.game_player (playerid, team) VALUES ({playerid}, {team})""")
+          .on(
+            'playerid -> playerid,
+            'team -> team)
+          .execute()
+        }
+      }
+
        SQL("""INSERT INTO """ +dbName+ """.game_map (gameid, name, width, height)
                   VALUES ({gameid}, {name}, {width}, {height})""")
         .on(
@@ -117,7 +137,6 @@ object GameManager
           'width -> map.width,
           'height -> map.height)
         .executeInsert()
-
 
       map.setTileIds;
       val sql: String ="""INSERT INTO """ +dbName+ """.game_tile
@@ -247,4 +266,40 @@ object GameManager
         ActiveGameMap(gameid, name, width, height)
     }
   }
+
+  def getPlayersForGame(gameid: Long): List[GamePlayer] =
+  {
+    val dbName = "game_"+gameid;
+
+    DB.withConnection { implicit c =>
+       SQL("""SELECT playerid,team FROM """ +dbName+ """.game_player""")
+       .as(parserGamePlayer *)
+    }
+  }
+
+  private val parserGamePlayer =
+  {
+    get[Int]("playerid") ~
+    get[Int]("team") map {
+      case playerid~team =>
+        GamePlayer(playerid, team)
+    }
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
