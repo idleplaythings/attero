@@ -104,10 +104,33 @@ Vagrant::Config.run do |config|
     # chef.log_level = :debug
     chef.log_level = :info
 
+    chef.json.merge!({
+      :set_fqdn => "dev.front.attero.local",
+      :symfony2 => {
+        :sites => [
+          {
+            :site => "dev.front.attero.local",
+            :base_path => "/var/www",
+            :fastcgi_params => {
+              :ENVIRONMENT => "dev",
+              :DEBUG => "1"
+            },
+            :deploy_owner => "www-data",
+            :deploy_group => "www-data",
+            :site_owner => "www-data",
+            :site_group => "www-data",
+          }
+        ]
+      }
+    })
+
     chef.environment = "dev"
-    chef.add_role("base")
-    chef.add_role("db_master")
-    chef.add_role("dev_server")
+    chef.add_role "base"
+    chef.add_role "vagrant"
+    chef.add_role "db_master"
+    chef.add_role "dev_server"
+    chef.add_role "webhead"
+    chef.add_recipe "symfony2"
   end
   #
   # If you're using the Opscode platform, your validator client is
