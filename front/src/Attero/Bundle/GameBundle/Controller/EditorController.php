@@ -12,7 +12,7 @@ class EditorController extends Controller
      * @Route("/editor")
      * @Template()
      */
-    public function indexAction()
+    public function editorAction()
     {
         return array();
     }

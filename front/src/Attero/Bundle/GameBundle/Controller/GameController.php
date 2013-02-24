@@ -9,21 +9,17 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class GameController extends Controller
 {
     /**
-     * @Route("/game")
+     * @Route("/game/{gameId}/{playerId}/{mapString}")
      * @Template()
      */
-    public function indexAction()
+    public function gameAction($gameId, $playerId, $mapString)
     {
-        return array();
-    }
-
-    /**
-     * @Route("/game/{gameId}/{playerId}")
-     * @Template()
-     */
-    public function gameAction($gameId, $playerId)
-    {
-        return array('gameId' => $gameId, 'playerId' => $playerId);
+        return array(
+            'gameId' => $gameId,
+            'playerId' => $playerId,
+            'mapString' => $mapString,
+            'units' => ''
+        );
     }
 }
 

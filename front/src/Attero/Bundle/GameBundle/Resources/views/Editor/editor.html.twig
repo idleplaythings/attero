@@ -41,7 +41,32 @@
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
-    {% javascripts '@AtteroGameBundle/Resources/public/js/*.js' %}
+    {% javascripts
+        '@AtteroGameBundle/Resources/public/js/requestAnimFrame.js'
+        '@AtteroGameBundle/Resources/public/js/ResourceLoader.js'
+        '@AtteroGameBundle/Resources/public/js/Loadable.js'
+        '@AtteroGameBundle/Resources/public/js/Tile.js'
+        '@AtteroGameBundle/Resources/public/js/GameTile.js'
+        '@AtteroGameBundle/Resources/public/js/TileGrid.js'
+        '@AtteroGameBundle/Resources/public/js/Texture.js'
+        '@AtteroGameBundle/Resources/public/js/Three.js'
+        '@AtteroGameBundle/Resources/public/js/Graphics.js'
+        '@AtteroGameBundle/Resources/public/js/Scrolling.js'
+        '@AtteroGameBundle/Resources/public/js/MouseWheel.js'
+        '@AtteroGameBundle/Resources/public/js/Zooming.js'
+        '@AtteroGameBundle/Resources/public/js/Landscaping.js'
+        '@AtteroGameBundle/Resources/public/js/SideSlideMenu.js'
+        '@AtteroGameBundle/Resources/public/js/TileElement.js'
+        '@AtteroGameBundle/Resources/public/js/ImageManipulation.js'
+        '@AtteroGameBundle/Resources/public/js/WaterLayer.js'
+        '@AtteroGameBundle/Resources/public/js/Grid.js'
+        '@AtteroGameBundle/Resources/public/js/FogOfWar.js'
+        '@AtteroGameBundle/Resources/public/js/editor/UIEvents.js'
+        '@AtteroGameBundle/Resources/public/js/ContourShadowDefinitions.js'
+        '@AtteroGameBundle/Resources/public/js/confirm.js'
+        '@AtteroGameBundle/Resources/public/js/SaveLoad.js'
+        '@AtteroGameBundle/Resources/public/js/MathLib.js'
+    %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
