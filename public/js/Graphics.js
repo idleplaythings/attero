@@ -69,6 +69,9 @@
         Graphics.camera.top = height / (80*zoom);
         Graphics.camera.bottom = height / (-80*zoom);
 
+        if (UnitHelper)
+            UnitHelper.updateZoom(zoom);
+
         Graphics.camera.updateProjectionMatrix();
     },
 

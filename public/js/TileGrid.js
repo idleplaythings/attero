@@ -102,7 +102,6 @@ window.TileGrid = {
                 var tex = new THREE.DataTexture(null, subSegmentSize * 40, subSegmentSize * 40);
                 tex.image = this.textureDatas[i];
                 tex.needsUpdate = true;
-                tex.mapping = [THREE.UV(1, 1)];
                 this.THREETextures[i] = tex;
             }
         }

@@ -1,5 +1,13 @@
 window.UnitHelper = {
-    textureSize: 128
+    textureSize: 128,
+
+    updateZoom: function(zoom)
+    {
+        for (var i in window.units)
+        {
+            window.units[i].setIconScale(0.1*zoom);
+        }
+    }
 };
 
 window.units = Array();
@@ -51,7 +59,7 @@ Unit.prototype.setAzimuth = function(azimuth)
     this.azimuth = azimuth;
     if (this.THREEmesh)
     {
-        this.THREEmesh.rotation.z = MathLib.degreeToRadian(MathLib.addToAzimuth(360, -this.azimuth));
+        this.THREEmesh.rotation  = MathLib.degreeToRadian(MathLib.addToAzimuth(360, -this.azimuth));
     }
 };
 
@@ -98,14 +106,16 @@ Unit.prototype.setIconPosition = function(position)
 
 Unit.prototype.createModel = function()
 {
-    this.THREEgeometry  = new THREE.PlaneGeometry(
-        1.6, 1.6, 1, 1 );
+    this.THREEmaterial =
+        new THREE.SpriteMaterial({
+            map: this.getTexture(),
+            useScreenCoordinates: false,
+            color: 0xffffff,
+            fog: false,
+            affectedByDistance: true
+        } );
 
-    this.THREEgeometry.dynamic = true;
-
-    vertShader = document.getElementById('vertexShader').innerHTML;
-    fragShader = document.getElementById('fragmentShader').innerHTML;
-
+/*
     this.THREEmaterial = new THREE.ShaderMaterial({
         uniforms: this.createUniforms(),
         vertexShader: vertShader,
@@ -115,15 +125,20 @@ Unit.prototype.createModel = function()
         depthWrite:false
         //wireframe:true
     });
+*/
 
-    this.THREEmesh = new THREE.Mesh(
-        this.THREEgeometry,
-        this.THREEmaterial);
+    this.THREEmesh = new THREE.Sprite(this.THREEmaterial);
 
     var pos = TileGrid.gameCordinatesTo3d(this.position);
 
     this.THREEmesh.position = new THREE.Vector3(pos.x, -pos.y, 3);
+    this.setIconScale(0.1);
 };
+
+Unit.prototype.setIconScale = function(scale)
+{
+    this.THREEmesh.scale.set( scale, scale, 1 );
+}
 
 Unit.prototype.createIcon = function()
 {
@@ -133,19 +148,17 @@ Unit.prototype.createIcon = function()
 };
 
 
-Unit.prototype.createTexture = function()
-{
-};
+Unit.prototype.createTexture = function(){};
 
-Unit.prototype.createUniforms = function()
+Unit.prototype.getTexture = function()
 {
     var texture = this.THREEtexture;
+    texture.magFilter = THREE.LinearFilter; //THREE.NearestFilter;
+    texture.minFilter = THREE.LinearFilter; //THREE.NearestMipMapNearestFilter;
     //texture.magFilter = THREE.NearestFilter;
-    texture.minFilter = THREE.NearestMipMapNearestFilter;
+    //texture.minFilter = THREE.NearestMipMapNearestFilter;
 
-    return {
-        texture: { type: "t", value: texture }
-    };
+    return texture;
 };
 
 var InfantryUnit = function(args)
@@ -244,8 +257,6 @@ VehicleUnit.prototype.createTexture = function()
     //tex.premultiplyAlpha = true;
     tex.image = this.texturedata;
 
-    tex.magFilter = THREE.LinearFilter; //THREE.NearestFilter;
-    tex.minFilter = THREE.LinearFilter; //THREE.NearestMipMapNearestFilter;
     tex.needsUpdate = true;
     this.THREEtexture = tex;
 

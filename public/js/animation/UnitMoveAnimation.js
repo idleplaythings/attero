@@ -25,7 +25,10 @@ UnitMoveAnimation.prototype.tick = function()
     var time = this.timeSinceLast();
     this.timeElapsed += time;
 
-    var percentage = this.timeElapsed / this.movementTime;
+    if (this.timeElapsed < 250)
+        return;
+
+    var percentage = (this.timeElapsed-250) / this.movementTime;
 
     if (percentage > 1)
         percentage = 1;
