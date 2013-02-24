@@ -15,7 +15,7 @@ import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
 
 import models.events.EventListener
-import models.events.MoveEventListener
+import models.events._
 
 object GameServer {
 
@@ -50,9 +50,7 @@ object GameServer {
         (iteratee,enumerator)
 
     }
-
   }
-
 }
 
 class GameServer extends Actor {
@@ -66,7 +64,9 @@ class GameServer extends Actor {
         if ( ! games.contains(gameid) )
         {
             val newGame: Game = new Game(gameid)
+            newGame.attach(new MoveRouteEventListener(newGame));
             newGame.attach(new MoveEventListener());
+            newGame.attach(new MoveEventSpottingListener(newGame.playerRepository));
 
             games += (gameid -> newGame)
         }
@@ -97,9 +97,7 @@ class GameServer extends Actor {
         games -= gameid;
       }
     }
-
   }
-
 }
 
 case class Join(userid: Int, gameid: Long)

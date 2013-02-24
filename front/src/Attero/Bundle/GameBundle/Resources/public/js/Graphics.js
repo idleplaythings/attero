@@ -45,6 +45,7 @@
     animate: function() {
 
         requestAnimationFrame( Graphics.animate );
+        AnimationHandler.tick();
         Graphics.render();
 
     },

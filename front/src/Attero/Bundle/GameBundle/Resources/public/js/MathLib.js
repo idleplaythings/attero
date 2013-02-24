@@ -56,16 +56,12 @@ window.MathLib =
 
             }
         }else if (dX>0 && dY<0 ){
-            //console.log("h:1");
             heading = MathLib.radianToDegree(Math.atan(dX/Math.abs(dY)));
         }else if (dX>0 && dY>0 ){
-            //console.log("h:2");
             heading = MathLib.radianToDegree(Math.atan(dY/dX)) + 90;
         }else if (dX<0 && dY>0){
-            //console.log("h:3");
             heading = MathLib.radianToDegree(Math.atan(Math.abs(dX)/dY)) + 180;
         }else if (dX<0 && dY<0){
-            //console.log("h:4");
             heading = MathLib.radianToDegree(Math.atan(dY/dX)) + 270;
         }
 
@@ -80,47 +76,17 @@ window.MathLib =
         return (angle / (180.0 / Math.PI));
     },
 
-    bresenhamRaytrace: function(start, end, visitfunction)
-    {
-        var x0 = start.x;
-        var x1 = end.x;
-        var y0 = start.y;
-        var y1 = end.y;
+    getExactPointBetween: function(start, end, percentage){
+        var x = start.x + percentage * (end.x - start.x);
+        var y = start.y + percentage * (end.y - start.y);
 
-        var dx = Math.abs(x1-x0);
-        var dy = Math.abs(y1-y0);
-        var sx = (x0 < x1) ? 1 : -1;
-        var sy = (y0 < y1) ? 1 : -1;
-        var err = dx-dy;
+        return {x:x, y:y};
+    },
 
-        while(true)
-        {
-            var e2 = 2*err;
-            var coords = Array();
-            if (e2 >-dy && e2 < dx)
-            {
-                coords.push({x:x0, y:y0});
-                coords.push({x:x0+sx, y:y0});
-                coords.push({x:x0, y:y0+sy});
-            }
+    getPointBetween: function(start, end, percentage){
+        var x = Math.floor(start.x + percentage * (end.x - start.x));
+        var y = Math.floor(start.y + percentage * (end.y - start.y));
 
-            if (e2 >-dy)
-            {
-                err -= dy;
-                x0  += sx;
-            }
-
-            if (e2 < dx)
-            {
-                err += dx;
-                y0  += sy;
-            }
-
-            coords.push({x:x0, y:y0});
-            visitfunction(coords);
-
-            if ((x0==x1) && (y0==y1))
-                break;
-        }
-    }
+        return {x:x, y:y};
+    },
 }
