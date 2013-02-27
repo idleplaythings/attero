@@ -2,6 +2,7 @@ AnimationHandler = {
 
     animationQueue: Array(),
     animating: false,
+    timeLastTick: (new Date()).getTime(),
 
     addAnimation: function(animation)
     {
@@ -10,6 +11,9 @@ AnimationHandler = {
 
     tick: function()
     {
+        var now = (new Date()).getTime();
+        var time = now - AnimationHandler.timeLastTick;
+
         if (AnimationHandler.animationQueue[0])
         {
             if (AnimationHandler.animationQueue[0].done)
@@ -20,33 +24,24 @@ AnimationHandler = {
             }
 
             AnimationHandler.animating = true;
-            AnimationHandler.animationQueue[0].tick();
+            AnimationHandler.animationQueue[0].tick(time);
         }
         else
         {
             AnimationHandler.animating = false;
         }
+        AnimationHandler.timeLastTick = now;
     }
 }
 
 var Animation = function()
 {
-    this.lastTick = (new Date()).getTime();
     this.done = false;
 }
 Animation.prototype.constructor =  Animation;
-Animation.prototype.tick = function(){}
+Animation.prototype.tick = function(time){}
 
 Animation.prototype.setDone = function()
 {
     this.done = true;
-}
-
-Animation.prototype.timeSinceLast = function()
-{
-    var now = (new Date()).getTime();
-    var time = now - this.lastTick;
-    this.lastTick = now;
-
-    return time;
 }

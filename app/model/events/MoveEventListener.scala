@@ -19,6 +19,7 @@ class MoveEventListener() extends EventListener
         if (canMoveTo(event.unitid, event.x, event.y, event.unitFacing))
         {
             moveTo(event.unitid, event.x, event.y, event.turretFacing, event.unitFacing);
+            event.setExecuted();
         }
         else
         {

@@ -64,9 +64,9 @@ class GameServer extends Actor {
         if ( ! games.contains(gameid) )
         {
             val newGame: Game = new Game(gameid)
-            newGame.attach(new MoveRouteEventListener(newGame));
+            newGame.attach(new MoveRouteEventListener(newGame, newGame.getPlayerRepository));
             newGame.attach(new MoveEventListener());
-            newGame.attach(new MoveEventSpottingListener(newGame.playerRepository));
+            newGame.attach(new MoveEventSpottingListener(newGame.getPlayerRepository));
 
             games += (gameid -> newGame)
         }

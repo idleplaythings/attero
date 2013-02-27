@@ -1,44 +1,61 @@
-var UnitMoveAnimation = function(unit, start, target, azimuth, turretFacing)
+var UnitMoveAnimation = function(unit, route)
 {
     Animation.call(this);
 
     this.unit = unit;
-    this.start = start;
-    this.target = target;
-    this.timeElapsed = 0;
-    this.azimuth = azimuth;
-    this.turretFacing = turretFacing;
+    this.route = route;
 
-    this.movementTime = MathLib.distance(this.start, this.target)*100;
+    this.timeToTarget = 0;
+    this.timeInThisPart = 0;
+
+    this.currentPos = this.route.shift();
+    this.resolveNextTarget();
 }
 
 UnitMoveAnimation.prototype = Object.create( Animation.prototype );
 
-UnitMoveAnimation.prototype.tick = function()
+UnitMoveAnimation.prototype.resolveNextTarget = function()
 {
-    if (this.timeElapsed == 0)
+    this.currentTarget = this.route.shift();
+    if (this.currentTarget.uf == this.currentPos.uf && this.route.length > 0)
     {
-        this.unit.lookAt(this.azimuth);
-        this.unit.faceTurretAt(this.turretFacing);
+        this.resolveNextTarget();
+    }
+    else
+    {
+        this.timeToTarget = MathLib.distance(this.currentPos, this.currentTarget)*100;
+    }
+}
+
+UnitMoveAnimation.prototype.tick = function(time)
+{
+    if (this.unit.getAzimuth != this.currentTarget.uf)
+    {
+        this.unit.lookAt(this.currentTarget.uf);
     }
 
-    var time = this.timeSinceLast();
-    this.timeElapsed += time;
+    this.timeInThisPart += time;
 
-    if (this.timeElapsed < 250)
-        return;
-
-    var percentage = (this.timeElapsed-250) / this.movementTime;
+    var percentage = this.timeInThisPart / this.timeToTarget;
 
     if (percentage > 1)
         percentage = 1;
 
-    var pos = MathLib.getExactPointBetween(this.start, this.target, percentage);
+    var pos = MathLib.getExactPointBetween(this.currentPos, this.currentTarget, percentage);
     this.unit.setIconPosition(pos);
 
     if (percentage == 1 )
     {
-        this.setDone();
+        if (this.route.length == 0)
+        {
+            this.setDone();
+        }
+        else
+        {
+            this.currentPos = this.currentTarget;
+            this.timeInThisPart = 0;
+            this.resolveNextTarget();
+        }
         //LineOfSight.calculateLosForUnit(this.unit);
     }
 }

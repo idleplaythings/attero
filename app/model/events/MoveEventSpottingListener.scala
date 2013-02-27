@@ -17,8 +17,6 @@ class MoveEventSpottingListener(val playerRepository: PlayerRepository) extends 
     private def processMoveEvent(event: MoveEvent) =
     {
         println("processing move spotting event");
-        this.playerRepository.getEnemies(event.userid).foreach({ playerid:Int =>
-            event.addMessageForUser(playerid, event.toJson);
-        });
+        event.setSpotted;
     }
 }

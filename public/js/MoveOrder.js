@@ -1,9 +1,16 @@
 var MoveOrder = function(unit, end)
 {
     this.unit = unit;
-    this.start = unit.position;
+
+    this.start = {
+        x:      unit.position.x,
+        y:      unit.position.y,
+        tf:     unit.getTurretFacing(),
+        uf:     unit.getAzimuth()
+    };
+
     this.end = end;
-    this.route = Array();
+    this.route = Array(this.start);
 }
 
 MoveOrder.prototype.execute = function()
@@ -18,7 +25,7 @@ MoveOrder.prototype.routeToMessage = function()
     for (var i in this.route)
     {
         var pos = this.route[i];
-        routeString.push(pos.x +","+pos.y+",0,0");
+        routeString.push(pos.x +","+pos.y+","+pos.tf+","+pos.uf);
         //last zeros: unit facing (reversing unit, for example), and turret facing.
     }
 
@@ -28,7 +35,15 @@ MoveOrder.prototype.routeToMessage = function()
 MoveOrder.prototype.visit = function(coords)
 {
     //TODO: check if you can move to this tile. If not, halt
-    this.route.push(coords.pop());
+    var pos = coords.pop();
+    var waypoint = {
+        x:      pos.x,
+        y:      pos.y,
+        tf:     this.start.tf,
+        uf:     this.start.uf
+    };
+
+    this.route.push(waypoint);
 }
 
 MoveOrder.prototype.bresenhamRaytrace = function(start, end, visitfunction)

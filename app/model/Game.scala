@@ -21,52 +21,16 @@ import scala.collection.mutable
 
 import models.repositories._
 
-class Game(val gameid: Long) extends EventDispatcher {
-
-    val playerRepository = new PlayerRepository(gameid);
-
+class Game(val gameid: Long) extends EventDispatcher with RepositoryContext
+{
     var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
+    var eventMessageList: List[Event] = List.empty[Event];
 
-    var eventListeners: mutable.Map[String, List[EventListener]] = mutable.Map.empty[String, List[EventListener]];
+    protected val playerRepository = new PlayerRepository(gameid);
 
     def canJoin(userid: Int): Boolean = ! this.players.contains(userid)
 
     def isEmpty(): Boolean = this.players.isEmpty
-
-    def attach(eventListener: EventListener) =
-    {
-        val eventname: String = eventListener.getEventName;
-
-        if ( ! eventListeners.contains(eventname)) {
-            eventListeners += (eventname -> List(eventListener))
-        } else {
-            eventListeners(eventname) = eventListener +: eventListeners(eventname)
-        }
-    }
-
-    def dispatch(event: Event) =
-    {
-        breakable {
-            eventListeners(event.name).foreach({ listener =>
-                listener.handle(event)
-                if (event.isStopped()) {
-                    println("Event propagation stopped")
-                    break
-                }
-            });
-        }
-
-        event.UiEventStream.foreach{
-            case (userid:Int, messages:List[JsValue]) =>
-            {
-                if (this.players.contains(userid))
-                {
-                    val player = this.players(userid);
-                    messages.foreach(player.channel.push(_))
-                }
-            }
-        }
-    }
 
     def join(userid: Int): (Enumerator[JsValue]) =
     {
@@ -81,6 +45,23 @@ class Game(val gameid: Long) extends EventDispatcher {
         enumerator
     }
 
+    override def dispatch(event: Event): Unit =
+    {
+        eventMessageList = event +: eventMessageList;
+        super.dispatch(event);
+        replyToDoneEvents();
+    }
+
+    def event(userid: Int, json: JsValue) =
+    {
+        println("message from userid: " + userid + " received.");
+        (json \ "type").asOpt[String] match
+        {
+            case Some(messageType) => dispatch(EventFactory.makeEvent(messageType + "Event", userid, json));
+            case None => sendErrorMessage(userid, "Message type omitted");
+        }
+    }
+
     def leave(userid: Int) =
     {
         if (this.players.contains(userid))
@@ -89,18 +70,43 @@ class Game(val gameid: Long) extends EventDispatcher {
         }
     }
 
-    def event(userid: Int, json: JsValue) =
+    private def replyToDoneEvents() =
     {
-        (json \ "type").asOpt[String] match
-        {
-            case Some(messageType) => dispatch(EventFactory.makeEvent(messageType + "Event", userid, json));
-            case None => sendErrorMessage(userid, "Message type omitted");
+        breakable {
+            eventMessageList.foreach({ event: Event =>
+                if (event.isDone)
+                {
+                    replyToEvent(event);
+                    event.setReplied();
+                }
+                else
+                {
+                    break;
+                }
+            })
+        }
+
+        eventMessageList = eventMessageList.filterNot(_.isReplied).toList;
+    }
+
+    private def replyToEvent(event: Event)
+    {
+        println("replying to event: " + event);
+        event.UiEventStream.foreach{
+            case (userid:Int, messages:List[JsValue]) =>
+            {
+                if (players.contains(userid))
+                {
+                    val player = players(userid);
+                    messages.foreach(player.channel.push(_))
+                }
+            }
         }
     }
 
-    def sendErrorMessage(userid: Int, msg: String) =
+    private def sendErrorMessage(userid: Int, msg: String) =
     {
-        this.players(userid).channel.push(JsObject(
+        players(userid).channel.push(JsObject(
             Seq(
                 "error" -> JsString(msg)
                 )

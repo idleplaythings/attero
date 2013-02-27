@@ -17,12 +17,10 @@ UnitPositionListener.prototype = Object.create( MoveEventLister.prototype );
 
 UnitPositionListener.prototype.handle = function(event)
 {
-    console.log("handling UnitPosition");
-    console.log(event);
-    event.unit.setPosition(event.route[event.route.length-1]);
+    var end = event.route[event.route.length-1];
+    var pos = {x: end.x, y: end.y};
+    event.unit.setPosition(pos);
 }
-
-
 
 var UnitMoveAnimationListener = function()
 {
@@ -33,9 +31,5 @@ UnitMoveAnimationListener.prototype = Object.create( MoveEventLister.prototype )
 
 UnitMoveAnimationListener.prototype.handle = function(event)
 {
-    console.log("handling UnitAnimation");
-    console.log(event);
-
-    AnimationHandler.addAnimation(new UnitMoveAnimation(
-        event.unit, event.start, event.route[event.route.length-1], event.azimuth, event.turretFacing));
+    AnimationHandler.addAnimation(new UnitMoveAnimation(event.unit, event.route.slice()));
 }

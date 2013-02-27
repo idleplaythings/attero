@@ -23,16 +23,37 @@ ServerConnection =
     receiveMessage: function(event)
     {
         var data = JSON.parse(event.data);
+        console.log(data);
 
         if(data.error) {
             ServerConnection.socket.close();
             console.log(data.error);
         } else {
-            var units = $.grep(window.units, function(unit) { return typeof unit !== 'undefined'; });
-            var unit = $.grep(units, function(unit) { return unit.id === data.unitId; })[0];
-
-            unit.setPosition({x: data.x, y: data.y});
-            LineOfSight.calculateLosForUnit(unit);
+            if (data.type == "MoveRouteEvent")
+                ServerConnection.receiveMoveRoute(data);
         }
+    },
+
+    receiveMoveRoute: function(data)
+    {
+        var unit = window.units[data.payload.unitid];
+
+        if (! unit)
+            throw "Unit matching message unitid not found"
+
+        var route = data.payload.route.split(";");
+        for (var i in route)
+        {
+            var details = route[i].split(",");
+
+            route[i] = {
+                x:  parseInt(details[0]),
+                y:  parseInt(details[1]),
+                tf: parseInt(details[2]),
+                uf: parseInt(details[3])
+            };
+        }
+
+        EventDispatcher.dispatch(new MoveEvent(unit, route));
     }
 };

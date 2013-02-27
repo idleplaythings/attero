@@ -20,8 +20,8 @@ object EventFactory
         var route: String = (json \ "payload" \ "moveroute").as[String]
 
         new MoveRouteEvent(
-            id,
             userid,
+            id,
             unitid,
             route.split(";").map(parseMoveEvent(userid, id,  unitid, _)).toList);
     }

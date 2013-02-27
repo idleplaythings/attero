@@ -1,12 +1,22 @@
 window.UnitHelper = {
-    textureSize: 128,
 
-    updateZoom: function(zoom)
+    textureSize: 128,
+    unitscale: 0.5,
+
+    updateZoom: function()
     {
+        var scale = UnitHelper.getIconScale();
+
         for (var i in window.units)
         {
-            window.units[i].setIconScale(0.1*zoom);
+            window.units[i].setIconScale(scale);
         }
+    },
+
+    getIconScale: function()
+    {
+        var size = window.innerWidth > window.innerHeight ?  window.innerHeight : window.innerWidth;
+        return UnitHelper.textureSize / size * Graphics.zoom * UnitHelper.unitscale;
     }
 };
 
@@ -33,6 +43,16 @@ var Unit = function(args)
     this.THREEtexture = null;
     this.texturedata = null;
 };
+
+Unit.prototype.getAzimuth = function()
+{
+    return this.azimuth;
+}
+
+Unit.prototype.getTurretFacing = function()
+{
+    return this.azimuth;
+}
 
 Unit.prototype.lookAt = function(target)
 {
@@ -65,7 +85,8 @@ Unit.prototype.setAzimuth = function(azimuth)
 
 Unit.prototype.moveTo = function(position)
 {
-    var azimuth = MathLib.getAzimuthFromTarget(this.position, position);
+    this.lookAt(position);
+
     var move = new MoveOrder(this, position);
     move.execute();
 
@@ -73,14 +94,12 @@ Unit.prototype.moveTo = function(position)
         type: "Move",
         id: 1,
         payload: {
-            azimuth: azimuth,
-            turretFacing: azimuth,
             unitId: this.id,
             moveroute: move.routeToMessage()
         }
     });
 
-    EventDispatcher.dispatch(new MoveEvent(this, move.route, azimuth, azimuth));
+    EventDispatcher.dispatch(new MoveEvent(this, move.route));
 };
 
 Unit.prototype.setPosition = function(position)
@@ -106,33 +125,23 @@ Unit.prototype.setIconPosition = function(position)
 
 Unit.prototype.createModel = function()
 {
+    var texture = this.getTexture();
     this.THREEmaterial =
         new THREE.SpriteMaterial({
-            map: this.getTexture(),
+            map: texture,
             useScreenCoordinates: false,
             color: 0xffffff,
             fog: false,
             affectedByDistance: true
         } );
 
-/*
-    this.THREEmaterial = new THREE.ShaderMaterial({
-        uniforms: this.createUniforms(),
-        vertexShader: vertShader,
-        fragmentShader: fragShader,
-        transparent:true,
-        depthTest:false,
-        depthWrite:false
-        //wireframe:true
-    });
-*/
-
     this.THREEmesh = new THREE.Sprite(this.THREEmaterial);
 
     var pos = TileGrid.gameCordinatesTo3d(this.position);
 
     this.THREEmesh.position = new THREE.Vector3(pos.x, -pos.y, 3);
-    this.setIconScale(0.1);
+
+    this.setIconScale(UnitHelper.getIconScale());
 };
 
 Unit.prototype.setIconScale = function(scale)
