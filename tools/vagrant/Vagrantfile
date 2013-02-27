@@ -34,7 +34,8 @@ Vagrant::Config.run do |config|
   # Share an additional folder to the guest VM. The first argument is
   # an identifier, the second is the path on the guest to mount the
   # folder, and the third is the path on the host to the actual folder.
-  config.vm.share_folder "attero", "/opt/attero", "../..", :nfs => true
+  config.vm.share_folder "attero-back", "/opt/attero", "../../back", :nfs => true
+  config.vm.share_folder "attero-front", "/var/www/dev.attero.local/current", "../../front", :nfs => true
 
   config.vm.customize do |vm|
     vm.memory_size = 2048
@@ -104,10 +105,33 @@ Vagrant::Config.run do |config|
     # chef.log_level = :debug
     chef.log_level = :info
 
+    chef.json.merge!({
+      :set_fqdn => "dev.attero.local",
+      :symfony2 => {
+        :sites => [
+          {
+            :site => "dev.attero.local",
+            :base_path => "/var/www",
+            :fastcgi_params => {
+              :ENVIRONMENT => "dev",
+              :DEBUG => "1"
+            },
+            :deploy_owner => "www-data",
+            :deploy_group => "www-data",
+            :site_owner => "www-data",
+            :site_group => "www-data",
+          }
+        ]
+      }
+    })
+
     chef.environment = "dev"
-    chef.add_role("base")
-    chef.add_role("db_master")
-    chef.add_role("dev_server")
+    chef.add_role "base"
+    chef.add_role "vagrant"
+    chef.add_role "db_master"
+    chef.add_role "dev_server"
+    chef.add_role "webhead"
+    chef.add_recipe "symfony2"
   end
   #
   # If you're using the Opscode platform, your validator client is
