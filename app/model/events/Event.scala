@@ -33,19 +33,23 @@ class Event(val name: String, val eventid: Int, val userid: Int)
 class MoveEvent(userid: Int, eventid: Int, val unitid: Int, val x: Int, val y: Int, val turretFacing: Int, val unitFacing: Int)
     extends Event( "MoveEvent", eventid, userid)
 {
-    var routeInterrupted = false;
+    private var routeInterrupted = false;
     def interruptRoute() = {routeInterrupted = true};
     def isRouteInterrupted() : Boolean = routeInterrupted;
 
-    var executed = false;
+    private var executed = false;
     def setExecuted() = {executed = true};
     def isExecuted(): Boolean = executed;
 
-    var spotted = false;
+    private var spotted = false;
     def setSpotted() = {spotted = true};
     def isSpotted(): Boolean = spotted;
 
-    println("MoveEvent from userid: "+userid+" created, unit:" +unitid+ " position: " + x + "," + y);
+    private var numberInRoute: Int = _;
+    def setNumberInRoute(n: Int) = {numberInRoute = n}
+    def getNumberInRoute: Int = numberInRoute;
+
+    //println("MoveEvent from userid: "+userid+" created, unit:" +unitid+ " position: " + x + "," + y);
 
     override def toString: String = {
         x+","+y+","+turretFacing+","+unitFacing
@@ -66,7 +70,7 @@ class MoveEvent(userid: Int, eventid: Int, val unitid: Int, val x: Int, val y: I
 class MoveRouteEvent(userid: Int, eventid: Int, val unitid: Int, val moves: List[MoveEvent])
     extends Event("MoveRouteEvent", eventid, userid)
 {
-    println("MoveRouteEvent from userid: "+userid+" created");
+    //println("MoveRouteEvent from userid: "+userid+" created");
 
     def isAnySpotted: Boolean = moves.filter(_.isSpotted).nonEmpty;
 

@@ -16,7 +16,6 @@ class MoveEventSpottingListener(val playerRepository: PlayerRepository) extends 
 
     private def processMoveEvent(event: MoveEvent) =
     {
-        println("processing move spotting event");
         event.setSpotted;
     }
 }
