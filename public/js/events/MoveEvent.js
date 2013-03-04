@@ -1,6 +1,8 @@
-var MoveEvent = function(unit, route)
+var MoveEvent = function(origin, unit, route)
 {
-    this.name = "MoveEvent";
+    Event.call(this, origin, "MoveEvent");
     this.unit = unit;
     this.route = route;
 }
+
+MoveEvent.prototype = Object.create( Event.prototype );

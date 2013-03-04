@@ -11,16 +11,25 @@ class TileRepository(gameid: Long) extends Repository(gameid)
 {
     val (width, height) = TileRepository.getMapDetails(gameid);
 
-    lazy val tiles: Map[Int, ActiveGameTile] = TileRepository.getTiles(gameid);
+    lazy val tiles: Array[(Byte,Byte,Byte)] = TileRepository.getTiles(gameid);
 
-    def getTileByXY(x:Int, y:Int): ActiveGameTile =
+    def getTileByXY(pos: (Int, Int)): ActiveGameTile =
     {
-        this.tiles(getTileIdFromXY(x, y))
+        val (x, y) = pos
+        val tileid = getTileIdFromXY(x,y)
+        ActiveGameTile.buildTile(tileid, (x, y), this.tiles(tileid))
     }
 
     def getTileIdFromXY(x:Int, y:Int): Int =
     {
         (y * this.width) + x;
+    }
+
+    def getPositionFromTileId(i:Int): (Int, Int) =
+    {
+        val x = i % this.width
+        val y = math.floor(i / this.height).toInt;
+        return (x,y)
     }
 
 }
@@ -46,15 +55,12 @@ object TileRepository
         }
     }
 
-    def getTiles(gameid: Long): Map[Int, ActiveGameTile] =
+    def getTiles(gameid: Long): Array[(Byte,Byte,Byte)]=
     {
         val dbName = "game_"+gameid;
 
         DB.withConnection { implicit c =>
           val tileSql = SQL("""SELECT
-            tileid,
-            x,
-            y,
             texture,
             elevation,
             element
@@ -62,8 +68,8 @@ object TileRepository
           ORDER BY tileid ASC""")
 
           tileSql().map(row =>
-            (row[Int]("tileid"), ActiveGameTile.buildTile(row[Int]("tileid"), row[Int]("x"), row[Int]("y"), row[Int]("texture"), row[Int]("elevation"), row[Int]("element")))
-          ).toMap;
+            (row[Int]("texture").toByte, row[Int]("elevation").toByte, row[Int]("element").toByte)
+          ).toArray;
         }
     }
 }

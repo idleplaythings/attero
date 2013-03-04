@@ -18,19 +18,22 @@ case class ActiveGameTile(
 
 object ActiveGameTile
 {
-    def buildTile(id: Int, x: Int, y: Int, texture: Int, elevation: Int, element: Int) =
+    def buildTile(id: Int, pos: (Int, Int), details: (Byte,Byte,Byte)) =
     {
+        val (x, y) = pos
+        val (texture, element, elevation) = details
+
         new ActiveGameTile(
             id,
             x,
             y,
             getTextureByType(texture),
-            elevation,
+            elevation.toInt,
             getElementByType(element)
         )
     }
 
-    def getElementByType(element: Int) : TileElement =
+    def getElementByType(element: Byte) : TileElement =
     {
         element match
         {
@@ -47,7 +50,7 @@ object ActiveGameTile
         }
     }
 
-    def getTextureByType(texture: Int) : TileTexture =
+    def getTextureByType(texture: Byte) : TileTexture =
     {
         texture match
         {

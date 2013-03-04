@@ -4,12 +4,12 @@ jQuery(function(){
     {
         //1-20 trees
         1:  new TileElement(1, ResourceLoader.loadImage("/assets/textures/firtreessmall.png"),20, 2),
-        2:  new TileElement(2, ResourceLoader.loadImage("/assets/textures/firtreesmany.png"),30, 3),
+        2:  new TileElement(2, ResourceLoader.loadImage("/assets/textures/firtreesmany.png"),20, 3),
         4:  new TileElement(4, ResourceLoader.loadImage("/assets/textures/bushesmany.png"),10),
         //21-30 small houses
         21:  new TileElement(21, ResourceLoader.loadImage("/assets/textures/cottage1.png"),150),
         //31-40 large houses
-        31:  new TileElement(31, ResourceLoader.loadImage("/assets/textures/houses.png"),300),
+        31:  new TileElement(31, ResourceLoader.loadImage("/assets/textures/houses.png"),300, 2),
         //41-50 roads
         41:  new RoadTileElement(41, ResourceLoader.loadImage("/assets/textures/road1.png")),
         42:  new RoadTileElement(42, ResourceLoader.loadImage("/assets/textures/road2.png")),

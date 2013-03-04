@@ -33,7 +33,7 @@ object Application extends Controller {
           userid,
           gameid,
           Json.stringify(map.toJSON),
-          GameManager.loadUnitsForOwner(gameid, 1).map(_.toString).mkString(";"))
+          GameManager.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"))
         )
       }
   }
