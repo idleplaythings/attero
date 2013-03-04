@@ -18,20 +18,6 @@ MoveOrder.prototype.execute = function()
     this.bresenhamRaytrace(this.start, this.end, this.visit);
 }
 
-MoveOrder.prototype.routeToMessage = function()
-{
-    var routeString = Array();
-
-    for (var i in this.route)
-    {
-        var pos = this.route[i];
-        routeString.push(pos.x +","+pos.y+","+pos.tf+","+pos.uf);
-        //last zeros: unit facing (reversing unit, for example), and turret facing.
-    }
-
-    return routeString.join(";");
-}
-
 MoveOrder.prototype.visit = function(coords)
 {
     //TODO: check if you can move to this tile. If not, halt

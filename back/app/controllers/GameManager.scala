@@ -1,6 +1,9 @@
 package controllers
 
 import models._
+import models.units._
+import models.units.states.MoveState
+
 import anorm._
 import anorm.SqlParser._
 import play.api.db._
@@ -28,21 +31,34 @@ object GameManager
   def createUnits(unitcount: Int, map: GameMap): List[GameUnit] =
   {
     var units: ListBuffer[GameUnit] = new ListBuffer[GameUnit]()
+    var count1 = 0;
+    var count2 = 0;
 
     println("Creating units, map width: " + map.width + " height: " + map.height);
     for (i <- 0 until unitcount)
     {
       val tileid = Random.nextInt(map.tiles.length-1);
-      units = units :+ new GameUnit(
-        i,
-        1,
-        Random.nextInt(1)+1,
-        1,
-        Random.nextInt(100),
-        Random.nextInt(100),
-        tileid,
-        map.getXForTile(tileid),
-        map.getYForTile(tileid))
+      val unittype = Random.nextInt(2)+1;
+      val owner = Random.nextInt(2)+1;
+
+      if (owner == 1)
+        count1 += 1;
+      else
+        count2 += 1;
+
+      var x = 0;
+      var y = count1;
+
+      if (owner == 2)
+      {
+        x = map.width*2;
+        y = count2;
+      }
+
+      val gameUnit = UnitDefinition.getUnitObjectByType(i, owner, unittype, owner);
+      gameUnit.setMoveState(new MoveState(x, y));
+
+      units = units :+ gameUnit;
     }
 
     units.toList
@@ -66,17 +82,26 @@ object GameManager
     DB.withTransaction { implicit c =>
       SQL("""
         CREATE TABLE """ +dbName+ """.game_unit (
-          "id" serial,
+          "id" integer,
+          "unittype" integer,
           "owner" integer DEFAULT NULL,
-          "unittype" integer DEFAULT NULL,
-          "amount" smallint DEFAULT NULL,
-          "hide" smallint DEFAULT NULL,
-          "spot" smallint DEFAULT NULL,
-          "location" integer DEFAULT 0,
-          "x" integer DEFAULT 0,
-          "y" integer DEFAULT 0,
-          "spotted" boolean DEFAULT FALSE,
+          "team" integer,
           PRIMARY KEY ("id")
+        )
+      """).execute();
+
+      SQL("""
+        CREATE TABLE """ +dbName+ """.game_unit_movestate (
+          "unitid" integer,
+          "x" integer DEFAULT NULL,
+          "y" integer DEFAULT NULL,
+          "azimuth" integer,
+          "turret_azimuth" integer,
+          "last_mp" float8,
+          "last_dm" float8,
+          "current_mp" float8,
+          "current_dm" float8,
+          PRIMARY KEY ("unitid")
         )
       """).execute();
 
@@ -134,8 +159,9 @@ object GameManager
         .on(
           'gameid -> gameid,
           'name -> map.name,
-          'width -> map.width,
-          'height -> map.height)
+          'width -> ((map.width*2)+1),
+          'height -> ((map.height*2)+1)
+        )
         .executeInsert()
 
       map.setTileIds;
@@ -147,18 +173,32 @@ object GameManager
       for (i <- 0 until units.length)
       {
         val unit: GameUnit = units(i)
-        SQL("""INSERT INTO """ +dbName+ """.game_unit (unittype, owner, amount, hide, spot, location, x ,y)
-                    VALUES ({unittype}, {owner}, {amount}, {hide}, {spot}, {location}, {x}, {y})""")
+        SQL("""INSERT INTO """ +dbName+ """.game_unit (id, unittype, owner, team)
+                    VALUES ({id},{unittype}, {owner}, {team})""")
           .on(
-            'unittype -> unit.unittype,
+            'id -> i,
+            'unittype -> unit.unitType,
             'owner -> unit.owner,
-            'amount -> unit.amount,
-            'hide -> unit.hide,
-            'spot -> unit.spot,
-            'location -> unit.location,
-            'x -> map.getXForTile(unit.location),
-            'y -> map.getYForTile(unit.location)
+            'team -> unit.team
             ).execute()
+
+        val moveState = unit.getMoveState;
+        val (x, y) = moveState.getPosition
+
+        SQL("""INSERT INTO """+dbName+ """.game_unit_movestate
+          (unitid, x, y, azimuth, turret_azimuth, last_mp, last_dm, current_mp, current_dm)
+          VALUES ({unitid}, {x}, {y}, {azimuth}, {turret_azimuth}, {lastMP}, {lastDM}, {currentMP}, {currentDM})""")
+          .on(
+            'unitid -> i,
+            'x -> x,
+            'y -> y,
+            'azimuth -> 0,
+            'turret_azimuth -> 0,
+            'lastMP -> moveState.getLastMovePointsUsed,
+            'lastDM -> moveState.getLastDistanceMoved,
+            'currentMP -> moveState.getCurrentMovePointsUsed,
+            'currentDM -> moveState.getCurrentDistanceMoved
+            ).execute();
       }
 
 
@@ -198,62 +238,74 @@ object GameManager
     }
   }
 
-  def loadUnits(gameid: Long): List[GameUnit] =
+  def loadUnitsForGame(gameid: Long): Map[Int, GameUnit] =
   {
-    val dbName = "game_"+gameid;
+      val dbName = "game_"+gameid;
 
-    DB.withConnection { implicit c =>
-      SQL("""SELECT
-        id,
-        unittype,
-        owner,
-        amount,
-        hide,
-        spot,
-        location,
-        x,
-        y
-      FROM """ +dbName+ """.game_unit
-      ORDER BY id ASC""")
-      .as(parserGameUnit *)
-    }
+      val unitSql = SQL("""
+          SELECT
+            id, unittype, owner, team
+          FROM
+            """ +dbName+ """.game_unit""")
+
+      loadUnitsWithSql(gameid, unitSql);
   }
 
   def loadUnitsForOwner(gameid: Long, owner: Int): List[GameUnit] =
   {
+      val dbName = "game_"+gameid;
+
+      val unitSql = SQL("""
+          SELECT
+            id, unittype, owner, team
+          FROM
+            """ +dbName+ """.game_unit
+          WHERE
+            owner = {owner}
+        ORDER BY id ASC""")
+      .on('owner -> owner)
+
+      loadUnitsWithSql(gameid, unitSql).map( t => t._2).toList;
+  }
+
+  def loadUnitsWithSql(gameid: Long, sql: SimpleSql[anorm.Row]): Map[Int, GameUnit] =
+  {
+    DB.withConnection { implicit c =>
+      var units =
+        sql()
+          .map(row =>
+            (row[Int]("id"), UnitDefinition.getUnitObjectByType(row[Int]("id"), row[Int]("owner"), row[Int]("unittype"), row[Int]("team")))
+          ).toMap;
+
+      units.foreach
+      {
+        case (id:Int, unit:Movable ) => unit.setMoveState(loadUnitMoveState(gameid, id));
+      }
+
+      units
+    }
+  }
+
+  def loadUnitMoveState(gameid: Long, unitid: Int): MoveState =
+  {
     val dbName = "game_"+gameid;
 
     DB.withConnection { implicit c =>
       SQL("""SELECT
-        id,
-        unittype,
-        owner,
-        amount,
-        hide,
-        spot,
-        location,
+        unitid,
         x,
-        y
-      FROM """ +dbName+ """.game_unit
-      WHERE owner = {owner}
-      ORDER BY id ASC""")
-      .on('owner -> owner)
-      .as(parserGameUnit *)
-    }
-  }
-
-  private val parserGameUnit = {
-    get[Int]("id") ~
-    get[Int]("unittype") ~
-    get[Int]("owner") ~
-    get[Int]("amount") ~
-    get[Int]("hide") ~
-    get[Int]("spot") ~
-    get[Int]("location") ~
-    get[Int]("x") ~
-    get[Int]("y") map {
-      case id~unittype~owner~amount~hide~spot~location~x~y =>
-        GameUnit(id, unittype, owner, amount, hide, spot, location, x, y)
+        y,
+        azimuth,
+        turret_azimuth,
+        last_mp,
+        last_dm,
+        current_mp,
+        current_dm
+      FROM """ +dbName+ """.game_unit_movestate
+      WHERE unitid = {unitid}
+      """)
+      .on('unitid -> unitid)
+      .as(MoveState.parserMoveState.singleOpt).get;
     }
   }
 

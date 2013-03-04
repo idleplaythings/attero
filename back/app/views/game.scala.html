@@ -36,6 +36,7 @@
         <script src="@routes.Assets.at("js/confirm.js")"></script>
         <script src="@routes.Assets.at("js/SaveLoad.js")"></script>
         <script src="@routes.Assets.at("js/Unit.js")"></script>
+        <script src="@routes.Assets.at("js/UnitIcon.js")"></script>
         <script src="@routes.Assets.at("js/MathLib.js")"></script>
         <script src="@routes.Assets.at("js/FogOfWar.js")"></script>
         <script src="@routes.Assets.at("js/LineOfSight.js")"></script>
@@ -46,13 +47,18 @@
         <script src="@routes.Assets.at("js/animation/AnimationHandler.js")"></script>
         <script src="@routes.Assets.at("js/animation/UnitMoveAnimation.js")"></script>
         <script src="@routes.Assets.at("js/EventDispatcher.js")"></script>
+        <script src="@routes.Assets.at("js/events/Event.js")"></script>
         <script src="@routes.Assets.at("js/events/MoveEvent.js")"></script>
         <script src="@routes.Assets.at("js/events/MoveEventListener.js")"></script>
+        <script src="@routes.Assets.at("js/events/MoveInterruptEvent.js")"></script>
+        <script src="@routes.Assets.at("js/events/MoveInterruptEventListener.js")"></script>
+
 
 
         <script>
             function dynamicResourcesLoaded()
             {
+                window.playerid = @userid;
 
                 Graphics.init();
                 Graphics.animate();
@@ -67,8 +73,10 @@
                 jQuery(".webglCanvas").on("mouseout", Scrolling.mouseout);
                 jQuery(".webglCanvas").on("mousemove", Scrolling.mousemove);
 
+                EventDispatcher.attach(new MoveServerMessageEventLister());
                 EventDispatcher.attach(new UnitPositionListener());
                 EventDispatcher.attach(new UnitMoveAnimationListener());
+                EventDispatcher.attach(new MoveInterruptEventLister());
 
                 MouseWheel.hookEvent(jQuery(".webglCanvas").get(0), 'mousewheel', Zooming.mouseWheel);
 

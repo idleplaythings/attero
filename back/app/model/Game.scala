@@ -28,6 +28,10 @@ class Game(val gameid: Long) extends EventDispatcher with RepositoryContext
 
     protected val playerRepository = new PlayerRepository(gameid);
 
+    protected val tileRepository = new TileRepository(gameid);
+
+    protected val unitRepository = new UnitRepository(gameid);
+
     def canJoin(userid: Int): Boolean = ! this.players.contains(userid)
 
     def isEmpty(): Boolean = this.players.isEmpty
@@ -47,9 +51,17 @@ class Game(val gameid: Long) extends EventDispatcher with RepositoryContext
 
     override def dispatch(event: Event): Unit =
     {
+        val now = System.nanoTime
         eventMessageList = event +: eventMessageList;
         super.dispatch(event);
         replyToDoneEvents();
+
+        val micros = (System.nanoTime - now) / 1000
+
+        println("Dispatching event: " + event.name + " took " + micros + " microseconds.");
+
+        if (eventMessageList.length == 0)
+            storeUpdatedGameState();
     }
 
     def event(userid: Int, json: JsValue) =
@@ -68,6 +80,15 @@ class Game(val gameid: Long) extends EventDispatcher with RepositoryContext
         {
             this.players -= userid
         }
+    }
+
+    private def storeUpdatedGameState() =
+    {
+        val now = System.nanoTime
+        unitRepository.updateUnitStatesIfNeeded();
+        val micros = (System.nanoTime - now) / 1000
+
+        println("Updating gamedata took " + micros + " microseconds.");
     }
 
     private def replyToDoneEvents() =
@@ -91,7 +112,6 @@ class Game(val gameid: Long) extends EventDispatcher with RepositoryContext
 
     private def replyToEvent(event: Event)
     {
-        println("replying to event: " + event);
         event.UiEventStream.foreach{
             case (userid:Int, messages:List[JsValue]) =>
             {

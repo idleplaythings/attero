@@ -1,8 +1,15 @@
 package models.events;
 
 import play.api.libs.json._
+import models.repositories.UnitRepository
+import models.repositories.TileRepository
+import models.tiles._
+import models.units._
+import models.units.states._
+import models.units.strategies._
+import models.MathLib
 
-class MoveEventListener() extends EventListener
+class MoveEventListener(val unitRepository: UnitRepository, val tileRepository: TileRepository) extends EventListener
 {
     def getEventName: String = "MoveEvent";
 
@@ -15,32 +22,45 @@ class MoveEventListener() extends EventListener
 
     private def processMoveEvent(event: MoveEvent) =
     {
-        println("processing move event");
-        if (canMoveTo(event.unitid, event.x, event.y, event.unitFacing))
+        val unit:GameUnit = unitRepository.getUnit(event.unitid);
+        val tile:ActiveGameTile = tileRepository.getTileByXY(event.x, event.y);
+
+        println("processing move event for unit " + unit.id + "moving from: " + unit.getPosition + " to " + tile.getPosition);
+        if (canMoveTo(unit, tile))
         {
-            moveTo(event.unitid, event.x, event.y, event.turretFacing, event.unitFacing);
+            moveTo(unit, tile, event.turretFacing, event.unitFacing);
             event.setExecuted();
         }
         else
         {
             event.stopPropagation();
             event.interruptRoute();
-            event.addMessageForUser(event.userid, Json.parse("{ \"id\": \"" + event.eventid + "\", \"interrupted\": \"cant reach target\"}"))
+            event.addMessageForUser(
+                event.userid,
+                JsObject(
+                  Seq(
+                    "type" -> JsString("MoveInterrupt"),
+                    "eventid" -> JsNumber(event.eventid),
+                    "routeNumber" -> JsNumber(event.getNumberInRoute)
+                  )
+                )
+            );
+
             //since nothing happened the enemy doesn't need to be notified
         }
         //event.UiEventStream = Json.parse("{ \"unitId\": \"" + event.unitid + "\", \"x\": " + event.x + ", \"y\": " + event.y + " }") +: event.UiEventStream
     }
 
-    private def canMoveTo(unitid: Int, x: Int, y: Int, facing: Int): Boolean =
+    private def canMoveTo(unit:GameUnit, tile:ActiveGameTile): Boolean =
     {
-        //TODO: Check that target is one adjacent to last unit position (no teleporting)
-        //TODO: Check that target is passable terrain for target
-        //TODO: Check that unit has enough movement left to reach the target
-        return true;
+        if (MathLib.distance(unit.getPosition, tile.getPosition) >= 2)
+            throw new IllegalArgumentException("Unit trying to teleport from tile: " + unit.getPosition + " to " + tile.getPosition)
+
+        unit.canMove(tile);
     }
 
-    private def moveTo(unitid: Int, x: Int, y: Int, turretFacing: Int, facing: Int) : Unit =
+    private def moveTo(unit:GameUnit, tile:ActiveGameTile, turretFacing: Int, facing: Int) : Unit =
     {
-        //TODO: change unit position
+        unit.move(tile:ActiveGameTile, turretFacing: Int, facing: Int);
     }
 }

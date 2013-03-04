@@ -31,6 +31,9 @@ ServerConnection =
         } else {
             if (data.type == "MoveRouteEvent")
                 ServerConnection.receiveMoveRoute(data);
+
+            if (data.type == "MoveInterrupt")
+                EventDispatcher.dispatch(new MoveInterruptEvent("server", data.eventid, data.routeNumber));
         }
     },
 
@@ -54,6 +57,6 @@ ServerConnection =
             };
         }
 
-        EventDispatcher.dispatch(new MoveEvent(unit, route));
+        EventDispatcher.dispatch(new MoveEvent("server", unit, route));
     }
 };

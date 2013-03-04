@@ -40,6 +40,7 @@ var Animation = function()
 }
 Animation.prototype.constructor =  Animation;
 Animation.prototype.tick = function(time){}
+Animation.prototype.reverse = function(){}
 
 Animation.prototype.setDone = function()
 {

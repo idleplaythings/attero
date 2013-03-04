@@ -21,10 +21,13 @@ class MoveRouteEventListener(
 
     private def processEvent(event: MoveRouteEvent) =
     {
+        var routeCount = 0;
         breakable {
             event.moves.foreach({ moveEvent =>
 
+                moveEvent.setNumberInRoute(routeCount);
                 eventDispatcher.dispatch(moveEvent);
+                routeCount += 1;
 
                 if (moveEvent.isRouteInterrupted()) {
                     println("Movement route interrupted")
@@ -35,9 +38,9 @@ class MoveRouteEventListener(
 
         if (event.isAnySpotted)
         {
-            println("Someone spotted this route");
+            //println("Someone spotted this route");
             playerRepository.getEnemies(event.userid).foreach({ playerid:Int =>
-                println("Moveroute event replying to userid: " + playerid);
+            //  println("Moveroute event replying to userid: " + playerid);
                 event.addMessageForUser(playerid, event.toJson);
             });
         }
