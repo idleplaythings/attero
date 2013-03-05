@@ -1,6 +1,6 @@
 package models
 
-import controllers.{MapStorage, GameManager}
+import controllers.MapStorage
 import play.api.libs.json._
 import anorm._
 import anorm.SqlParser._
@@ -95,7 +95,8 @@ case class ActiveGameMap(
   override val height: Int)
     extends GameMap(id, name, width, height)
 {
-  private lazy val _tiles = GameManager.loadTiles(this.id);
+  val gameManager = new GameManager();
+  private lazy val _tiles = gameManager.loadTiles(this.id);
   def tiles: List[GameTile] = _tiles;
 
   println("ActiveGameMap has been constructed '"+ this.name + "'");

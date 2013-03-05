@@ -1,11 +1,11 @@
 package models.repositories;
 
-import controllers.GameManager
 import models.units._
+import models.GameManager
 
-class UnitRepository(gameid: Long) extends Repository(gameid)
+class UnitRepository(gameid: Long, gameManager: GameManager) extends Repository(gameid)
 {
-    lazy val units: Map[Int, GameUnit] = GameManager.loadUnitsForGame(gameid);
+    lazy val units: Map[Int, GameUnit] = gameManager.loadUnitsForGame(gameid);
 
     def getUnit(id: Int): GameUnit =
     {

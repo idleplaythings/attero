@@ -25,12 +25,13 @@ class Game(val gameid: Long) extends EventDispatcher with RepositoryContext
 {
     var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
     var eventMessageList: List[Event] = List.empty[Event];
+    var gameManager = new GameManager();
 
-    protected val playerRepository = new PlayerRepository(gameid);
+    protected val playerRepository = new PlayerRepository(gameid, gameManager);
 
     protected val tileRepository = new TileRepository(gameid);
 
-    protected val unitRepository = new UnitRepository(gameid);
+    protected val unitRepository = new UnitRepository(gameid, gameManager);
 
     def canJoin(userid: Int): Boolean = ! this.players.contains(userid)
 

@@ -14,6 +14,7 @@ import play.api.Play.current
 import play.api.libs.iteratee._
 import akka.actor._
 import scala.concurrent.duration._
+import models.GameManager
 
 object Application extends Controller {
 
@@ -26,14 +27,15 @@ object Application extends Controller {
   }
 
   def game(gameid: Long, userid: Int) = Action { implicit request =>
+    val gameManager = new GameManager();
 
-    GameManager.loadMap(gameid) match {
+    gameManager.loadMap(gameid) match {
         case None =>  Ok("""{"status":"error", "info": "game not found"}""")
         case Some(map) => Ok(views.html.game(
           userid,
           gameid,
           Json.stringify(map.toJSON),
-          GameManager.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"))
+          gameManager.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"))
         )
       }
   }
@@ -63,8 +65,10 @@ object Application extends Controller {
 
   def createGame = Action(parse.json(maxLength = 1024 * 2000))
   {
+    val gameManager = new GameManager();
+
     request =>
-      if (GameManager.create((request.body)) != 0)
+      if (gameManager.create((request.body)) != 0)
       {
         Ok("""{"status": "ok"}""")
       }

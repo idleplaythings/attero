@@ -1,12 +1,11 @@
 package models.repositories;
 
-import controllers.GameManager
 import models.GamePlayer
+import models.GameManager
 
-
-class PlayerRepository(gameid: Long) extends Repository(gameid)
+class PlayerRepository(gameid: Long, gameManager: GameManager) extends Repository(gameid)
 {
-    private lazy val players: List[GamePlayer] = GameManager.getPlayersForGame(gameid);
+    private lazy val players: List[GamePlayer] = gameManager.getPlayersForGame(gameid);
 
     private def getPlayersTeam(userid: Int): Int =
     {
