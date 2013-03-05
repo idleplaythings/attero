@@ -15,6 +15,7 @@ import play.api.libs.iteratee._
 import akka.actor._
 import scala.concurrent.duration._
 import models.GameManager
+import models.MapStorage
 
 object Application extends Controller {
 
@@ -42,7 +43,8 @@ object Application extends Controller {
 
   def loadMap(id: Long) = Action
   {
-      MapStorage.loadMap(id) match {
+      val mapStorage = new MapStorage();
+      mapStorage.loadMap(id) match {
         case None =>  Ok("""{"status":"error", "info": "map not found"}""")
         case Some(map) => Ok(map.toJSON)
       }
@@ -50,8 +52,9 @@ object Application extends Controller {
 
   def saveMap = Action(parse.json(maxLength = 1024 * 2000))
   {
+    val mapStorage = new MapStorage();
     request =>
-      if (MapStorage.saveMap(GameMap.fromJson(request.body)) != 0)
+      if (mapStorage.saveMap(GameMap.fromJson(request.body)) != 0)
       {
         println("ok!");
         Ok("""{"status": "ok"}""")

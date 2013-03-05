@@ -1,6 +1,5 @@
 package models
 
-import controllers.MapStorage
 import play.api.libs.json._
 import anorm._
 import anorm.SqlParser._
@@ -70,7 +69,8 @@ case class EditorGameMap(
   override val height: Int)
     extends GameMap(id, name, width, height)
 {
-  private lazy val _tiles = MapStorage.loadTiles(this.id);
+  val mapStorage = new MapStorage();
+  private lazy val _tiles = mapStorage.loadTiles(this.id);
   def tiles: List[GameTile] = _tiles;
   println("EditorGameMap has been constructed '"+ this.name + "'");
 
