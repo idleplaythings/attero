@@ -13,8 +13,10 @@ import play.api.Play.current
 
 import play.api.libs.iteratee._
 import akka.actor._
+import repositories.UnitRepository
 import scala.concurrent.duration._
 import models.GameManager
+import models.repositories.UnitRepository
 import models.MapStorage
 
 object Application extends Controller {
@@ -29,6 +31,7 @@ object Application extends Controller {
 
   def game(gameid: Long, userid: Int) = Action { implicit request =>
     val gameManager = new GameManager();
+    val unitRepository = new UnitRepository(gameid);
 
     gameManager.loadMap(gameid) match {
         case None =>  Ok("""{"status":"error", "info": "game not found"}""")
@@ -36,7 +39,7 @@ object Application extends Controller {
           userid,
           gameid,
           Json.stringify(map.toJSON),
-          gameManager.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"))
+          unitRepository.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"))
         )
       }
   }

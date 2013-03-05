@@ -31,7 +31,7 @@ class Game(val gameid: Long) extends EventDispatcher with RepositoryContext
 
     protected val tileRepository = new TileRepository(gameid);
 
-    protected val unitRepository = new UnitRepository(gameid, gameManager);
+    protected val unitRepository = new UnitRepository(gameid);
 
     def canJoin(userid: Int): Boolean = ! this.players.contains(userid)
 
