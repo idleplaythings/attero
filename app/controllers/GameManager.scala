@@ -55,9 +55,8 @@ object GameManager
         y = count2;
       }
 
-      val gameUnit = UnitDefinition.getUnitObjectByType(i, owner, unittype, owner);
-      gameUnit.setMoveState(new MoveState(x, y));
-
+      val gameUnit = UnitDefinition.getUnitObjectByType(0, i, x, y, owner, unittype, owner);
+      gameUnit.setMoveState(new MoveState(0, 0, 0, 0.0, 0.0, 0.0, 0.0))
       units = units :+ gameUnit;
     }
 
@@ -84,6 +83,8 @@ object GameManager
         CREATE TABLE """ +dbName+ """.game_unit (
           "id" integer,
           "unittype" integer,
+          "x" integer DEFAULT NULL,
+          "y" integer DEFAULT NULL,
           "owner" integer DEFAULT NULL,
           "team" integer,
           PRIMARY KEY ("id")
@@ -93,8 +94,6 @@ object GameManager
       SQL("""
         CREATE TABLE """ +dbName+ """.game_unit_movestate (
           "unitid" integer,
-          "x" integer DEFAULT NULL,
-          "y" integer DEFAULT NULL,
           "azimuth" integer,
           "turret_azimuth" integer,
           "last_mp" float8,
@@ -173,25 +172,26 @@ object GameManager
       for (i <- 0 until units.length)
       {
         val unit: GameUnit = units(i)
-        SQL("""INSERT INTO """ +dbName+ """.game_unit (id, unittype, owner, team)
-                    VALUES ({id},{unittype}, {owner}, {team})""")
+        val (x, y) = unit.getPosition
+
+        SQL("""INSERT INTO """ +dbName+ """.game_unit (id, unittype, x, y, owner, team)
+                    VALUES ({id}, {unittype}, {x}, {y}, {owner}, {team})""")
           .on(
             'id -> i,
             'unittype -> unit.unitType,
+            'x -> x,
+            'y -> y,
             'owner -> unit.owner,
             'team -> unit.team
             ).execute()
 
         val moveState = unit.getMoveState;
-        val (x, y) = moveState.getPosition
 
         SQL("""INSERT INTO """+dbName+ """.game_unit_movestate
-          (unitid, x, y, azimuth, turret_azimuth, last_mp, last_dm, current_mp, current_dm)
-          VALUES ({unitid}, {x}, {y}, {azimuth}, {turret_azimuth}, {lastMP}, {lastDM}, {currentMP}, {currentDM})""")
+          (unitid, azimuth, turret_azimuth, last_mp, last_dm, current_mp, current_dm)
+          VALUES ({unitid}, {azimuth}, {turret_azimuth}, {lastMP}, {lastDM}, {currentMP}, {currentDM})""")
           .on(
             'unitid -> i,
-            'x -> x,
-            'y -> y,
             'azimuth -> 0,
             'turret_azimuth -> 0,
             'lastMP -> moveState.getLastMovePointsUsed,
@@ -244,7 +244,7 @@ object GameManager
 
       val unitSql = SQL("""
           SELECT
-            id, unittype, owner, team
+            id, unittype, x, y, owner, team
           FROM
             """ +dbName+ """.game_unit""")
 
@@ -257,7 +257,7 @@ object GameManager
 
       val unitSql = SQL("""
           SELECT
-            id, unittype, owner, team
+            id, unittype, x, y, owner, team
           FROM
             """ +dbName+ """.game_unit
           WHERE
@@ -271,41 +271,11 @@ object GameManager
   def loadUnitsWithSql(gameid: Long, sql: SimpleSql[anorm.Row]): Map[Int, GameUnit] =
   {
     DB.withConnection { implicit c =>
-      var units =
-        sql()
-          .map(row =>
-            (row[Int]("id"), UnitDefinition.getUnitObjectByType(row[Int]("id"), row[Int]("owner"), row[Int]("unittype"), row[Int]("team")))
-          ).toMap;
 
-      units.foreach
-      {
-        case (id:Int, unit:Movable ) => unit.setMoveState(loadUnitMoveState(gameid, id));
-      }
-
-      units
-    }
-  }
-
-  def loadUnitMoveState(gameid: Long, unitid: Int): MoveState =
-  {
-    val dbName = "game_"+gameid;
-
-    DB.withConnection { implicit c =>
-      SQL("""SELECT
-        unitid,
-        x,
-        y,
-        azimuth,
-        turret_azimuth,
-        last_mp,
-        last_dm,
-        current_mp,
-        current_dm
-      FROM """ +dbName+ """.game_unit_movestate
-      WHERE unitid = {unitid}
-      """)
-      .on('unitid -> unitid)
-      .as(MoveState.parserMoveState.singleOpt).get;
+      sql()
+        .map(row =>
+          (row[Int]("id"), UnitDefinition.getUnitObjectByType(gameid, row[Int]("id"), row[Int]("x"), row[Int]("y"), row[Int]("owner"), row[Int]("unittype"), row[Int]("team")))
+        ).toMap;
     }
   }
 

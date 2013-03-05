@@ -29,9 +29,8 @@ class UnitRepository(gameid: Long) extends Repository(gameid)
 
     def updateUnitStatesIfNeeded(): Unit =
     {
-        units.foreach({keyVal =>
-            val unit:GameUnit = keyVal._2;
-            unit.getMoveState.updateIfNeeded(gameid);
+        units.foreach({
+            case (id:Int, gameUnit: GameUnit) =>gameUnit.updateStateIfNeeded(gameid);
         })
     }
 }

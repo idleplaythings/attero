@@ -7,8 +7,6 @@ import play.api.Play.current
 
 case class MoveState(
     private var unitid: Int,
-    private var x: Int,
-    private var y: Int,
     private var azimuth: Int,
     private var turretAzimuth: Int,
     private var lastMovePointsUsed:Double,
@@ -16,24 +14,10 @@ case class MoveState(
     private var currentMovePointsUsed: Double,
     private var currentDistanceMoved: Double)
 {
-
-    println("MoveState created: " +x+ "," +y);
+    println("created movestate for unit " + unitid);
     var needsUpdate = false;
 
-    def this(x: Int, y:Int) = this(0, x, y, 0, 0, 0.0, 0.0, 0.0, 0.0)
-
     def getUnitid: Int = unitid;
-
-    def getPosition: (Int, Int) = {(this.x, this.y)}
-    def setPosition(pos: (Int, Int)) =
-    {
-        val (x, y) = pos;
-        this.x = x;
-        this.y = y;
-        this.needsUpdate = true;
-
-        println("MOVE-STATE: Changed position of unit: " + unitid + " to " + x +"," +y);
-    }
 
     def getAzimuth: Int = azimuth;
     def setAzimuth(a: Int) = {
@@ -78,7 +62,7 @@ case class MoveState(
 
     override def toString: String =
     {
-        x+","+y+","+azimuth+","+turretAzimuth+","+lastMovePointsUsed+","+lastDistanceMoved+","+currentMovePointsUsed+","+currentDistanceMoved;
+        azimuth+","+turretAzimuth+","+lastMovePointsUsed+","+lastDistanceMoved+","+currentMovePointsUsed+","+currentDistanceMoved;
     }
 
     def updateIfNeeded(gameid: Long): Unit =
@@ -98,10 +82,7 @@ object MoveState
 
             val dbName = "game_"+gameid;
 
-            val (x, y) = state.getPosition
             SQL("""UPDATE """ +dbName+ """.game_unit_movestate SET
-                x = {x},
-                y = {y},
                 azimuth = {azimuth},
                 turret_azimuth = {turret_azimuth},
                 last_mp = {last_mp},
@@ -113,8 +94,6 @@ object MoveState
             """)
             .on(
                 'unitid -> state.getUnitid,
-                'x -> x,
-                'y -> y,
                 'azimuth -> state.getAzimuth,
                 'turret_azimuth -> state.getTurretAzimuth,
                 'last_mp -> state.getLastMovePointsUsed,
@@ -125,18 +104,37 @@ object MoveState
         }
     }
 
+    def loadUnitMoveState(gameid: Long, unitid: Int): MoveState =
+    {
+        val dbName = "game_"+gameid;
+
+        DB.withConnection { implicit c =>
+          SQL("""SELECT
+            unitid,
+            azimuth,
+            turret_azimuth,
+            last_mp,
+            last_dm,
+            current_mp,
+            current_dm
+          FROM """ +dbName+ """.game_unit_movestate
+          WHERE unitid = {unitid}
+          """)
+          .on('unitid -> unitid)
+          .as(parserMoveState.singleOpt).get;
+        }
+    }
+
     val parserMoveState = {
         get[Int]("unitid") ~
-        get[Int]("x") ~
-        get[Int]("y") ~
         get[Int]("azimuth") ~
         get[Int]("turret_azimuth") ~
         get[Double]("last_mp") ~
         get[Double]("last_dm") ~
         get[Double]("current_mp") ~
         get[Double]("current_dm") map {
-          case unitid~x~y~azimuth~turret_azimuth~last_mp~last_dm~current_mp~current_dm =>
-            MoveState(unitid, x, y, azimuth, turret_azimuth, last_mp, last_dm, current_mp, current_dm)
+          case unitid~azimuth~turret_azimuth~last_mp~last_dm~current_mp~current_dm =>
+            MoveState(unitid, azimuth, turret_azimuth, last_mp, last_dm, current_mp, current_dm)
         }
     }
 }

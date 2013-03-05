@@ -7,22 +7,18 @@ import models.units.strategies.MoveStrategy
 
 trait Movable
 {
-    private var moveState: MoveState = _;
-    def getMoveState: MoveState = moveState;
-    def setMoveState(state: MoveState) = {moveState = state}
-
-    def getPosition: (Int, Int) = moveState.getPosition
+    def getMoveState: MoveState;
 
     private var moveStrategy: MoveStrategy = _;
     def setMoveStrategy(strategy: MoveStrategy) = { moveStrategy = strategy}
 
     def canMove(tile:ActiveGameTile): Boolean =
     {
-        moveStrategy.canMove(moveState, tile);
+        moveStrategy.canMove(this.asInstanceOf[GameUnit], tile);
     }
 
     def move(tile:ActiveGameTile, turretFacing: Int, facing: Int): Unit =
     {
-        moveStrategy.move(moveState, tile, turretFacing, facing);
+        moveStrategy.move(this.asInstanceOf[GameUnit], tile, turretFacing, facing);
     }
 }
