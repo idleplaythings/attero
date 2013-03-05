@@ -68,7 +68,8 @@ GameTile.prototype.subscribeUnitToTile = function(unit)
         throw "Can't subscribe same unit to same tile more than once";
 
     if (this.subscribedUnit != null)
-        throw "Can't subscribe more than one unit per tile";
+        console.log("TODO: support multiple units in same tile");
+        //throw "Can't subscribe more than one unit per tile";
 
     this.subscribedUnit = unit;
 }

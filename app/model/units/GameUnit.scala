@@ -6,15 +6,23 @@ import anorm._
 import anorm.SqlParser._
 import models.units.states._
 
-class GameUnit(val gameid: Long, val id: Int, x: Int, y: Int, val unitType: Int, val owner: Int, val team: Int) extends Movable with Spotter with Spottable
+class GameUnit(
+    val gameid: Long,
+    val id: Int,
+    x: Int,
+    y: Int,
+    val unitType: Int,
+    val owner: Int,
+    val team: Int)
+extends Movable with Spotter with Spottable
 {
     private var position = (x, y);
-    private var positionNeedsUpdate:Boolean = false;
+    private var needsUpdate:Boolean = false;
 
     def getPosition: (Int, Int) = position;
     def setPosition(pos: (Int, Int)) = {
         position = pos
-        positionNeedsUpdate = true;
+        needsUpdate = true;
     }
 
     println("created gameunit: " + unitType + " owner: " + owner);
@@ -36,7 +44,7 @@ class GameUnit(val gameid: Long, val id: Int, x: Int, y: Int, val unitType: Int,
 
     def updateStateIfNeeded(gameid: Long): Unit =
     {
-        if (positionNeedsUpdate == true)
+        if (needsUpdate == true)
             GameUnit.updatePosition(gameid, id, getPosition)
 
         moveState match {
@@ -50,10 +58,15 @@ class GameUnit(val gameid: Long, val id: Int, x: Int, y: Int, val unitType: Int,
         moveState = None;
     }
 
-    override def toString: String =
+    def toBaseString: String =
     {
         val (x, y) = getPosition
-        id +","+ unitType +","+ owner + "," + x + "," + y +","+ getMoveState.toString
+        id +","+ unitType +","+ owner + "," + x + "," + y
+    }
+
+    override def toString: String =
+    {
+        toBaseString+","+ getMoveState.toString
     }
 }
 

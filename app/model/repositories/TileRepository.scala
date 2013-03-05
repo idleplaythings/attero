@@ -13,15 +13,30 @@ class TileRepository(gameid: Long) extends Repository(gameid)
 
     lazy val tiles: Array[(Byte,Byte,Byte)] = TileRepository.getTiles(gameid);
 
-    def getTileByXY(pos: (Int, Int)): ActiveGameTile =
+    def getTileByXY(pos: (Int, Int)): Option[ActiveGameTile] =
     {
-        val (x, y) = pos
-        val tileid = getTileIdFromXY(x,y)
-        ActiveGameTile.buildTile(tileid, (x, y), this.tiles(tileid))
+        val (x,y) = pos;
+        if (x < 0 || y < 0 || x > width || y > height)
+            None
+        else
+        {
+            val tileid = getTileIdFromXY(pos);
+            Some(ActiveGameTile.buildTile(tileid, pos, this.tiles(tileid)))
+        }
     }
 
-    def getTileIdFromXY(x:Int, y:Int): Int =
+    def getTileElevationByXY(pos:(Int, Int)): Int =
     {
+        val (x,y) = pos;
+        if (x < 0 || y < 0 || x > width || y > height)
+            0
+        else
+            tiles(getTileIdFromXY(pos))._3.toInt
+    }
+
+    def getTileIdFromXY(pos:(Int, Int)): Int =
+    {
+        val (x, y) = pos
         (y * this.width) + x;
     }
 
@@ -31,7 +46,6 @@ class TileRepository(gameid: Long) extends Repository(gameid)
         val y = math.floor(i / this.height).toInt;
         return (x,y)
     }
-
 }
 
 object TileRepository

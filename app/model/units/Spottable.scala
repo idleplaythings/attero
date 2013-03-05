@@ -8,8 +8,8 @@ trait Spottable
     private var hideStrategy: HideStrategy = _;
     def setHideStrategy(strategy: HideStrategy) = { hideStrategy = strategy}
 
-    def getHiding(tile: ActiveGameTile): Int =
+    def getHiding(): Int =
     {
-        hideStrategy.getHiding(tile);
+        hideStrategy.getHiding(this.asInstanceOf[GameUnit]);
     }
 }

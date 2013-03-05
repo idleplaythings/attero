@@ -14,6 +14,14 @@ case class ActiveGameTile(
     def getMovementDifficulty: Int = {
         texture.terrainDifficulty + element.terrainDifficulty;
     }
+
+    def getConcealment(elevation:Double): Int = {
+
+        if (elevation < this.elevation + element.height)
+            this.texture.concealment + this.element.concealment;
+
+        0
+    }
 }
 
 object ActiveGameTile
@@ -37,16 +45,16 @@ object ActiveGameTile
     {
         element match
         {
-            case 0 => new TileElement()
-            case 1 => new SmallTrees()
-            case 2 => new Tree()
-            case 4 => new Bushes()
-            case 21 => new SmallHouse()
-            case 31 => new LargeHouse()
-            case 41 => new DirtRoad()
-            case 42 => new PavedRoad()
-            case 51 => new LowRockWall()
-            case 52 => new TallRockWall()
+            case 0  => new TileElement(0, 0, 0, 0, 0, 0)
+            case 1  => new TileElement(1, 100, 30, 5, 10, 2)
+            case 2  => new TileElement(2, 20, 20, 15, 20, 3)
+            case 4  => new TileElement(4, 100, 30, 5, 10, 1)
+            case 21 => new TileElement(21, 100, 100, 40, 150, 1)
+            case 31 => new TileElement(31, 100, 100, 40, 300, 40)
+            case 41 => new TileElement(41, -25, -20, -20, 0, 0)
+            case 42 => new TileElement(42, -50, -50, -30, 0, 0)
+            case 51 => new TileElement(51, 20, 20, 60, 50, 1) with Continious
+            case 52 => new TileElement(52, 200, 40, 70, 100, 1 ) with Continious
         }
     }
 
@@ -54,16 +62,16 @@ object ActiveGameTile
     {
         texture match
         {
-            case 1 => new Grass()
-            case 5 => new LongGrass()
-            case 2 => new ForrestFloor()
-            case 21 => new RockyGround()
-            case 31 => new Dirt()
-            case 41 => new LongGrass()
-            case 42 => new LongGrass()
-            case 43 => new LongGrass()
-            case 44 => new LongGrass()
-            case 51 => new LongGrass()
+            case 1  => new TileTexture(1, 20, 0, 0, 0)
+            case 5  => new TileTexture(5, 40, 10, 0, 0)
+            case 2  => new TileTexture(2, 20, 0, 0, 0)
+            case 21 => new TileTexture(21, 150, 10, 20, 0)
+            case 31 => new TileTexture(31, 20, 0, 0, 0)
+            case 41 => new TileTexture(41, 40, 10, 0, 0)
+            case 42 => new TileTexture(42, 40, 10, 0, 0)
+            case 43 => new TileTexture(43, 40, 0, 0, 0)
+            case 44 => new TileTexture(44, 40, 0, 0, 0)
+            case 51 => new TileTexture(51, 40, 0, 0, 0)
         }
     }
 }

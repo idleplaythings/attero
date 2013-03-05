@@ -23,7 +23,11 @@ class MoveEventListener(val unitRepository: UnitRepository, val tileRepository: 
     private def processMoveEvent(event: MoveEvent) =
     {
         val unit:GameUnit = unitRepository.getUnit(event.unitid);
-        val tile:ActiveGameTile = tileRepository.getTileByXY(event.x, event.y);
+        var tile:ActiveGameTile = tileRepository.getTileByXY(event.x, event.y) match {
+            case Some(t) => t;
+            case None => throw new IllegalArgumentException("Trying to move outside of tilegrid");
+        }
+
 
         println("processing move event for unit " + unit.id + "moving from: " + unit.getPosition + " to " + tile.getPosition);
         if (canMoveTo(unit, tile))
