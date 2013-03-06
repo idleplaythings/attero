@@ -16,6 +16,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 
 import models.events.EventListener
 import models.events._
+import models.repositories._
 
 object GameServer {
 
@@ -63,7 +64,12 @@ class GameServer extends Actor {
 
         if ( ! games.contains(gameid) )
         {
-            val newGame: Game = new Game(gameid)
+            val newGame: Game = new Game(
+              gameid,
+              new PlayerRepository(gameid),
+              new TileRepository(gameid),
+              new UnitRepository(gameid)
+            )
             newGame.attach(new MoveRouteEventListener(newGame, newGame.getPlayerRepository));
             newGame.attach(new MoveEventListener(newGame.getUnitRepository, newGame.getTileRepository));
             newGame.attach(new MoveEventSpottingListener(newGame.getPlayerRepository));

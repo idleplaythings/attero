@@ -6,7 +6,6 @@ import play.api.db._
 import play.api.Play.current
 
 import models.GamePlayer
-import models.GameManager
 
 class PlayerRepository(gameid: Long) extends Repository(gameid) {
   private lazy val players: List[GamePlayer] = getPlayersForGame(gameid);

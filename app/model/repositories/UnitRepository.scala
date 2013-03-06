@@ -81,12 +81,12 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
     }
   }
 
-  def loadUnitMoveState(gameid: Long, unitid: Int): MoveState =
-  {
-    val dbName = "game_"+gameid;
+  def loadUnitMoveState(gameid: Long, unitid: Int): MoveState = {
+    val dbName = "game_" + gameid;
 
-    DB.withConnection { implicit c =>
-      SQL("""SELECT
+    DB.withConnection {
+      implicit c =>
+        SQL( """SELECT
         unitid,
         x,
         y,
@@ -96,11 +96,11 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
         last_dm,
         current_mp,
         current_dm
-      FROM """ +dbName+ """.game_unit_movestate
+      FROM """ + dbName + """.game_unit_movestate
       WHERE unitid = {unitid}
-                        """)
-        .on('unitid -> unitid)
-        .as(MoveState.parserMoveState.singleOpt).get;
+                          """)
+          .on('unitid -> unitid)
+          .as(MoveState.parserMoveState.singleOpt).get;
     }
   }
 }
