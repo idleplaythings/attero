@@ -236,8 +236,7 @@ class GameManager()
         eangle
       FROM """ +dbName+ """.game_tile
       ORDER BY tileid ASC""")
-<<<<<<< HEAD:app/controllers/GameManager.scala
-      .as(MapStorage.parserGameTile *)
+      .as(mapStorage.parserGameTile *)
     }
   }
 
@@ -279,9 +278,6 @@ class GameManager()
         .map(row =>
           (row[Int]("id"), UnitDefinition.getUnitObjectByType(gameid, row[Int]("id"), row[Int]("x"), row[Int]("y"), row[Int]("owner"), row[Int]("unittype"), row[Int]("team")))
         ).toMap;
-=======
-      .as(mapStorage.parserGameTile *)
->>>>>>> 69f32eb75a2e75c4dffad0a6c4e454b4a50d98fb:app/model/GameManager.scala
     }
   }
 

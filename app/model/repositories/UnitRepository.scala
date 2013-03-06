@@ -40,7 +40,7 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
 
     val unitSql = SQL( """
           SELECT
-            id, unittype, owner, team
+            id, x, y, unittype, owner, team
           FROM
             """ + dbName + """.game_unit""")
 
@@ -53,9 +53,9 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
 
     val unitSql = SQL("""
           SELECT
-            id, unittype, owner, team
+            id, x, y, unittype, owner, team
           FROM
-                      """ +dbName+ """.game_unit
+              """ +dbName+ """.game_unit
           WHERE
             owner = {owner}
         ORDER BY id ASC""")
@@ -67,36 +67,20 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
   def loadUnitsWithSql(gameid: Long, sql: SimpleSql[anorm.Row]): Map[Int, GameUnit] = {
     DB.withConnection {
       implicit c =>
-        var units =
           sql()
             .map(row =>
-            (row[Int]("id"), UnitDefinition.getUnitObjectByType(row[Int]("id"), row[Int]("owner"), row[Int]("unittype"), row[Int]("team")))
+            (row[Int]("id"), UnitDefinition.getUnitObjectByType(gameid, row[Int]("id"), row[Int]("x"), row[Int]("y"), row[Int]("owner"), row[Int]("unittype"), row[Int]("team")))
           ).toMap;
-
-        units.foreach {
-          case (id: Int, unit: Movable) => unit.setMoveState(loadUnitMoveState(gameid, id));
-        }
-
-        units
     }
   }
 
   def loadUnitMoveState(gameid: Long, unitid: Int): MoveState = {
     val dbName = "game_" + gameid;
 
-<<<<<<< HEAD
-    def updateUnitStatesIfNeeded(): Unit =
-    {
-        units.foreach({
-            case (id:Int, gameUnit: GameUnit) =>gameUnit.updateStateIfNeeded(gameid);
-        })
-=======
     DB.withConnection {
       implicit c =>
         SQL( """SELECT
         unitid,
-        x,
-        y,
         azimuth,
         turret_azimuth,
         last_mp,
@@ -108,7 +92,6 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
                           """)
           .on('unitid -> unitid)
           .as(MoveState.parserMoveState.singleOpt).get;
->>>>>>> 69f32eb75a2e75c4dffad0a6c4e454b4a50d98fb
     }
   }
 }

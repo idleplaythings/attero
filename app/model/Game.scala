@@ -26,7 +26,7 @@ import models.repositories._
 class Game(val gameid: Long,
            playerRepository: PlayerRepository,
            tileRepository: TileRepository,
-           unitRepository: UnitRepository) extends EventDispatcher {
+           unitRepository: UnitRepository) extends EventDispatcher with MessageSender{
 
   var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
   var eventMessageList: List[Event] = List.empty[Event];

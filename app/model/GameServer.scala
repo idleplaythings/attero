@@ -64,18 +64,14 @@ class GameServer extends Actor {
 
         if ( ! games.contains(gameid) )
         {
-<<<<<<< HEAD
-            val newGame: Game = new Game(gameid)
-            newGame.attach(new MoveRouteEventListener(newGame, newGame.getPlayerRepository, newGame.getUnitRepository));
-=======
             val newGame: Game = new Game(
               gameid,
               new PlayerRepository(gameid),
               new TileRepository(gameid),
               new UnitRepository(gameid)
             )
-            newGame.attach(new MoveRouteEventListener(newGame, newGame.getPlayerRepository));
->>>>>>> 69f32eb75a2e75c4dffad0a6c4e454b4a50d98fb
+
+            newGame.attach(new MoveRouteEventListener(newGame, newGame.getPlayerRepository, newGame.getUnitRepository));
             newGame.attach(new MoveEventListener(newGame.getUnitRepository, newGame.getTileRepository));
             newGame.attach(new MoveEventSpottingListener(newGame.getPlayerRepository, newGame.getUnitRepository, newGame.getTileRepository, newGame));
 
