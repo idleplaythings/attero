@@ -4,9 +4,9 @@ import play.api.libs.json._
 
 object EventFactory
 {
-    def makeEvent(eventname: String, userid: Int, json: JsValue): Event =
+    def makeEvent(eventName: String, userid: Int, json: JsValue): Event =
     {
-        eventname match
+        eventName match
         {
             case move if move == "MoveEvent" => parseMoveEvents(userid, json)
         }
@@ -15,15 +15,15 @@ object EventFactory
     def parseMoveEvents(userid: Int, json: JsValue) : MoveRouteEvent =
     {
         println(json);
-        var unitid: Int = (json \ "payload" \ "unitId").as[String].toInt
-        var id: Int = (json \ "id").as[Int]
+        var unitId: Int = (json \ "payload" \ "unitId").as[String].toInt
+        var eventId: Int = (json \ "id").as[Int]
         var route: String = (json \ "payload" \ "moveroute").as[String]
 
         new MoveRouteEvent(
             userid,
-            id,
-            unitid,
-            route.split(";").map(parseMoveEvent(userid, id,  unitid, _)).toList);
+            eventId,
+            unitId,
+            route.split(";").map(parseMoveEvent(userid, eventId, unitId, _)).toList);
     }
 
     def parseMoveEvent(userid: Int, id: Int,  unitid: Int, args: String): MoveEvent =
