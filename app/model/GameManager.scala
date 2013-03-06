@@ -249,25 +249,6 @@ class GameManager()
         ActiveGameMap(gameid, name, width, height)
     }
   }
-
-  def getPlayersForGame(gameid: Long): List[GamePlayer] =
-  {
-    val dbName = "game_"+gameid;
-
-    DB.withConnection { implicit c =>
-       SQL("""SELECT playerid,team FROM """ +dbName+ """.game_player""")
-       .as(parserGamePlayer *)
-    }
-  }
-
-  private val parserGamePlayer =
-  {
-    get[Int]("playerid") ~
-    get[Int]("team") map {
-      case playerid~team =>
-        GamePlayer(playerid, team)
-    }
-  }
 }
 
 

@@ -25,9 +25,8 @@ class Game(val gameid: Long) extends EventDispatcher with RepositoryContext
 {
     var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
     var eventMessageList: List[Event] = List.empty[Event];
-    var gameManager = new GameManager();
 
-    protected val playerRepository = new PlayerRepository(gameid, gameManager);
+    protected val playerRepository = new PlayerRepository(gameid);
 
     protected val tileRepository = new TileRepository(gameid);
 
