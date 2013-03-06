@@ -15,7 +15,7 @@ MoveServerMessageEventLister.prototype = Object.create( MoveEventLister.prototyp
 
 MoveServerMessageEventLister.prototype.handle = function(event)
 {
-    console.log("Server message: " + event.name + " origin: " + event.origin);
+    console.log("Server message: " + event.name + " origin: " + event.origin + " at time: " + (new Date()).getTime());
     if (event.name == "MoveEvent" && event.origin == "player")
     {
         ServerConnection.sendMessage({

@@ -4,11 +4,13 @@ import play.api.libs.json._
 import models.repositories._
 import models.Raytrace;
 import models.units._
+import models.MessageSender
 
 class MoveEventSpottingListener(
     val playerRepository: PlayerRepository,
     val unitRepository: UnitRepository,
-    val tileRepository: TileRepository
+    val tileRepository: TileRepository,
+    val messageSender: MessageSender
 ) extends EventListener
 {
     def getEventName: String = "MoveEvent";
@@ -24,16 +26,21 @@ class MoveEventSpottingListener(
 
     private def processMoveEvent(event: MoveEvent) =
     {
-        val unit:GameUnit = unitRepository.getUnit(event.unitid);
-        unitRepository.getEnemyUnitsForTeam(unit.team).foreach({keyVal =>
-            spot(event, unit, keyVal._2);
-        })
+        if (event.getNumberInRoute > 0)
+        {
+            val unit:GameUnit = unitRepository.getUnit(event.unitid);
+            unitRepository.getEnemyUnitsForTeam(unit.team).foreach({keyVal =>
+                spot(event, unit, keyVal._2);
+            })
+        }
 
     }
 
     private def spot(event: MoveEvent, mover: GameUnit, enemy: GameUnit)
     {
         val concealment = new Raytrace(mover.getPosition, enemy.getPosition, tileRepository).run;
+
+        //println("Concealment between mover and unit: " + enemy.id + " is: " + concealment);
         if (concealment < 100)
         {
             if (mover.canSpot(enemy, concealment))
@@ -52,7 +59,20 @@ class MoveEventSpottingListener(
 
     private def informAboutSpottedEnemy(event: MoveEvent, enemy: GameUnit): Unit =
     {
-        event.interruptRoute();
+        if ( ! event.isRouteInterrupted)
+        {
+            event.interruptRoute();
+            messageSender.sendMessageToPlayer(
+                event.userid,
+                JsObject(
+                  Seq(
+                    "type" -> JsString("MoveInterrupt"),
+                    "eventid" -> JsNumber(event.eventid),
+                    "routeNumber" -> JsNumber(event.getNumberInRoute+1)
+                  )
+                )
+            );
+        }
 
         event.addMessageForUser(
             event.userid,

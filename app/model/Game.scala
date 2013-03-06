@@ -21,7 +21,7 @@ import scala.collection.mutable
 
 import models.repositories._
 
-class Game(val gameid: Long) extends EventDispatcher with RepositoryContext
+class Game(val gameid: Long) extends EventDispatcher with RepositoryContext with MessageSender
 {
     var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
     var eventMessageList: List[Event] = List.empty[Event];

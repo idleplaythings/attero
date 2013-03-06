@@ -25,7 +25,7 @@ extends Movable with Spotter with Spottable
         needsUpdate = true;
     }
 
-    println("created gameunit: " + unitType + " owner: " + owner);
+    println("created gameunit: " + id + " owner: " + owner);
 
     private var moveState: Option[MoveState] = None;
 

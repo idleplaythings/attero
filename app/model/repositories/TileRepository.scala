@@ -82,7 +82,7 @@ object TileRepository
           ORDER BY tileid ASC""")
 
           tileSql().map(row =>
-            (row[Int]("texture").toByte, row[Int]("elevation").toByte, row[Int]("element").toByte)
+            (row[Int]("texture").toByte, row[Int]("element").toByte, row[Int]("elevation").toByte)
           ).toArray;
         }
     }

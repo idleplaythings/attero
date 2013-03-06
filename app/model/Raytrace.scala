@@ -24,7 +24,10 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
 
     private def visitCorner(tiles: Array[(Int, Int)]): Unit =
     {
-        tiles.map(tileRepository.getTileByXY(_)) match {
+        var gts = tiles.map(tileRepository.getTileByXY(_)).toArray
+
+
+        gts match {
             case Array(Some(start), Some(c1), Some(c2), Some(end)) =>
             {
                 val c1E = c1.element;
@@ -42,6 +45,7 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
                     sumConcealment += (getConcealmentFromTile(c2.getPosition)*0.2).toFloat;
                 }
             }
+            case _ => {}
         }
 
     }
@@ -82,7 +86,7 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
         var err:Int = dx-dy;
 
         var path = true;
-        while(path != false || sumConcealment >= 100)
+        while(path && sumConcealment < 100)
         {
             var e2:Int = 2*err;
             var coords: Array[(Int, Int)] = Array.empty[(Int, Int)];
