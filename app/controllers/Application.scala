@@ -13,7 +13,11 @@ import play.api.Play.current
 
 import play.api.libs.iteratee._
 import akka.actor._
+import repositories.UnitRepository
 import scala.concurrent.duration._
+import models.GameManager
+import models.repositories.UnitRepository
+import models.MapStorage
 
 object Application extends Controller {
 
@@ -26,21 +30,24 @@ object Application extends Controller {
   }
 
   def game(gameid: Long, userid: Int) = Action { implicit request =>
+    val gameManager = new GameManager();
+    val unitRepository = new UnitRepository(gameid);
 
-    GameManager.loadMap(gameid) match {
+    gameManager.loadMap(gameid) match {
         case None =>  Ok("""{"status":"error", "info": "game not found"}""")
         case Some(map) => Ok(views.html.game(
           userid,
           gameid,
           Json.stringify(map.toJSON),
-          GameManager.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"))
+          unitRepository.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"))
         )
       }
   }
 
   def loadMap(id: Long) = Action
   {
-      MapStorage.loadMap(id) match {
+      val mapStorage = new MapStorage();
+      mapStorage.loadMap(id) match {
         case None =>  Ok("""{"status":"error", "info": "map not found"}""")
         case Some(map) => Ok(map.toJSON)
       }
@@ -48,8 +55,9 @@ object Application extends Controller {
 
   def saveMap = Action(parse.json(maxLength = 1024 * 2000))
   {
+    val mapStorage = new MapStorage();
     request =>
-      if (MapStorage.saveMap(GameMap.fromJson(request.body)) != 0)
+      if (mapStorage.saveMap(GameMap.fromJson(request.body)) != 0)
       {
         println("ok!");
         Ok("""{"status": "ok"}""")
@@ -63,8 +71,10 @@ object Application extends Controller {
 
   def createGame = Action(parse.json(maxLength = 1024 * 2000))
   {
+    val gameManager = new GameManager();
+
     request =>
-      if (GameManager.create((request.body)) != 0)
+      if (gameManager.create((request.body)) != 0)
       {
         Ok("""{"status": "ok"}""")
       }

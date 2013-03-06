@@ -1,4 +1,4 @@
-package controllers
+package models
 
 import models._
 import models.units._
@@ -13,15 +13,17 @@ import util.Random
 import play.api.libs.json._
 import scala.collection.mutable
 
-object GameManager
+class GameManager()
 {
+  val mapStorage = new MapStorage()
+
   def create(json: JsValue): Int =
   {
     val mapid: Long = (json \ "mapid").toString.toLong
     val unitcount: Int = (json \ "unitcount").toString.toInt
 
     val players: Map[Int, Int] = Map(1 -> 1, 2 -> 2);
-    val map: GameMap = MapStorage.loadMap(mapid).get
+    val map: GameMap = mapStorage.loadMap(mapid).get
     val units: List[GameUnit] = createUnits(unitcount, map)
 
     initializeGameDatabase(players, units, map)
@@ -234,6 +236,7 @@ object GameManager
         eangle
       FROM """ +dbName+ """.game_tile
       ORDER BY tileid ASC""")
+<<<<<<< HEAD:app/controllers/GameManager.scala
       .as(MapStorage.parserGameTile *)
     }
   }
@@ -276,6 +279,9 @@ object GameManager
         .map(row =>
           (row[Int]("id"), UnitDefinition.getUnitObjectByType(gameid, row[Int]("id"), row[Int]("x"), row[Int]("y"), row[Int]("owner"), row[Int]("unittype"), row[Int]("team")))
         ).toMap;
+=======
+      .as(mapStorage.parserGameTile *)
+>>>>>>> 69f32eb75a2e75c4dffad0a6c4e454b4a50d98fb:app/model/GameManager.scala
     }
   }
 
@@ -286,25 +292,6 @@ object GameManager
     get[Int]("height") map {
       case gameid~name~width~height =>
         ActiveGameMap(gameid, name, width, height)
-    }
-  }
-
-  def getPlayersForGame(gameid: Long): List[GamePlayer] =
-  {
-    val dbName = "game_"+gameid;
-
-    DB.withConnection { implicit c =>
-       SQL("""SELECT playerid,team FROM """ +dbName+ """.game_player""")
-       .as(parserGamePlayer *)
-    }
-  }
-
-  private val parserGamePlayer =
-  {
-    get[Int]("playerid") ~
-    get[Int]("team") map {
-      case playerid~team =>
-        GamePlayer(playerid, team)
     }
   }
 }

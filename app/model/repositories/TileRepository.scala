@@ -4,7 +4,6 @@ import anorm._
 import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
-import controllers.GameManager
 import models.tiles._
 
 class TileRepository(gameid: Long) extends Repository(gameid)

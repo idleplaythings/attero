@@ -1,12 +1,11 @@
-package controllers
+package models
 
-import models._
 import anorm._
 import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
 
-object MapStorage
+class MapStorage()
 {
   val parserGameMap = {
     get[Long]("id") ~
