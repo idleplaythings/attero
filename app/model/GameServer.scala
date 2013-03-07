@@ -14,13 +14,17 @@ import akka.pattern.ask
 import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits._
 
+import models.events.EventListener
+import models.events._
+import models.repositories._
+
 object GameServer {
 
   implicit val timeout = Timeout(1 second)
 
   lazy val default = Akka.system.actorOf(Props[GameServer])
 
-  def join(userid: Int, gameid: Int): scala.concurrent.Future[(Iteratee[JsValue,_],Enumerator[JsValue])] = {
+  def join(userid: Int, gameid: Long): scala.concurrent.Future[(Iteratee[JsValue,_],Enumerator[JsValue])] = {
 
     (default ? Join(userid, gameid)).map {
 
@@ -47,22 +51,31 @@ object GameServer {
         (iteratee,enumerator)
 
     }
-
   }
-
 }
 
 class GameServer extends Actor {
 
-  var games: Map[Int, ActiveGame] = Map.empty[Int, ActiveGame];
+  var games: Map[Long, Game] = Map.empty[Long, Game];
 
   def receive = {
 
-    case Join(userid: Int, gameid: Int) => {
+    case Join(userid: Int, gameid: Long) => {
 
         if ( ! games.contains(gameid) )
         {
-            games += (gameid -> new ActiveGame(gameid))
+            val newGame: Game = new Game(
+              gameid,
+              new PlayerRepository(gameid),
+              new TileRepository(gameid),
+              new UnitRepository(gameid)
+            )
+
+            newGame.attach(new MoveRouteEventListener(newGame, newGame.getPlayerRepository, newGame.getUnitRepository));
+            newGame.attach(new MoveEventListener(newGame.getUnitRepository, newGame.getTileRepository));
+            newGame.attach(new MoveEventSpottingListener(newGame.getPlayerRepository, newGame.getUnitRepository, newGame.getTileRepository, newGame));
+
+            games += (gameid -> newGame)
         }
 
         if (games(gameid).canJoin(userid))
@@ -75,8 +88,7 @@ class GameServer extends Actor {
         }
     }
 
-    case GameMessage(userid: Int, gameid: Int, json: JsValue) => {
-      println(json.toString)
+    case GameMessage(userid: Int, gameid: Long, json: JsValue) => {
       games(gameid).event(userid, json);
     }
 
@@ -91,14 +103,12 @@ class GameServer extends Actor {
         games -= gameid;
       }
     }
-
   }
-
 }
 
-case class Join(userid: Int, gameid: Int)
-case class Quit(userid: Int, gameid: Int)
-case class GameMessage(userid: Int, gameid: Int, json: JsValue)
+case class Join(userid: Int, gameid: Long)
+case class Quit(userid: Int, gameid: Long)
+case class GameMessage(userid: Int, gameid: Long, json: JsValue)
 
 case class Connected(enumerator:Enumerator[JsValue])
 case class CannotConnect(msg: String)

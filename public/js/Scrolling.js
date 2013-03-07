@@ -25,6 +25,16 @@ window.Scrolling = {
 
     mouseup: function(event){
         Scrolling.Scrolling = false;
+
+        var now = (new Date()).getTime();
+        if (now - Scrolling.Scrollingstarted < 250)
+        {
+            var x = event.pageX - this.offsetLeft;
+            var y = event.pageY - this.offsetTop;
+            TileGrid.doGridClicked(x, y, true);
+        }
+
+
     },
 
     mouseout: function(event){

@@ -1,3 +1,5 @@
+@(userid: Int, gameid: Long, map:String, units:String)(implicit request: RequestHeader)
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -17,7 +19,7 @@
         <script src="@routes.Assets.at("js/GameTile.js")"></script>
         <script src="@routes.Assets.at("js/TileGrid.js")"></script>
         <script src="@routes.Assets.at("js/Texture.js")"></script>
-        <script src="@routes.Assets.at("js/Three.js")"></script>
+        <script src="@routes.Assets.at("js/three.min.js")"></script>
         <script src="@routes.Assets.at("js/Graphics.js")"></script>
         <script src="@routes.Assets.at("js/Scrolling.js")"></script>
         <script src="@routes.Assets.at("js/MouseWheel.js")"></script>
@@ -34,16 +36,35 @@
         <script src="@routes.Assets.at("js/confirm.js")"></script>
         <script src="@routes.Assets.at("js/SaveLoad.js")"></script>
         <script src="@routes.Assets.at("js/Unit.js")"></script>
+        <script src="@routes.Assets.at("js/UnitIcon.js")"></script>
         <script src="@routes.Assets.at("js/MathLib.js")"></script>
+        <script src="@routes.Assets.at("js/FogOfWar.js")"></script>
+        <script src="@routes.Assets.at("js/LineOfSight.js")"></script>
+        <script src="@routes.Assets.at("js/Raytrace.js")"></script>
+        <script src="@routes.Assets.at("js/UnitManager.js")"></script>
+        <script src="@routes.Assets.at("js/ServerConnection.js")"></script>
+        <script src="@routes.Assets.at("js/MoveOrder.js")"></script>
+        <script src="@routes.Assets.at("js/animation/AnimationHandler.js")"></script>
+        <script src="@routes.Assets.at("js/animation/UnitMoveAnimation.js")"></script>
+        <script src="@routes.Assets.at("js/animation/UnitAppearAnimation.js")"></script>
+        <script src="@routes.Assets.at("js/EventDispatcher.js")"></script>
+        <script src="@routes.Assets.at("js/events/Event.js")"></script>
+        <script src="@routes.Assets.at("js/events/MoveEvent.js")"></script>
+        <script src="@routes.Assets.at("js/events/MoveEventListener.js")"></script>
+        <script src="@routes.Assets.at("js/events/MoveInterruptEvent.js")"></script>
+        <script src="@routes.Assets.at("js/events/MoveInterruptEventListener.js")"></script>
+        <script src="@routes.Assets.at("js/events/EnemySpottedEventListener.js")"></script>
 
         <script>
             function dynamicResourcesLoaded()
             {
+                window.playerid = @userid;
 
                 Graphics.init();
                 Graphics.animate();
                 WaterLayer.init();
                 Grid.init();
+                FogOfWar.init();
 
                 jQuery(".webglCanvas").on("click", TileGrid.onGridClicked);
 
@@ -52,60 +73,17 @@
                 jQuery(".webglCanvas").on("mouseout", Scrolling.mouseout);
                 jQuery(".webglCanvas").on("mousemove", Scrolling.mousemove);
 
+                EventDispatcher.attach(new MoveServerMessageEventLister());
+                EventDispatcher.attach(new UnitPositionListener());
+                EventDispatcher.attach(new UnitMoveAnimationListener());
+                EventDispatcher.attach(new MoveInterruptEventLister());
+                EventDispatcher.attach(new UnitAppearAnimationListener());
+
                 MouseWheel.hookEvent(jQuery(".webglCanvas").get(0), 'mousewheel', Zooming.mouseWheel);
 
-                var unitcount = 400;
-                while (unitcount--)
-                {
-                    var pos = {
-                        x: Math.floor((Math.random()*200)+1),
-                        y: Math.floor((Math.random()*200)+1)
-                    };
+                UnitManager.createFromString("@units");
 
-                    if (Math.random() > 0.5)
-                    {
-                        var unit = new StugIII({position:pos});
-                        unit.createIcon();
-                    }
-                    else
-                    {
-                        var membertypes = Array();
-                        var l = Math.floor(Math.random()*10)+1;
-
-                        for (var i = 0; i<l; i++)
-                        {
-                            membertypes[i] = Math.floor(Math.random()*9);
-                        }
-
-                        var unit = new GeInfantry({
-                            position:pos,
-                            membertypes:membertypes
-                        });
-                        unit.createIcon();
-                    }
-                }
-
-
-                var stug = new StugIII({position:TileGrid.gameCordinatesTo3d({x:0, y:0})});
-                stug.createIcon();
-
-                /*
-                var memberTypes = Array();
-                //var l = Math.floor(Math.random()*9)+1;
-                var l = 10;
-
-                for (var i = 0; i<l; i++)
-                {
-                    memberTypes[i] = Math.floor(Math.random()*9);
-                }
-
-                var inf = new GeInfantry({
-                    position:{x:0, y:0},
-                    membertypes:memberTypes
-                });
-
-                inf.createIcon();
-                */
+                ServerConnection.connect("@routes.Application.gameserver(userid, gameid).webSocketURL()");
 
                 ResourceLoader.remove();
             }
@@ -113,12 +91,83 @@
 
             function staticResourcesLoaded()
             {
+                console.log("static loaded");
                 TileGrid.width = 100;
                 TileGrid.height = 100;
-                TileGrid.createDefaultGameTiles();
+                var mapString = "@map";
+                mapString = mapString.replace(/&quot;/g, '"');
+
+                TileGrid.createFromJson(JSON.parse(mapString));
+                console.log("tiles created");
                 ResourceLoader.loadTiles(dynamicResourcesLoaded);
             }
 
+        </script>
+
+        <script id="fogvertexShader" type="x-shader/x-vertex">
+            varying vec2 vUv;
+
+            void main() {
+                vUv = uv;
+
+                gl_Position =   projectionMatrix *
+                                modelViewMatrix *
+                                vec4(position,1.0);
+            }
+        </script>
+
+        <script id="fogfragmentShader2" type="x-shader/x-fragment">
+            uniform float xStep;
+            uniform float yStep;
+            uniform sampler2D tilemap;
+
+            varying vec2 vUv;
+
+            void main() {
+                vec4 tile = texture2D(tilemap, vUv);
+
+                if(tile.b == 0.0) { discard; }
+
+                float oAlpha = tile.b;
+                float alpha = tile.b;
+
+                gl_FragColor = vec4(0.0, 0.0, 0.0, alpha);
+
+            }
+        </script>
+
+
+        <script id="fogfragmentShader" type="x-shader/x-fragment">
+            uniform sampler2D fogtexture;
+            uniform float tilewidth;
+            uniform float tileheight;
+            uniform sampler2D tilemap;
+            uniform float opacity;
+
+            varying vec2 vUv;
+
+            float texcount = 4.0;
+            float texsize = 0.25;
+
+
+            void main() {
+                vec4 tile = texture2D(tilemap, vUv);
+
+                if(tile.x == 1.0 && tile.y == 1.0) { discard; }
+
+                float x = vUv.x/tilewidth;
+                x -= floor(x);
+                x /= texcount;
+                x += tile.x*255.0*texsize;
+
+                float y = vUv.y / tileheight;
+                y -= floor(y);
+                y /= texcount;
+                y += tile.y*255.0*texsize;
+
+                vec2 v = vec2(x, y);
+                gl_FragColor = texture2D(fogtexture, v);
+            }
         </script>
 
         <script id="vertexShader" type="x-shader/x-vertex">

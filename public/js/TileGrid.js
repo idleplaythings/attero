@@ -31,10 +31,15 @@ window.TileGrid = {
         return data;
     },
 
-    onGridClicked: function( event )
+    onGridClicked: function(event)
     {
         var x = event.pageX - this.offsetLeft;
         var y = event.pageY - this.offsetTop;
+        TileGrid.doGridClicked(x, y, false);
+    },
+
+    doGridClicked: function(x, y, right)
+    {
         var width = window.innerWidth/2;
         var height = window.innerHeight/2;
 
@@ -46,7 +51,7 @@ window.TileGrid = {
         x /= Graphics.zoom;
         y /= Graphics.zoom;
 
-        UIEvents.onGridClicked(x,y);
+        UIEvents.onGridClicked(x,y, right);
     },
 
     gridCordinatesToTile: function(pos)
@@ -65,10 +70,10 @@ window.TileGrid = {
 
     gameCordinatesTo3d: function(pos)
     {
-        pos.x = (pos.x / 2);
-        pos.y = (pos.y / 2);
+        var x = (pos.x / 2);
+        var y = (pos.y / 2);
 
-        return pos;
+        return {x:x, y:y};
     },
 
     getTileGridWidht: function()
@@ -97,7 +102,6 @@ window.TileGrid = {
                 var tex = new THREE.DataTexture(null, subSegmentSize * 40, subSegmentSize * 40);
                 tex.image = this.textureDatas[i];
                 tex.needsUpdate = true;
-                tex.mapping = [THREE.UV(1, 1)];
                 this.THREETextures[i] = tex;
             }
         }
@@ -224,7 +228,7 @@ window.TileGrid = {
 
     getGameTileCount: function()
     {
-        return Math.pow((TileGrid.tileRowCount*2)+1, 2);
+        return ((TileGrid.tileRowCount*2)+1) * ((TileGrid.tileColumnCount*2)+1);
     },
 
     getContext: function()
@@ -301,7 +305,6 @@ window.TileGrid = {
 
             TileGrid.gameTiles[i] = new GameTile(args);
         }
-
     },
 
     createDefaultGameTiles: function()
@@ -350,6 +353,12 @@ window.TileGrid = {
 
     getGameTileByXY: function(x, y)
     {
+        if (x < 0 || y < 0)
+            return null;
+
+        if (x > (TileGrid.tileRowCount*2)+1 || y > (TileGrid.tileColumnCount*2)+1)
+            return null;
+
         var i = y*((TileGrid.tileRowCount*2)+1) + x;
         if (!TileGrid.gameTiles[i])
         {
@@ -565,14 +574,4 @@ window.TileGrid = {
         }
     },
 
-    getGameTileByCount: function(count, add)
-    {
-        var i = count+add;
-        if (TileGrid.gameTiles[i])
-        {
-            return TileGrid.gameTiles[i].inLos ? 1 : 0;
-        }
-
-        return 0;
-    },
 }

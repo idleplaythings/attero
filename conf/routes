@@ -9,7 +9,7 @@ GET     /                           controllers.Application.index
 GET     /editor                     controllers.Application.editor
 
 #Game
-GET     /game                       controllers.Application.game
+GET     /game/:gameid/:userid       controllers.Application.game(gameid: Long, userid: Int)
 
 #REST API for loading and saving maps
 GET 	/gamemap/:id				controllers.Application.loadMap(id: Long)
@@ -20,7 +20,7 @@ POST /creategame                    controllers.Application.createGame
 GET /testCalc/:x/:y                 controllers.Application.testCalc(x: Integer, y: Integer)
 
 GET     /websockettest              controllers.Application.websockettest
-GET     /gameserver                 controllers.Application.gameserver(userid: Int, gameid: Int)
+GET     /gameserver                 controllers.Application.gameserver(userid: Int, gameid: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

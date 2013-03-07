@@ -1,12 +1,11 @@
-package controllers
+package models
 
-import models._
 import anorm._
 import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
 
-object MapStorage
+class MapStorage()
 {
   val parserGameMap = {
     get[Long]("id") ~
@@ -14,11 +13,11 @@ object MapStorage
     get[Int]("width") ~
     get[Int]("height") map {
       case id~name~width~height =>
-        GameMap(id, name, width, height, loadTiles(id))
+        EditorGameMap(id, name, width, height)
     }
   }
 
-  val parserGameTiles = {
+  val parserGameTile = {
     get[Int]("texture") ~
     get[Int]("toffset") ~
     get[Int]("tmask") ~
@@ -32,7 +31,7 @@ object MapStorage
     }
   }
 
-  def loadMap(id: Long) : Option[GameMap] =
+  def loadMap(id: Long) : Option[EditorGameMap] =
   {
     DB.withConnection { implicit c =>
       SQL("""SELECT id, name, width, height
@@ -59,13 +58,13 @@ object MapStorage
       WHERE mapid = {mapid}
       ORDER BY tileid ASC""")
       .on('mapid -> mapid)
-      .as(parserGameTiles *)
+      .as(parserGameTile *)
     }
   }
 
-  def saveMap(map: GameMap) =
+  def saveMap(map: SubmittedGameMap) =
   {
-    map.setTileIds
+    map.setTileIds;
     val mapid = DB.withConnection { implicit c =>
       SQL("""INSERT INTO game_map (name, width, height)
                   VALUES ({name}, {width}, {height})""")

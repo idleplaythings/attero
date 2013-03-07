@@ -1,96 +1,153 @@
 window.UnitHelper = {
-    textureSize: 128,
-}
 
+    textureSize: 128,
+    unitscale: 0.5,
+
+    updateZoom: function()
+    {
+        var scale = UnitHelper.getIconScale();
+
+        for (var i in window.units)
+        {
+            window.units[i].setIconScale(scale);
+        }
+    },
+
+    getIconScale: function()
+    {
+        var size = window.innerWidth > window.innerHeight ?  window.innerHeight : window.innerWidth;
+        return UnitHelper.textureSize / size * Graphics.zoom * UnitHelper.unitscale;
+    }
+};
+
+window.units = Array();
 
 var Unit = function(args)
 {
-    if (!args.position)
-        throw "Unit has to have position defined"
+    if (!args.id) {
+        throw "Unit must have an Id";
+    }
 
-    this.position = args.position;
-    this.THREEgeometry = null;
-    this.THREEmaterial = null;
-    this.THREEmesh = null;
-    this.THREEtexture = null;
+    if (!args.position) {
+        throw "Unit has to have position defined";
+    }
+
+    this.id = args.id;
+    this.setPosition(args.position);
+    this.owner = args.owner;
+    this.setIconPosition(this.position);
+    this.azimuth = args.azimuth || 0;
+
+    this.icon = null;
     this.texturedata = null;
+
+    this.iconSprite = null;
+    this.underIconSprite = null;
+};
+
+Unit.prototype.getAzimuth = function()
+{
+    return this.azimuth;
 }
 
-Unit.prototype.createModel = function()
+Unit.prototype.getTurretFacing = function()
 {
-    this.THREEgeometry  = new THREE.PlaneGeometry(
-        1.6, 1.6, 1, 1 );
+    return this.azimuth;
+}
 
-    this.THREEgeometry.dynamic = true
+Unit.prototype.lookAt = function(target)
+{
+    var azimuth;
+    if (target.x && target.y)
+    {
+        azimuth = MathLib.getAzimuthFromTarget(this.position, target);
+    }
+    else
+    {
+        azimuth = target;
+    }
 
-    vertShader = document.getElementById('vertexShader').innerHTML;
-    fragShader = document.getElementById('fragmentShader').innerHTML;
+    this.setAzimuth(azimuth);
+};
 
-    this.THREEmaterial = new THREE.ShaderMaterial({
-        uniforms: this.createUniforms(),
-        vertexShader: vertShader,
-        fragmentShader: fragShader,
-        transparent:true,
-        depthTest:false,
-        depthWrite:false,
-        //wireframe:true
-    });
+Unit.prototype.faceTurretAt = function(target)
+{
+    //TODO: need turrets
+};
 
-    this.THREEmesh = new THREE.Mesh(
-        this.THREEgeometry,
-        this.THREEmaterial);
+Unit.prototype.setAzimuth = function(azimuth)
+{
+    this.azimuth = azimuth;
+    this.icon.setAzimuth(azimuth);
+};
 
-    var pos = TileGrid.gameCordinatesTo3d(this.position);
+Unit.prototype.moveTo = function(position)
+{
+    this.lookAt(position);
 
-    this.THREEmesh.position = new THREE.Vector3(pos.x, -pos.y, 3);
+    var move = new MoveOrder(this, position);
+    move.execute();
+
+    EventDispatcher.dispatch(new MoveEvent("player", this, move.route));
+};
+
+Unit.prototype.setPosition = function(position)
+{
+    position.x = parseInt(position.x, 10);
+    position.y = parseInt(position.y, 10);
+
+    if (this.position)
+        TileGrid.getGameTileByXY(this.position.x, this.position.y).unSubscribeUnitToTile(this);
+
+    this.position = position;
+    TileGrid.getGameTileByXY(this.position.x, this.position.y).subscribeUnitToTile(this);
+}
+
+Unit.prototype.setIconPosition = function(position)
+{
+    if (this.icon)
+    {
+        var pos = TileGrid.gameCordinatesTo3d(position);
+        this.icon.group.position = new THREE.Vector3(pos.x, -pos.y, 3);
+    }
+}
+
+Unit.prototype.setIconScale = function(scale)
+{
+    this.icon.setIconScale(scale);
 }
 
 Unit.prototype.createIcon = function()
 {
-    this.createTexture();
-    this.createModel();
-    Grid.scene.add(this.THREEmesh);
-}
+    this.icon.createIcon();
+    this.icon.setAzimuth(this.azimuth);
+
+    var pos = TileGrid.gameCordinatesTo3d(this.position);
+
+    if (this.owner == window.playerid)
+        this.icon.setFriendly();
+    else
+        this.icon.setEnemy();
 
 
-Unit.prototype.createTexture = function()
+
+    this.icon.group.position = new THREE.Vector3(pos.x, -pos.y, 3);
+    this.setIconScale(UnitHelper.getIconScale());
+    Grid.scene.add(this.icon.group);
+};
+
+Unit.prototype.showIcon = function()
 {
-    var size = UnitHelper.textureSize;
-    var finalCanvas =
-        $('<canvas width="'+size+'" height="'+size+'"></canvas>').get(0);
-    //$(finalCanvas).appendTo('#texturecontainer');
-    var finalContext = finalCanvas.getContext("2d");
-
-    var offset = 0;
-    var t = offset*size;
-    finalContext.drawImage(window.unitTilesets[1], t , 0, size, size, 0, 0, size, size);
-
-    //TileGrid.textureDatas[i] = finalContext.getImageData(0, 0, size, size);
-    //console.dir(finalContext.getImageData(0,0,size, size).data.buffer);
-    this.texturedata = {
-        data : new Uint8Array(
-            finalContext.getImageData(0,0,size, size).data.buffer),
-        height: size,
-        width: size
-    };
-
-    var tex = new THREE.DataTexture(null, size, size);
-    tex.image = this.texturedata;
-    tex.needsUpdate = true;
-    this.THREEtexture = tex;
-
+    this.icon.show();
 }
 
-Unit.prototype.createUniforms = function()
+Unit.prototype.hideIcon = function()
 {
-    var texture = this.THREEtexture;
-    //texture.magFilter = THREE.NearestFilter;
-    texture.minFilter = THREE.NearestMipMapNearestFilter;
-
-    return {
-        texture: { type: "t", value: texture },
-    };
+    this.icon.hide();
 }
+
+
+
 
 var InfantryUnit = function(args)
 {
@@ -99,111 +156,39 @@ var InfantryUnit = function(args)
         throw "InfantryUnit needs args.membertypes";
 
     this.membertypes = args.membertypes;
-}
+};
 
 InfantryUnit.prototype = Object.create( Unit.prototype );
 
-InfantryUnit.prototype.createTexture = function()
-{
-    var size = UnitHelper.textureSize;
-    var finalCanvas =
-        $('<canvas width="'+size+'" height="'+size+'"></canvas>').get(0);
-    //$(finalCanvas).appendTo('#texturecontainer');
-    var finalContext = finalCanvas.getContext("2d");
 
-    for (var i in this.membertypes)
-    {
-        var memberType = this.membertypes[i];
-        var pos = this.getMemberPosition(i);
-        var t = this.getTextureOffsetForMember(memberType);
-        finalContext.drawImage(this.textureImg, t , 0, 40, 40, pos.x-20, pos.y-20, 40, 40);
-    }
 
-    //TileGrid.textureDatas[i] = finalContext.getImageData(0, 0, size, size);
-    //console.dir(finalContext.getImageData(0,0,size, size).data.buffer);
-    this.texturedata = {
-        data : new Uint8Array(
-            finalContext.getImageData(0,0,size, size).data.buffer),
-        height: size,
-        width: size
-    };
 
-    var tex = new THREE.DataTexture(null, size, size);
-    tex.image = this.texturedata;
-    tex.needsUpdate = true;
-    this.THREEtexture = tex;
-
-}
-
-InfantryUnit.prototype.getTextureOffsetForMember = function(memberType)
-{
-    return memberType*40;
-}
-InfantryUnit.prototype.getMemberPosition = function(index)
-{
-    var origo = Math.floor(UnitHelper.textureSize/2);
-    if (index < 2)
-    {
-        var angle =  (index*180);
-        return MathLib.getPointInDirection(8, angle, origo, origo);
-    }
-    else if ( index < 11)
-    {
-        var angle =  (index-2)*45;
-        return MathLib.getPointInDirection(30, angle, origo, origo);
-    }
-
-    return null;
-}
 
 var VehicleUnit = function(args)
 {
     Unit.call( this, args);
-}
+};
 
 VehicleUnit.prototype = Object.create( Unit.prototype );
 
-VehicleUnit.prototype.createTexture = function()
-{
-    var size = UnitHelper.textureSize;
-    var finalCanvas =
-        $('<canvas width="'+size+'" height="'+size+'"></canvas>').get(0);
-    //$(finalCanvas).appendTo('#texturecontainer');
-    var finalContext = finalCanvas.getContext("2d");
 
-    var t = this.offset*size;
-    finalContext.drawImage(this.textureImg, t , 0, size, size, 0, 0, size, size);
 
-    //TileGrid.textureDatas[i] = finalContext.getImageData(0, 0, size, size);
-    //console.dir(finalContext.getImageData(0,0,size, size).data.buffer);
-    this.texturedata = {
-        data : new Uint8Array(
-            finalContext.getImageData(0,0,size, size).data.buffer),
-        height: size,
-        width: size
-    };
-
-    var tex = new THREE.DataTexture(null, size, size);
-    tex.image = this.texturedata;
-    tex.needsUpdate = true;
-    this.THREEtexture = tex;
-
-}
 
 var GeInfantry = function(args)
 {
     InfantryUnit.call( this, args);
-    this.textureImg = window.unitTilesets["ge_infantry"];
-    this.offset = 0;
-}
+    this.icon = new InfantryUnitIcon(this, window.unitTilesets["ge_infantry"], this.membertypes);
+};
 
 GeInfantry.prototype = Object.create( InfantryUnit.prototype );
+
+
+
 
 var StugIII = function(args)
 {
     VehicleUnit.call( this, args);
-    this.textureImg = window.unitTilesets["ge_tanks"];
-    this.offset = 0;
-}
+    this.icon = new VehicleUnitIcon(this, window.unitTilesets["ge_tanks"], 0);
+};
 
 StugIII.prototype = Object.create( VehicleUnit.prototype );

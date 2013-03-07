@@ -1,0 +1,10 @@
+{
+  "name" : "attero",
+  "dependencies": {
+    "bower": ">= 0.8.5",
+    "testacular": ">= 0.6.0"
+  },
+  "scripts": {
+    "tests": "testacular start spec/testacular.conf.js"
+  }
+}

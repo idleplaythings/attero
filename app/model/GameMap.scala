@@ -4,14 +4,13 @@ import play.api.libs.json._
 import anorm._
 import anorm.SqlParser._
 
-case class GameMap(
-  id: Long,
-  name: String,
-  width: Int,
-  height: Int,
-  tiles: List[GameTile])
+abstract class GameMap(
+  val id: Long,
+  val name: String,
+  val width: Int,
+  val height: Int)
 {
-  println("GameMap has been constructed '"+ this.name + "'");
+  def tiles: List[GameTile];
 
   def setTileIds =
   {
@@ -30,7 +29,7 @@ case class GameMap(
 
   def getYForTile(i:Int): Int =
   {
-    math.floor(i / this.width).toInt;
+    math.floor(i / ((this.height*2)+1)).toInt;
   }
 
   def toJSON(): JsObject =
@@ -47,18 +46,59 @@ case class GameMap(
 
 object GameMap {
 
-  def fromJson(json: JsValue) : GameMap =
+  def fromJson(json: JsValue) : SubmittedGameMap =
   {
     val id = -1
     val name: String = (json \ "name").toString.replace("\"", "")
     val width: Int = (json \ "width").toString.toInt
     val height: Int = (json \ "height").toString.toInt
 
-  	val gametiles: List[GameTile] =
+    val gametiles: List[GameTile] =
       (json \ "tiles").toString.replace("\"", "").split(";")
         .map(GameTile.fromString(_))
         .toList
 
-    GameMap(id, name, width, height, gametiles);
+    SubmittedGameMap(id, name, width, height, gametiles);
   }
+}
+
+case class EditorGameMap(
+  override val id: Long,
+  override val name: String,
+  override val width: Int,
+  override val height: Int)
+    extends GameMap(id, name, width, height)
+{
+  val mapStorage = new MapStorage();
+  private lazy val _tiles = mapStorage.loadTiles(this.id);
+  def tiles: List[GameTile] = _tiles;
+  println("EditorGameMap has been constructed '"+ this.name + "'");
+
+}
+
+case class SubmittedGameMap(
+  override val id: Long,
+  override val name: String,
+  override val width: Int,
+  override val height: Int,
+  private val _tiles: List[GameTile])
+    extends GameMap(id, name, width, height)
+{
+  def tiles: List[GameTile] = _tiles;
+  println("SubmittedGameMap has been constructed '"+ this.name + "'");
+}
+
+case class ActiveGameMap(
+  override val id: Long,
+  override val name: String,
+  override val width: Int,
+  override val height: Int)
+    extends GameMap(id, name, width, height)
+{
+  val gameManager = new GameManager();
+  private lazy val _tiles = gameManager.loadTiles(this.id);
+  def tiles: List[GameTile] = _tiles;
+
+  println("ActiveGameMap has been constructed '"+ this.name + "'");
+
 }

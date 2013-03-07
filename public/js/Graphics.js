@@ -45,6 +45,7 @@
     animate: function() {
 
         requestAnimationFrame( Graphics.animate );
+        AnimationHandler.tick();
         Graphics.render();
 
     },
@@ -68,7 +69,19 @@
         Graphics.camera.top = height / (80*zoom);
         Graphics.camera.bottom = height / (-80*zoom);
 
+        if (UnitHelper)
+            UnitHelper.updateZoom(zoom);
+
         Graphics.camera.updateProjectionMatrix();
+    },
+
+    moveCameraToPosition: function(pos)
+    {
+        Graphics.camera.position.x = pos.x;
+        Graphics.camera.position.y = -pos.y;
+
+        WaterLayer.light.position.x = Graphics.camera.position.x;
+        WaterLayer.light.position.y = Graphics.camera.position.y;
     },
 
     moveCamera: function (pos){

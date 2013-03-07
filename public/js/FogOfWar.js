@@ -8,14 +8,17 @@ window.FogOfWar =
 
     init: function()
     {
+        console.log("FogOfWar init");
+
         var width = TileGrid.tileRowCount +0.5;
         var height = TileGrid.tileColumnCount + 0.5;
 
-        var y =width/2;//
-        var x =height/2;//
+        var y =width/2 -0.25;//
+        var x =height/2 -0.25;//
 
-        var vertShader = document.getElementById('vertexShader').innerHTML;
-        var fragShader = document.getElementById('fragmentShader').innerHTML;
+
+        var vertShader = document.getElementById('fogvertexShader').innerHTML;
+        var fragShader = document.getElementById('fogfragmentShader2').innerHTML;
 
         FogOfWar.setUniforms();
 
@@ -47,22 +50,31 @@ window.FogOfWar =
 
     setUniforms: function()
     {
-        var fogtexture = THREE.ImageUtils.loadTexture("resource/fogofwar16inverseB.png");
-        fogtexture.magFilter = THREE.NearestFilter;
-        fogtexture.minFilter = THREE.NearestMipMapNearestFilter;
+        //var fogtexture = THREE.ImageUtils.loadTexture("/assets/resource/fogofwar16inverse.png");
+        //fogtexture.magFilter = THREE.NearestFilter;
+        //fogtexture.minFilter = THREE.NearestMipMapNearestFilter;
 
-        var subSegments = TileGrid.getSubTextureCount();
-        var tileRowCount = TileGrid.tileRowCount;
+        var width = (TileGrid.tileRowCount*2)+1;
+        var height = (TileGrid.tileColumnCount*2)+1;
 
         FogOfWar.uniforms = {
+            xStep: {type: "f", value: 1/width/20},
+            yStep: {type: "f", value: 1/height/20},
+            tilemap: {type: "t", value: LineOfSight.getTilemap()},
+
+        };
+    /*
+        FogOfWar.uniforms = {
             fogtexture: { type: "t", value: fogtexture },
-            tilewidth: {type: "f", value: 1/LineOfSight.rowcount},
-            tileheight: {type: "f", value: 1/LineOfSight.rowcount},
+            tilewidth: {type: "f", value: 1/width},
+            tileheight: {type: "f", value: 1/height},
             tilemap: {type: "t", value: LineOfSight.getTilemap()},
             tilesize: {type: "i", value: 64},
             opacity: {type: "f", value: FogOfWar.opacity}
 
         };
+
+        */
     },
 
     updateLosStatus: function()
@@ -70,90 +82,4 @@ window.FogOfWar =
         FogOfWar.uniforms.tilemap.value = LineOfSight.getTilemap();
         FogOfWar.material.needsUpdate = true;
     },
-
-    getTilemap: function()
-    {
-        var size = TileGrid.tileRowCount;
-        var finalCanvas =
-            $('<canvas width="'+size+'" height="'+size+'"></canvas>').get(0);
-        //$(finalCanvas).appendTo('#texturecontainer');
-        var finalContext = finalCanvas.getContext("2d");
-        var imageData = {
-            data : new Uint8Array(finalContext.getImageData(0,0,size, size).data.buffer),
-            height: size,
-            width: size
-        };
-
-        for (var i in window.tiles)
-        {
-            var tile = window.tiles[i];
-            var pixels = i*4;
-            var r = pixels;
-            var g = pixels+1;
-            var b = pixels+2;
-            var a = pixels+3;
-
-            var tileinfo = tile.getLosTexture();
-
-            imageData.data[r] = tileinfo.x;
-            imageData.data[g] = tileinfo.y;
-        }
-
-        var tilemap = new THREE.DataTexture(null, size, size);
-        tilemap.image = imageData;
-
-
-        //var tilemap = THREE.ImageUtils.loadTexture("resource/tilemap.png");
-        tilemap.magFilter = THREE.NearestFilter;
-        tilemap.minFilter = THREE.NearestMipMapNearestFilter;
-        tilemap.needsUpdate = true;
-
-        return tilemap;
-    },
-
-    calculateLosTextures: function()
-    {
-        for (var i in window.tiles)
-        {
-            var tile = window.tiles[i];
-
-            if ( ! tile.inLOS)
-            {
-                tile.losTexture = {x:3, y:0};
-                continue;
-            }
-
-            var tiles = TileGrid.getDirectAdjacentTilesInArray(tile);
-            var number = Array(4);
-            //console.dir(tiles);
-            for (var a in tiles)
-            {
-                if (a === 4)
-                    continue;
-
-                if ( ! tiles[a])
-                {
-                    number[a] = 1;
-                    continue;
-                }
-
-                number[a] = tiles[a].inLOS ? 1 : 0;
-            }
-            number = number.join("");
-            number = parseInt(number, 2)
-            tile.losTexture = FogOfWar.getShadowTexture(number);
-        }
-    },
-
-    getShadowTexture: function(number)
-    {
-        var x = number % 4;
-        var y = 3-Math.floor(number / 4);
-        //if (number != 15)
-
-        if (number === 15)
-            return {x:255, y:255};
-
-        return {x:x, y:y};
-    }
 };

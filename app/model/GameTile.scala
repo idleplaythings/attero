@@ -21,6 +21,17 @@ case class GameTile(
     texture +","+ tOffset +","+ tMask +","+ elevation +","+ element +","+ eOffset +","+ eVariance +","+ eAngle
   }
 
+  def toStringWithDetails: String =
+  {
+    val details = TileElement.definition(this.element)
+    this.toString() + "," + details._1 + "," + details._2 + "," + details._3 + "," + details._4;
+  }
+
+  def toSqlValueWithDetails(map: GameMap): String =
+  {
+    "("+this.id+"," + map.getXForTile(this.id) + ","+ map.getYForTile(this.id) +"," + this.toStringWithDetails + ")"
+  }
+
   def toSqlValue(mapid: Long): String =
   {
     "(" + mapid +","+this.id+","+ this.toString() + ")"

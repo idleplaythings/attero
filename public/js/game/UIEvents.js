@@ -1,17 +1,41 @@
-$(function(){
-    $('#saveicon').on('click', UIEvents.onSave);
-});
-
-
 window.UIEvents = {
 
-    onGameTileClicked: function(tile)
+    selectedUnit: null,
+
+    onGameTileClicked: function(tile, right)
     {
+        var unit = UIEvents.selectedUnit;
+        if (unit && right)
+        {
+            unit.lookAt(tile.position);
+            LineOfSight.calculateLosForUnit(unit);
+        }
+        else if (unit && !right)
+        {
+            // unit.setPosition(tile.position);
+            LineOfSight.clearLineOfSight();
+            unit.moveTo(tile.position);
+        }
     },
 
-    onGridClicked: function(x,y)
+    onUnitClicked: function(unit, right)
     {
-        TileGrid.gridCordinatesToTile({x:x, y:y}).onClicked();
+        UIEvents.selectedUnit = unit;
+        console.log("selected unit: " + unit.id)
+        LineOfSight.calculateLosForUnit(unit);
+    },
+
+    onGridClicked: function(x,y, right)
+    {
+        var tile = TileGrid.gridCordinatesToTile({x:x, y:y});
+
+        if (!tile)
+            return;
+
+        if (tile.subscribedUnit)
+            UIEvents.onUnitClicked(tile.subscribedUnit, right);
+        else
+            UIEvents.onGameTileClicked(tile, right);
     }
 }
 

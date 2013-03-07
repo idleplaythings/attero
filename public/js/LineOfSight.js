@@ -1,61 +1,60 @@
 window.LineOfSight =
 {
-    tiles:null,
-    tiletypes: Array(),
-    tilecount:0,
-    rowcount:0,
-    
-    init: function()
+    visibilityDegradationPerTile: 0.5,
+    distance: 200,
+    degreeIncrement: 0.25,
+    unitheight: 0.5,
+    cornerWeight: 0.5,
+
+    clearLineOfSight: function()
     {
-        LineOfSight.rowcount = (TileGrid.tileRowCount*2)+1;
-        LineOfSight.count = (Math.pow(LineOfSight.rowcount));
-        
-        var count = LineOfSight.count;
-        
-        while (count--)
+        for (var i in TileGrid.gameTiles)
         {
-            TileGrid.gameTiles[count].inLOS = Math.round(Math.random());
+            var tile = TileGrid.gameTiles[i];
+            tile.losConcealment = 0;
         }
-        
-        LineOfSight.calculateTileTypes();
+        FogOfWar.updateLosStatus();
     },
-    
-    calculateTileTypes: function()
+
+    calculateLosForUnit: function(unit)
     {
-        var count = LineOfSight.count;
-        
-        while (count--)
+        for (var i in TileGrid.gameTiles)
         {
-            var inLos = TileGrid.gameTiles[count].inLOS;
-            if ( ! inLos)
-            {
-                TileGrid.gameTiles[count].losTexture= {x:3, y:0};
-                continue;
-            }
-            
-            var number = LineOfSight.getDirectNeighbours(count);
-            number = number.join("");
-            number = parseInt(number, 2)
-            TileGrid.gameTiles[count].losTexture = FogOfWar.getShadowTexture(number);
+            var tile = TileGrid.gameTiles[i];
+            tile.losConcealment = 100;
         }
+
+        LineOfSight.raytraceAround(unit);
+        FogOfWar.updateLosStatus();
     },
-    
-    getDirectNeighbours: function(count)
+
+    raytraceAround: function(unit)
     {
-        var tiles = Array(4);
-        var rowcount = LineOfSight.rowcount;
-        tiles[0] = TileGrid.getGameTileByCount(count, -rowcount);
-        tiles[1] = TileGrid.getGameTileByCount(count, -1);
-        tiles[2] = TileGrid.getGameTileByCount(count, +1);
-        tiles[3] = TileGrid.getGameTileByCount(count, +rowcount);
-        
-        return tiles;
+        var startTime = (new Date()).getTime();
+
+        var unittile = TileGrid.getGameTileByXY(unit.position.x,unit.position.y);
+        unittile.losConcealment = 0;
+        var startElevation = unittile.elevation;
+        var unitheight = LineOfSight.unitheight;
+
+        for (var i = 0; i < 360; i += LineOfSight.degreeIncrement)
+        {
+            //var i = unit.azimuth;
+            var pos = MathLib.getPointInDirection(LineOfSight.distance, i, unit.position.x, unit.position.y );
+
+            var ray = new Raytrace(unit.position, pos);
+            ray.run();
+        }
+
+        var endTime = (new Date()).getTime();
+        console.log("LOS TOOK: " + (endTime - startTime) );
+
     },
-    
+
     getTilemap: function()
     {
-        var size = LineOfSight.rowcount;
-        var finalCanvas = 
+        var size = (TileGrid.tileRowCount*2)+1;
+        var finalCanvas =
             $('<canvas width="'+size+'" height="'+size+'"></canvas>').get(0);
         //$(finalCanvas).appendTo('#texturecontainer');
         var finalContext = finalCanvas.getContext("2d");
@@ -64,30 +63,31 @@ window.LineOfSight =
             height: size,
             width: size
         };
-        
-        var count = LineOfSight.count;
-        while (count--)
+
+        for (var i in TileGrid.gameTiles)
         {
-            var pixels = count*4; 
-            var r = pixels-4;
-            var g = pixels-3;
-            var b = pixels-2;
-            var a = pixels-1;
-            
-            var tileinfo = TileGrid.gameTiles[count].losTexture;
-            
-            imageData.data[r] = tileinfo.x;
-            imageData.data[g] = tileinfo.y;
+            var tile = TileGrid.gameTiles[i];
+            var pixels = i*4;
+            var r = pixels;
+            var g = pixels+1;
+            var b = pixels+2;
+            var a = pixels+3;
+
+            imageData.data[r] = 0;
+            imageData.data[g] = 0;
+            imageData.data[b] = tile.getLosConcealmentInByteScale();
+            imageData.data[a] = 255;
         }
+        //console.dir(imageData.data);
         var tilemap = new THREE.DataTexture(null, size, size);
         tilemap.image = imageData;
-        
-        
-        //var tilemap = THREE.ImageUtils.loadTexture("resource/tilemap.png");
-        tilemap.magFilter = THREE.NearestFilter;
-        tilemap.minFilter = THREE.NearestMipMapNearestFilter;
+
+
+        //var tilemap = THREE.ImageUtils.loadTexture("/assets/resource/tilemap.png");
+        //tilemap.magFilter = THREE.NearestFilter;
+        //tilemap.minFilter = THREE.NearestMipMapNearestFilter;
         tilemap.needsUpdate = true;
-        
+
         return tilemap;
     },
 }

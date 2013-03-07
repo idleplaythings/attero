@@ -8,15 +8,70 @@ var GameTile = function (args)
     this.subTexture = (args.subTexture) ? args.subTexture : 1;
     this.subTextureOffset = (args.subTextureOffset) ? args.subTextureOffset : 1;
     this.subTextureMask = (args.subTextureMask) ? args.subTextureMask : 1;
-    this.elevation = (args.elevation) ? args.elevation : 0;
-    this.subElement = (args.subElement) ? args.subElement : 0;
+    this.elevation = (args.elevation) ? parseInt(args.elevation) : 0;
+    this.subElement = (args.subElement) ? parseInt(args.subElement) : 0;
     this.subElementOffset = (args.subElementOffset) ? args.subElementOffset : 0;
     this.subElementOffset2 = (args.subElementVariance) ? args.subElementVariance : 0;
     this.subElementAngle = (args.subElementAngle) ? args.subElementAngle : 0;
 
-    this.LOSfactor = 0;
-    this.inLOS = false;
-    this.losTexture = {x:3, y:0};
+    this.concealment = 0;
+    this.elementHeight = 0;
+
+    this.calculateLosProperties();
+    this.losConcealment = 0;
+
+    this.subscribedUnit = null;
+}
+
+GameTile.prototype.calculateLosProperties = function()
+{
+    var element = window.availableTileElements[this.subElement]
+
+    if (element)
+    {
+        this.elementHeight = element.height;
+        this.concealment = element.concealment;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+GameTile.prototype.getLosConcealmentInByteScale = function(conc)
+{
+    conc = this.losConcealment;
+
+    if (conc < 25)
+        return 0;
+
+    if (conc >= 25 && conc < 50)
+        return 50;
+
+    if (conc >= 50 && conc < 75)
+        return 90;
+
+    if (conc >= 75 && conc < 100)
+        return 130;
+
+    return 180;
+}
+
+GameTile.prototype.unSubscribeUnitToTile = function(unit)
+{
+    this.subscribedUnit = null;
+}
+
+GameTile.prototype.subscribeUnitToTile = function(unit)
+{
+    if (this.subscribedUnit != null && this.subscribedUnit.id == unit.id)
+        throw "Can't subscribe same unit to same tile more than once";
+
+    if (this.subscribedUnit != null)
+        console.log("TODO: support multiple units in same tile");
+        //throw "Can't subscribe more than one unit per tile";
+
+    this.subscribedUnit = unit;
 }
 
 GameTile.prototype.serialize = function()
@@ -39,13 +94,6 @@ GameTile.prototype.randomizeTile = function()
     this.subTextureOffset = texture.getRandomOffset();
     //console.log(this.subTextureOffset);
     this.subTextureMask = texture.getRandomMask();
-}
-
-GameTile.prototype.onClicked = function()
-{
-    console.log("clicked gameTile " + this.position.x + "," + this.position.y + " elevation: "+this.elevation + " elevationString: " + this.getElevationDifferenceString());
-
-    UIEvents.onGameTileClicked(this);
 }
 
 GameTile.prototype.getTilesTouchedByGameTile = function()
