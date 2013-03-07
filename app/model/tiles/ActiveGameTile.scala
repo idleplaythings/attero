@@ -22,6 +22,25 @@ case class ActiveGameTile(
 
 object ActiveGameTile
 {
+    implicit def boolToInt(b: Boolean) = if (b) 1 else 0
+
+    def getTileConcealment(details: (Byte,Byte,Byte)): Short =
+    {
+        val (texture, element, elevation) = details;
+        val textureObject = getTextureByType(texture);
+        val elementObject = getElementByType(element);
+
+        val concealment = (textureObject.concealment + elementObject.concealment).toShort;
+        val continious:Int = elementObject.isInstanceOf[Continious]
+        val height = elementObject.height.toShort;
+
+        val bit = ((continious << 14) + (height << 13) + concealment).toShort;
+        if (concealment > 0)
+            println("tile detais (c,con,h): " + concealment + ", " + continious + ", " + height + " bit: " + bit);
+
+        bit
+    }
+
     def buildTile(id: Int, pos: (Int, Int), details: (Byte,Byte,Byte)) =
     {
         val (x, y) = pos

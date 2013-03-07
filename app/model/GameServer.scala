@@ -89,7 +89,6 @@ class GameServer extends Actor {
     }
 
     case GameMessage(userid: Int, gameid: Long, json: JsValue) => {
-      println(json.toString)
       games(gameid).event(userid, json);
     }
 

@@ -8,9 +8,30 @@ import models.tiles._
 
 class TileRepository(gameid: Long) extends Repository(gameid)
 {
+    implicit def intToBool(i: Int) = if (i == 1) true else false
+
     val (width, height) = TileRepository.getMapDetails(gameid);
 
-    lazy val tiles: Array[(Byte,Byte,Byte)] = TileRepository.getTiles(gameid);
+    val tiles: Array[(Byte,Byte,Byte)] = TileRepository.getTiles(gameid);
+
+    lazy val tileConcealments: Array[Short] = tiles.map(ActiveGameTile.getTileConcealment(_)).toArray;
+
+    def getTileConcealment(pos: (Int, Int)): (Int, Int, Int, Int, Boolean) =
+    {
+        val mask:Short = 2047;
+        val tileid = getTileIdFromXY(pos)
+
+        val bit = tileConcealments(tileid)
+        val cont:Boolean = (bit >> 14)
+        val height:Int = (bit >> 13)
+        val concealment: Int = (bit & 2047)
+
+        val tile = tiles(tileid);
+        val elevation = tile._3.toInt
+        val element = tile._2.toInt;
+
+        (concealment, element, elevation, height, cont)
+    }
 
     def getTileByXY(pos: (Int, Int)): Option[ActiveGameTile] =
     {

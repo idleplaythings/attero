@@ -15,8 +15,6 @@ class MoveEventSpottingListener(
 {
     def getEventName: String = "MoveEvent";
 
-    var enemiesSpottedThis: List[GameUnit] = List.empty[GameUnit]
-
     def handle(event: Event): Unit = {
 
         event match {
@@ -52,6 +50,8 @@ class MoveEventSpottingListener(
     {
         val concealment = new Raytrace(mover.getPosition, enemy.getPosition, tileRepository).run;
 
+        var enemiesSpottedThis: List[GameUnit] = List.empty[GameUnit];
+
         if (concealment < 100)
         {
             if ( ! enemy.isSpotted && mover.canSpot(enemy, concealment))
@@ -64,7 +64,7 @@ class MoveEventSpottingListener(
             if (enemy.canSpot(mover, concealment))
             {
                 event.setSpotted();
-                enemiesSpottedThis :+= enemy;
+                //enemiesSpottedThis :+= enemy;
             }
         }
     }

@@ -8,68 +8,51 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
     val elevationPerTile:Double = tileRepository.getTileElevationByXY(target) - tileRepository.getTileElevationByXY(start);
     var sumConcealment:Int = (MathLib.distance(start, target)*0.5).toInt;
 
+    var encountered: List[Int] = List.empty[Int];
+
     def run: Int =
     {
         bresenham(start, target);
         sumConcealment;
     }
 
-    private def visit(tiles: Array[(Int, Int)]): Unit =
+    private def visitCorner(c1: (Int, Int), c2: (Int, Int)): Unit =
     {
-        if (tiles.length > 1)
-            visitCorner(tiles)
-
-        visitOne(tiles.last)
-    }
-
-    private def visitCorner(tiles: Array[(Int, Int)]): Unit =
-    {
-        var gts = tiles.map(tileRepository.getTileByXY(_)).toArray
-
-        gts match {
-            case Array(Some(start), Some(c1), Some(c2), Some(end)) =>
-            {
-                val c1E = c1.element;
-                val c2E = c2.element;
-
-                if (c1E.isInstanceOf[Continious] && c1E.elementType == c2E.elementType)
-                {
-                    if (start.element.elementType != c1E.elementType && end.element.elementType != c1E.elementType)
-                        sumConcealment += getConcealmentFromTile(c1.getPosition);
-                }
-                else
-                {
-                    sumConcealment += (getConcealmentFromTile(c1.getPosition)*0.2).toInt;
-                    sumConcealment += (getConcealmentFromTile(c2.getPosition)*0.2).toInt;
-                }
-            }
-            case _ => {}
-        }
-
+        sumConcealment += getConcealmentFromTile(c1, 0.2);
+        sumConcealment += getConcealmentFromTile(c2, 0.2);
     }
 
     private def visitOne(pos: (Int, Int)): Unit =
     {
-        sumConcealment += getConcealmentFromTile(pos);
+        sumConcealment += getConcealmentFromTile(pos, 1.0);
     }
 
-    private def getConcealmentFromTile(pos: (Int, Int)): Int =
+    private def getConcealmentFromTile(pos: (Int, Int), multi: Double): Int =
     {
+        var uMulti = multi;
+        val (concealment, element, tileElevation, height, cont) = tileRepository.getTileConcealment(pos);
+
+        if (element == 0)
+            return 0;
+
+        if (cont == true && encountered.contains(element))
+            return 0;
+
+        if (cont == true)
+        {
+            uMulti = 1.0;
+            encountered :+= element;
+        }
+
         val elevation: Double = MathLib.distance(start, pos)*elevationPerTile+0.5;
 
-        if (tileRepository.getTileElevationByXY(pos) > elevation)
-            return 100;
+        if (tileElevation > elevation)
+            return (100*uMulti).toInt;
 
-        tileRepository.getTileByXY(pos) match {
-            case Some(tile) =>
-            {
-                if (tile.elevation + tile.element.height > elevation)
-                    return tile.getConcealment();
+        if (tileElevation + height > elevation)
+            return (concealment*uMulti).toInt;;
 
-                return 0;
-            }
-            case None => 100
-        }
+        0
     }
 
     private def bresenham(start: (Int, Int), end: (Int, Int)): Unit =
@@ -93,13 +76,10 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
         while(path && sumConcealment < 100)
         {
             var e2:Int = 2*err;
-            var coords: Array[(Int, Int)] = Array.empty[(Int, Int)];
 
             if (e2 > -dy && e2 < dx)
             {
-                coords :+= (x0, y0)
-                coords :+= (x0+sx, y0)
-                coords :+= (x0, y0+sy)
+                this.visitCorner((x0+sx, y0), (x0, y0+sy))
             }
 
             if (e2 > -dy)
@@ -114,10 +94,9 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
                 y0  += sy;
             }
 
-            coords :+= (x0, y0)
-            this.visit(coords);
+            this.visitOne((x0, y0));
 
-            if ((x0==x1) && (y0==y1))
+            if ((x0 == x1) && (y0 == y1))
                 path = false;
         }
     }

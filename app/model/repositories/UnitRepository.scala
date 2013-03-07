@@ -40,6 +40,8 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
   }
 
   def loadUnitsForGame(gameid: Long): Map[Int, GameUnit] = {
+    println("loading units for game");
+
     val dbName = "game_" + gameid;
 
     val unitSql = SQL( """
