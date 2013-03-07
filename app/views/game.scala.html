@@ -46,14 +46,14 @@
         <script src="@routes.Assets.at("js/MoveOrder.js")"></script>
         <script src="@routes.Assets.at("js/animation/AnimationHandler.js")"></script>
         <script src="@routes.Assets.at("js/animation/UnitMoveAnimation.js")"></script>
+        <script src="@routes.Assets.at("js/animation/UnitAppearAnimation.js")"></script>
         <script src="@routes.Assets.at("js/EventDispatcher.js")"></script>
         <script src="@routes.Assets.at("js/events/Event.js")"></script>
         <script src="@routes.Assets.at("js/events/MoveEvent.js")"></script>
         <script src="@routes.Assets.at("js/events/MoveEventListener.js")"></script>
         <script src="@routes.Assets.at("js/events/MoveInterruptEvent.js")"></script>
         <script src="@routes.Assets.at("js/events/MoveInterruptEventListener.js")"></script>
-
-
+        <script src="@routes.Assets.at("js/events/EnemySpottedEventListener.js")"></script>
 
         <script>
             function dynamicResourcesLoaded()
@@ -77,6 +77,7 @@
                 EventDispatcher.attach(new UnitPositionListener());
                 EventDispatcher.attach(new UnitMoveAnimationListener());
                 EventDispatcher.attach(new MoveInterruptEventLister());
+                EventDispatcher.attach(new UnitAppearAnimationListener());
 
                 MouseWheel.hookEvent(jQuery(".webglCanvas").get(0), 'mousewheel', Zooming.mouseWheel);
 

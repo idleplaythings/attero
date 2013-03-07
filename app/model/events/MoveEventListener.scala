@@ -29,7 +29,7 @@ class MoveEventListener(val unitRepository: UnitRepository, val tileRepository: 
         }
 
 
-        println("processing move event for unit " + unit.id + "moving from: " + unit.getPosition + " to " + tile.getPosition);
+        //println("processing move event for unit " + unit.id + "moving from: " + unit.getPosition + " to " + tile.getPosition);
         if (canMoveTo(unit, tile))
         {
             moveTo(unit, tile, event.turretFacing, event.unitFacing);

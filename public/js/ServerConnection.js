@@ -34,6 +34,9 @@ ServerConnection =
 
             if (data.type == "MoveInterrupt")
                 EventDispatcher.dispatch(new MoveInterruptEvent("server", data.eventid, data.routeNumber));
+
+            if (data.type == "EnemySpotted")
+                EventDispatcher.dispatch(new EnemySpottedEvent("server", UnitManager.createFromJsonIfNeeded(data.unit)));
         }
     },
 

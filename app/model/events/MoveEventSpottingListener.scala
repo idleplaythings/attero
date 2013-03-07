@@ -28,10 +28,22 @@ class MoveEventSpottingListener(
     {
         if (event.getNumberInRoute > 0)
         {
+
             val unit:GameUnit = unitRepository.getUnit(event.unitid);
+            val now = System.nanoTime
+
             unitRepository.getEnemyUnitsForTeam(unit.team).foreach({keyVal =>
                 spot(event, unit, keyVal._2);
             })
+
+            val micros = (System.nanoTime - now) / 1000
+
+            println("Raytrace took " + micros + " microseconds.");
+
+            if (event.isSpotted)
+                unit.setSpotted(true);
+            else
+                unit.setSpotted(false);
         }
 
     }
@@ -40,12 +52,12 @@ class MoveEventSpottingListener(
     {
         val concealment = new Raytrace(mover.getPosition, enemy.getPosition, tileRepository).run;
 
-        //println("Concealment between mover and unit: " + enemy.id + " is: " + concealment);
         if (concealment < 100)
         {
-            if (mover.canSpot(enemy, concealment))
+            if ( ! enemy.isSpotted && mover.canSpot(enemy, concealment))
             {
-                //TODO: Change enemy unit state to spotted
+                //println("Enemy spotted with concealment: " + concealment);
+                enemy.setSpotted(true);
                 informAboutSpottedEnemy(event, enemy)
             }
 

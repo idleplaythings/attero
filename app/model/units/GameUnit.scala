@@ -13,7 +13,8 @@ class GameUnit(
     y: Int,
     val unitType: Int,
     val owner: Int,
-    val team: Int)
+    val team: Int,
+    private var spotted: Boolean)
 extends Movable with Spotter with Spottable
 {
     private var position = (x, y);
@@ -25,7 +26,17 @@ extends Movable with Spotter with Spottable
         needsUpdate = true;
     }
 
-    println("created gameunit: " + id + " owner: " + owner);
+    def isSpotted: Boolean = spotted;
+    def setSpotted(s: Boolean) =
+    {
+        if (spotted != s)
+        {
+            spotted = s;
+            needsUpdate = true;
+        }
+    }
+
+    //println("created gameunit: " + id + " owner: " + owner);
 
     private var moveState: Option[MoveState] = None;
 
@@ -45,7 +56,10 @@ extends Movable with Spotter with Spottable
     def updateStateIfNeeded(gameid: Long): Unit =
     {
         if (needsUpdate == true)
-            GameUnit.updatePosition(gameid, id, getPosition)
+        {
+            GameUnit.updateUnit(gameid, id, getPosition, isSpotted)
+            needsUpdate = false;
+        }
 
         moveState match {
             case Some(state) =>
@@ -72,7 +86,7 @@ extends Movable with Spotter with Spottable
 
 object GameUnit
 {
-    def updatePosition(gameid: Long, unitid: Int, pos:(Int, Int)): Unit =
+    def updateUnit(gameid: Long, unitid: Int, pos:(Int, Int), spotted:Boolean): Unit =
     {
         DB.withConnection { implicit c =>
 
@@ -81,14 +95,16 @@ object GameUnit
 
             SQL("""UPDATE """ +dbName+ """.game_unit SET
                 x = {x},
-                y = {y}
+                y = {y},
+                spotted = {spotted}
             WHERE
                 id = {unitid}
             """)
             .on(
                 'unitid -> unitid,
                 'x -> x,
-                'y -> y
+                'y -> y,
+                'spotted -> spotted
             ).execute();
         }
     }

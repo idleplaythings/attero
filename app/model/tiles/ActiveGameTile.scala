@@ -15,12 +15,8 @@ case class ActiveGameTile(
         texture.terrainDifficulty + element.terrainDifficulty;
     }
 
-    def getConcealment(elevation:Double): Int = {
-
-        if (elevation < this.elevation + element.height)
-            this.texture.concealment + this.element.concealment;
-
-        0
+    def getConcealment(): Int = {
+        this.texture.concealment + this.element.concealment;
     }
 }
 

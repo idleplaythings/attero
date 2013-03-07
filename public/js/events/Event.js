@@ -14,3 +14,11 @@ Event.prototype.setId = function(id)
 {
     this.id = id;
 }
+
+var EnemySpottedEvent = function(origin, unit)
+{
+    Event.call(this, origin, "EnemySpottedEvent");
+    this.unit = unit;
+}
+
+EnemySpottedEvent.prototype = Object.create( Event.prototype );

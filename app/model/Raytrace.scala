@@ -6,12 +6,12 @@ import models.tiles._
 class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository: TileRepository)
 {
     val elevationPerTile:Double = tileRepository.getTileElevationByXY(target) - tileRepository.getTileElevationByXY(start);
-    var sumConcealment:Float = (MathLib.distance(start, target)*0.5).toFloat;
+    var sumConcealment:Int = (MathLib.distance(start, target)*0.5).toInt;
 
     def run: Int =
     {
         bresenham(start, target);
-        math.round(sumConcealment);
+        sumConcealment;
     }
 
     private def visit(tiles: Array[(Int, Int)]): Unit =
@@ -26,7 +26,6 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
     {
         var gts = tiles.map(tileRepository.getTileByXY(_)).toArray
 
-
         gts match {
             case Array(Some(start), Some(c1), Some(c2), Some(end)) =>
             {
@@ -35,14 +34,13 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
 
                 if (c1E.isInstanceOf[Continious] && c1E.elementType == c2E.elementType)
                 {
-                    println("raytrace continious");
                     if (start.element.elementType != c1E.elementType && end.element.elementType != c1E.elementType)
                         sumConcealment += getConcealmentFromTile(c1.getPosition);
                 }
                 else
                 {
-                    sumConcealment += (getConcealmentFromTile(c1.getPosition)*0.2).toFloat;
-                    sumConcealment += (getConcealmentFromTile(c2.getPosition)*0.2).toFloat;
+                    sumConcealment += (getConcealmentFromTile(c1.getPosition)*0.2).toInt;
+                    sumConcealment += (getConcealmentFromTile(c2.getPosition)*0.2).toInt;
                 }
             }
             case _ => {}
@@ -63,7 +61,13 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
             return 100;
 
         tileRepository.getTileByXY(pos) match {
-            case Some(tile) => tile.getConcealment(elevation);
+            case Some(tile) =>
+            {
+                if (tile.elevation + tile.element.height > elevation)
+                    return tile.getConcealment();
+
+                return 0;
+            }
             case None => 100
         }
     }

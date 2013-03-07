@@ -136,7 +136,15 @@ Unit.prototype.createIcon = function()
     Grid.scene.add(this.icon.group);
 };
 
+Unit.prototype.showIcon = function()
+{
+    this.icon.show();
+}
 
+Unit.prototype.hideIcon = function()
+{
+    this.icon.hide();
+}
 
 
 

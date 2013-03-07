@@ -1,4 +1,4 @@
-var UnitMoveAnimation = function(unit, route)
+var UnitMoveAnimation = function(unit, route, wait)
 {
     Animation.call(this);
 
@@ -15,6 +15,8 @@ var UnitMoveAnimation = function(unit, route)
     this.currentPosNumber = 0;
 
     this.timePerTile = 100;
+    this.wait = wait | false;
+
     //this.resolveNextTarget();
 }
 
@@ -37,11 +39,31 @@ UnitMoveAnimation.prototype.resolveNextTarget = function()
 
 UnitMoveAnimation.prototype.tick = function(time)
 {
+    if (this.unit.owner != window.playerid)
+    {
+        var curCamPos = {
+            x:Graphics.camera.position.x*2,
+            y: -Graphics.camera.position.y*2
+        };
+
+        var unitpos =
+        {
+            x:this.unit.icon.group.position.x*2,
+            y:-this.unit.icon.group.position.y*2,
+        }
+
+        var cameradistance = MathLib.distance(curCamPos, unitpos);
+        camp = 0.2;
+
+        Graphics.moveCameraToPosition(TileGrid.gameCordinatesTo3d(
+            MathLib.getExactPointBetween(curCamPos, unitpos, camp)));
+    }
+
     this.timeInThisPart += time;
 
     if (this.routeNumber == -1)
     {
-        if (this.timeInThisPart>250)
+        if (this.timeInThisPart>250 || this.wait == false)
         {
             this.timeInThisPart = 0;
             this.resolveNextTarget();

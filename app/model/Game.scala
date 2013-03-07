@@ -66,7 +66,7 @@ class Game(val gameid: Long,
   }
 
   def event(userid: Int, json: JsValue) = {
-    println("message from userid: " + userid + " received.");
+    //println("message from userid: " + userid + " received.");
     (json \ "type").asOpt[String] match {
       case Some(messageType) => dispatch(EventFactory.makeEvent(messageType + "Event", userid, json));
       case None => sendErrorMessage(userid, "Message type omitted");
@@ -84,7 +84,7 @@ class Game(val gameid: Long,
     unitRepository.updateUnitStatesIfNeeded();
     val micros = (System.nanoTime - now) / 1000
 
-    println("Updating gamedata took " + micros + " microseconds.");
+    //println("Updating gamedata took " + micros + " microseconds.");
   }
 
   private def replyToDoneEvents() = {

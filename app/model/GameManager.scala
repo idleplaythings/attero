@@ -57,7 +57,7 @@ class GameManager()
         y = count2;
       }
 
-      val gameUnit = UnitDefinition.getUnitObjectByType(0, i, x, y, owner, unittype, owner);
+      val gameUnit = UnitDefinition.getUnitObjectByType(0, i, x, y, owner, unittype, owner, false);
       gameUnit.setMoveState(new MoveState(0, 0, 0, 0.0, 0.0, 0.0, 0.0))
       units = units :+ gameUnit;
     }
@@ -89,6 +89,7 @@ class GameManager()
           "y" integer DEFAULT NULL,
           "owner" integer DEFAULT NULL,
           "team" integer,
+          "spotted" bool,
           PRIMARY KEY ("id")
         )
       """).execute();
@@ -176,8 +177,8 @@ class GameManager()
         val unit: GameUnit = units(i)
         val (x, y) = unit.getPosition
 
-        SQL("""INSERT INTO """ +dbName+ """.game_unit (id, unittype, x, y, owner, team)
-                    VALUES ({id}, {unittype}, {x}, {y}, {owner}, {team})""")
+        SQL("""INSERT INTO """ +dbName+ """.game_unit (id, unittype, x, y, owner, team, spotted)
+                    VALUES ({id}, {unittype}, {x}, {y}, {owner}, {team}, false)""")
           .on(
             'id -> i,
             'unittype -> unit.unitType,
@@ -208,7 +209,6 @@ class GameManager()
     }
   }
 
-
   def loadMap(gameid: Long) : Option[GameMap] =
   {
     val dbName = "game_"+gameid;
@@ -237,47 +237,6 @@ class GameManager()
       FROM """ +dbName+ """.game_tile
       ORDER BY tileid ASC""")
       .as(mapStorage.parserGameTile *)
-    }
-  }
-
-  def loadUnitsForGame(gameid: Long): Map[Int, GameUnit] =
-  {
-      val dbName = "game_"+gameid;
-
-      val unitSql = SQL("""
-          SELECT
-            id, unittype, x, y, owner, team
-          FROM
-            """ +dbName+ """.game_unit""")
-
-      loadUnitsWithSql(gameid, unitSql);
-  }
-
-  def loadUnitsForOwner(gameid: Long, owner: Int): List[GameUnit] =
-  {
-      val dbName = "game_"+gameid;
-
-      val unitSql = SQL("""
-          SELECT
-            id, unittype, x, y, owner, team
-          FROM
-            """ +dbName+ """.game_unit
-          WHERE
-            owner = {owner}
-        ORDER BY id ASC""")
-      .on('owner -> owner)
-
-      loadUnitsWithSql(gameid, unitSql).map( t => t._2).toList;
-  }
-
-  def loadUnitsWithSql(gameid: Long, sql: SimpleSql[anorm.Row]): Map[Int, GameUnit] =
-  {
-    DB.withConnection { implicit c =>
-
-      sql()
-        .map(row =>
-          (row[Int]("id"), UnitDefinition.getUnitObjectByType(gameid, row[Int]("id"), row[Int]("x"), row[Int]("y"), row[Int]("owner"), row[Int]("unittype"), row[Int]("team")))
-        ).toMap;
     }
   }
 

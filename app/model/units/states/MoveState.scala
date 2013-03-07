@@ -14,7 +14,7 @@ case class MoveState(
     private var currentMovePointsUsed: Double,
     private var currentDistanceMoved: Double)
 {
-    println("created movestate for unit " + unitid);
+    //println("created movestate for unit " + unitid);
     var needsUpdate = false;
 
     def getUnitid: Int = unitid;
@@ -43,7 +43,7 @@ case class MoveState(
     {
         currentMovePointsUsed = points;
         this.needsUpdate = true;
-        println("MOVE-STATE: Changed current used movement points of unit: " + unitid + " to " + currentMovePointsUsed);
+        //println("MOVE-STATE: Changed current used movement points of unit: " + unitid + " to " + currentMovePointsUsed);
     }
 
     def getLastDistanceMoved: Double = lastDistanceMoved;

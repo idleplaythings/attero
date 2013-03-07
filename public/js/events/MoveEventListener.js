@@ -72,7 +72,9 @@ UnitMoveAnimationListener.prototype = Object.create( MoveEventLister.prototype )
 
 UnitMoveAnimationListener.prototype.handle = function(event)
 {
-    event.animation = new UnitMoveAnimation(event.unit, event.route.slice());
+    var wait = (event.origin == "player");
+
+    event.animation = new UnitMoveAnimation(event.unit, event.route.slice(), wait);
     AnimationHandler.addAnimation(event.animation);
 }
 

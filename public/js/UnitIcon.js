@@ -16,6 +16,18 @@ UnitIcon.prototype.setAzimuth = function(azimuth)
     this.unitSprite.rotation  = MathLib.degreeToRadian(MathLib.addToAzimuth(360, -azimuth));
 }
 
+UnitIcon.prototype.show = function()
+{
+    this.unitSprite.visible = true;
+    this.underSprite.visible = true;
+}
+
+UnitIcon.prototype.hide = function()
+{
+    this.unitSprite.visible = false;
+    this.underSprite.visible = false;
+}
+
 UnitIcon.prototype.createIcon = function()
 {
     this.group = new THREE.Object3D();
@@ -54,6 +66,7 @@ UnitIcon.prototype.createUnitSprite = function()
         } );
 
     var sprite = new THREE.Sprite(material);
+    sprite.visible = false;
     sprite.position = new THREE.Vector3(0, 0, 1);
 
     return sprite;
@@ -87,6 +100,7 @@ UnitIcon.prototype.createUnderSprite = function()
 
     //this.underIconMaterial.uvOffset.set( -0.5, 0 );
     var sprite = new THREE.Sprite(material);
+    sprite.visible = false;
     sprite.position = new THREE.Vector3(0, 0, 0);
 
     return sprite;

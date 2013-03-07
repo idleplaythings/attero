@@ -21,6 +21,7 @@ window.UIEvents = {
     onUnitClicked: function(unit, right)
     {
         UIEvents.selectedUnit = unit;
+        console.log("selected unit: " + unit.id)
         LineOfSight.calculateLosForUnit(unit);
     },
 

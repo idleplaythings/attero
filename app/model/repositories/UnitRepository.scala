@@ -23,6 +23,10 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
     units.filterNot(keyVal => keyVal._2.team == team)
   }
 
+  def getUnspottedEnemyUnitsForTeam(team: Int): Map[Int, GameUnit] = {
+    units.filterNot(keyVal => keyVal._2.team == team || keyVal._2.isSpotted)
+  }
+
   def getUnitsForOwner(owner: Int): Map[Int, GameUnit] = {
     units.filterNot(keyVal => keyVal._2.owner == owner)
   }
@@ -31,7 +35,7 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
     units.foreach({
       keyVal =>
         val unit: GameUnit = keyVal._2;
-        unit.getMoveState.updateIfNeeded(gameid);
+        unit.updateStateIfNeeded(gameid);
     })
   }
 
@@ -40,7 +44,7 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
 
     val unitSql = SQL( """
           SELECT
-            id, x, y, unittype, owner, team
+            id, x, y, unittype, owner, team, spotted
           FROM
             """ + dbName + """.game_unit""")
 
@@ -53,11 +57,13 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
 
     val unitSql = SQL("""
           SELECT
-            id, x, y, unittype, owner, team
+            id, x, y, unittype, owner, team, spotted
           FROM
               """ +dbName+ """.game_unit
           WHERE
             owner = {owner}
+          OR
+            spotted = true
         ORDER BY id ASC""")
       .on('owner -> owner)
 
@@ -69,7 +75,16 @@ class UnitRepository(gameid: Long) extends Repository(gameid) {
       implicit c =>
           sql()
             .map(row =>
-            (row[Int]("id"), UnitDefinition.getUnitObjectByType(gameid, row[Int]("id"), row[Int]("x"), row[Int]("y"), row[Int]("owner"), row[Int]("unittype"), row[Int]("team")))
+            (row[Int]("id"),
+                UnitDefinition.getUnitObjectByType(
+                    gameid,
+                    row[Int]("id"),
+                    row[Int]("x"),
+                    row[Int]("y"),
+                    row[Int]("owner"),
+                    row[Int]("unittype"),
+                    row[Int]("team"),
+                    row[Boolean]("spotted")))
           ).toMap;
     }
   }

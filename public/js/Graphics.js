@@ -75,6 +75,15 @@
         Graphics.camera.updateProjectionMatrix();
     },
 
+    moveCameraToPosition: function(pos)
+    {
+        Graphics.camera.position.x = pos.x;
+        Graphics.camera.position.y = -pos.y;
+
+        WaterLayer.light.position.x = Graphics.camera.position.x;
+        WaterLayer.light.position.y = Graphics.camera.position.y;
+    },
+
     moveCamera: function (pos){
 
         Graphics.camera.position.x -= pos.x/40;

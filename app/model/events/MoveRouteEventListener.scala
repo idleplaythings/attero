@@ -23,7 +23,12 @@ class MoveRouteEventListener(
 
     private def processEvent(event: MoveRouteEvent) =
     {
+        val unit:GameUnit = unitRepository.getUnit(event.unitid);
+        val wasSpotted = unit.isSpotted
+        var informUnit: String = "";
+
         var routeCount = 0;
+
         breakable {
             event.moves.foreach({ moveEvent =>
 
@@ -31,8 +36,13 @@ class MoveRouteEventListener(
                 eventDispatcher.dispatch(moveEvent);
                 routeCount += 1;
 
+                if (! wasSpotted && informUnit == "" && moveEvent.isSpotted)
+                {
+                    informUnit = unit.toString;
+                }
+
                 if (moveEvent.isRouteInterrupted()) {
-                    println("Movement route interrupted")
+                    //println("Movement route interrupted")
                     break
                 }
             });
@@ -40,21 +50,47 @@ class MoveRouteEventListener(
 
         if (event.isAnySpotted)
         {
-            val unit:GameUnit = unitRepository.getUnit(event.unitid);
             //println("Someone spotted this route");
             playerRepository.getEnemies(event.userid).foreach({ playerid:Int =>
-            //  println("Moveroute event replying to userid: " + playerid);
-                event.addMessageForUser(
-                    playerid,
-                    JsObject(
-                      Seq(
-                        "type" -> JsString("EnemySpotted"),
-                        "unit" -> JsString(unit.toString)
-                      )
-                    )
-                );
+
+                if ( ! wasSpotted)
+                {
+                    event.addMessageForUser(
+                        playerid,
+                        JsObject(
+                          Seq(
+                            "type" -> JsString("EnemySpotted"),
+                            "unit" -> JsString(informUnit)
+                          )
+                        )
+                    );
+                }
                 event.addMessageForUser(playerid, event.toJson);
+
+                if ( ! unit.isSpotted)
+                {
+                    disappearUnit(event, unit);
+                }
             });
         }
+        else if ( wasSpotted && ! unit.isSpotted)
+        {
+            disappearUnit(event, unit);
+        }
+    }
+
+    private def disappearUnit(event: MoveRouteEvent, unit: GameUnit)
+    {
+        playerRepository.getEnemies(event.userid).foreach({ playerid:Int =>
+            event.addMessageForUser(
+                playerid,
+                JsObject(
+                  Seq(
+                    "type" -> JsString("EnemyDissapear"),
+                    "unitid" -> JsNumber(unit.id)
+                  )
+                )
+            );
+        })
     }
 }

@@ -25,7 +25,7 @@ class Event(val name: String, val eventid: Int, val userid: Int)
         if ( ! UiEventStream.contains(userid)) {
             UiEventStream += (userid -> List(message))
         } else {
-            UiEventStream(userid) = message +: UiEventStream(userid)
+            UiEventStream(userid) :+= message;
         }
     }
 }

@@ -14,7 +14,6 @@ object EventFactory
 
     def parseMoveEvents(userid: Int, json: JsValue) : MoveRouteEvent =
     {
-        println(json);
         var unitId: Int = (json \ "payload" \ "unitId").as[String].toInt
         var eventId: Int = (json \ "id").as[Int]
         var route: String = (json \ "payload" \ "moveroute").as[String]
