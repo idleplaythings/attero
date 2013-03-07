@@ -3,7 +3,7 @@ window.Grid =
     scene: new THREE.Scene(),
     mesh:null,
     material:null,
-    opacity:0.50,
+    opacity:0.00,
 
     init: function()
     {
