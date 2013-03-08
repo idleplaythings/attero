@@ -70,8 +70,6 @@ window.ResourceLoader =
         TileGrid.initTiles();
 
         console.log("loading tiles");
-        console.dir(window.tiles);
-        console.dir(TileGrid.gameTiles);
 
         ResourceLoader.addLoadable(new LoadTiles(window.tiles));
         ResourceLoader.addLoadable(new LoadTileGrid());

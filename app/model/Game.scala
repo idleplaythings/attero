@@ -1,7 +1,5 @@
 package models
 
-;
-
 import akka.actor._
 import scala.concurrent.duration._
 import scala.util.control.Breaks._

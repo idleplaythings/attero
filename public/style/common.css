@@ -1,0 +1,22 @@
+@import url(https://fonts.googleapis.com/css?family=Lato:300italic,700italic,300,700);
+
+body{
+    margin:0px;
+    padding:0px;
+    overflow:hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight:300;
+}
+
+.webglCanvas{
+    background-color: black;
+    margin:0px;
+    padding:0px;
+    z-index:0;
+}

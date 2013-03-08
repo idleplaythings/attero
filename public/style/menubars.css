@@ -1,0 +1,99 @@
+.menubar
+{
+	width:100%;
+	background-image:url(../resource/raster.jpg);
+	position:absolute;
+	z-index:1;
+	left:0px;
+	color:#8f8f8f;
+    padding:0;
+    margin:0;
+    border-collapse: collapse;
+}
+
+.menubar.top
+{
+	top:0px;
+	border-bottom:5px solid #202020;
+}
+
+.menubar.bottom
+{
+	bottom:0px;
+	border-top:5px solid #202020;
+}
+
+.menubar td
+{
+    vertical-align: middle;
+	height:45px;
+}
+
+
+.menubar .left
+{
+	width:25%;
+	text-align:left;
+    padding-left:5px;
+}
+
+.menubar .center
+{
+	width:50%;
+	text-align:center;
+}
+
+.menubar .right
+{
+    padding-right:5px;
+	width:25%;
+	text-align:right;
+}
+
+.menubar span
+{
+	margin: 0px 0px 0px 10px;
+}
+
+.menubar h2
+{
+    letter-spacing: 2px;
+    margin: 0;
+    height: 30px;
+    color: #8f8f8f;
+    padding: 2px 0px 4px 30px;
+    display: inline;
+    width: 400px;
+    background-color: #1c1c1c;
+    border: 2px solid #202020;
+    border-radius: 19px;
+}
+
+.menubar h3
+{
+    display: inline;
+    vertical-align: 4px;
+    padding: 0px 30px;
+}
+
+.menubar h2 .icon
+{
+    vertical-align: -7px;
+    margin-left: 30px;
+}
+
+.menubar .icon
+{
+    vertical-align:bottom;
+	width:30px;
+	height:30px;
+	display:inline-block;
+	cursor:pointer;
+	margin: 0px 2px;
+    background-size: cover;
+}
+
+.menubar .button:hover
+{
+	background-position:100% 0%;
+}
