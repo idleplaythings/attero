@@ -58,12 +58,20 @@
 .menubar h2
 {
     letter-spacing: 2px;
-    margin: 0;
-    height: 30px;
+    margin: 0 5px;
     color: #8f8f8f;
-    padding: 2px 0px 4px 30px;
+    padding: 3px 30px 3px 30px;
     display: inline;
-    width: 400px;
+    background-color: #1c1c1c;
+    border: 2px solid #202020;
+    border-radius: 19px;
+}
+
+.menubar .container
+{
+    margin: 0 5px;
+    padding: 0px 5px;
+    display: inline-block;
     background-color: #1c1c1c;
     border: 2px solid #202020;
     border-radius: 19px;
@@ -76,10 +84,9 @@
     padding: 0px 30px;
 }
 
-.menubar h2 .icon
+.menubar .container .icon
 {
     vertical-align: -7px;
-    margin-left: 30px;
 }
 
 .menubar .icon
@@ -91,6 +98,27 @@
 	cursor:pointer;
 	margin: 0px 2px;
     background-size: cover;
+}
+
+.button.icon
+{
+    width:25px;
+    height:25px;
+}
+
+.button
+{
+    border: #8f8f8f solid 2px;
+    box-shadow: 2px 2px 10px #000000;
+    background-color: #474141;
+    border-radius: 100%;
+}
+
+.button.active
+{
+    box-shadow: 0px 0px 5px #000000;
+    background-position: 100% 0%;
+    border-color: #6c6c6c;
 }
 
 .menubar .button:hover

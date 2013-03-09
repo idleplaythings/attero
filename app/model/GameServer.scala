@@ -102,6 +102,7 @@ class GameServer extends Actor {
       {
         games -= gameid;
       }
+      println("userid "+ userid +" quitting game " + gameid +", games: " + games);
     }
   }
 }

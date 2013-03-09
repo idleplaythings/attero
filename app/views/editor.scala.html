@@ -4,8 +4,10 @@
         <title>Texture test</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-        <link href="@routes.Assets.at("style/tiles.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.at("style/common.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.at("style/menubars.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/confirm.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.at("style/unitstatusicons.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/resourceLoader.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/TextureContainer.css")" rel="stylesheet" type="text/css">
 
@@ -86,25 +88,34 @@
 
     </head>
     <body oncontextmenu="return false;">
-		<div class="menubar top">
-			<table>
-				<tr>
-					<td class="left">
+		<table class="menubar top">
+			<tr>
+				<td class="left">
 
-					</td>
-					<td class="center">
-						<h2>MAP EDITOR</h2><span id="mapname">Unnamed</span><span id="savestatus">(Unsaved)</span>
-					</td>
-					<td class="right">
-						<div class="icon" id="loadicon" style="background-image:url(/assets/resource/loadicon.png)"></div>
-						<div class="icon" id="saveicon" style="background-image:url(/assets/resource/saveicon.png)"></div>
-						<div class="icon" id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)"></div>
-					</td>
-				</tr>
-			</table>
-		</div>
+				</td>
+				<td class="center">
+					<h2>MAP EDITOR</h2>
+				</td>
+				<td class="right">
+					<div class="icon button" id="loadicon" style="background-image:url(/assets/resource/loadicon.png)"></div>
+					<div class="icon button" id="saveicon" style="background-image:url(/assets/resource/saveicon.png)"></div>
+					<div class="icon button" id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)"></div>
+				</td>
+			</tr>
+		</table>
         <!-- <canvas id="testcanvas" width="40" height="40" style="position:absolute;z-index:200;border:1px solid white;"></canvas> -->
         <div id="texturecontainer"></div>
-        <div class="menubar bottom"></div>
+
+        <table class="menubar bottom">
+            <tr>
+                <td class="left">
+
+                </td>
+                <td class="center">
+                </td>
+                <td class="right">
+                </td>
+            </tr>
+        </table>
     </body>
 </html>

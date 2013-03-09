@@ -9,6 +9,7 @@
         <link href="@routes.Assets.at("style/common.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/menubars.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/confirm.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.at("style/unitstatusicons.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/resourceLoader.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/TextureContainer.css")" rel="stylesheet" type="text/css">
 
@@ -218,10 +219,12 @@
                     <h2>
                         TURN 4:
                         <span id="playername">Player name</span>
-                        <div class="icon button" id="turnsicon" style="background-image:url(/assets/resource/turnicongreen.png)"></div>
                     </h2>
+                    <div class="icon button" id="turnsicon" style="background-image:url(/assets/resource/turnicon.png)"></div>
                 </td>
                 <td class="right">
+                    <div class="icon button" id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)"></div>
+                    <div class="icon button active" id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)"></div>
                     <div class="icon button" id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)"></div>
                 </td>
             </tr>
@@ -234,9 +237,12 @@
                     <h3>
                         STUG III - Rupert Schüder
                     </h3>
-                    <div class="icon button" id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)"></div>
                 </td>
                 <td class="center">
+                    <span class="container">
+                        <div class="icon statusicon moving"></div>
+                        <div class="icon statusicon mediumsupression"></div>
+                    </span>
                 </td>
                 <td class="right">
                     <div class="icon button" id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)"></div>

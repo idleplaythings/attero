@@ -1,0 +1,34 @@
+.statusicon
+{
+    background-image:url(../resource/unitstatusicons.png);
+}
+
+.stationary
+{
+    background-position:0% 0%;
+}
+
+.moving
+{
+    background-position:-100% 0%;
+}
+
+.movingfast
+{
+    background-position:-200% 0%;
+}
+
+.lowsupression
+{
+    background-position:-500% 0%;
+}
+
+.mediumsupression
+{
+    background-position:-600% 0%;
+}
+
+.highsupression
+{
+    background-position:-700% 0%;
+}
