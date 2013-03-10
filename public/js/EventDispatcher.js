@@ -4,15 +4,20 @@ var Dispatcher = function()
     this.events = Array();
 }
 
-Dispatcher.prototype.attach = function(listener)
+Dispatcher.prototype.attach = function(listener, name)
 {
-    if (! this.listeners[listener.eventName])
+    if ( ! name)
     {
-        this.listeners[listener.eventName] = Array(listener);
+        name = listener.eventName;
+    }
+
+    if (! this.listeners[name])
+    {
+        this.listeners[name] = Array(listener);
     }
     else
     {
-        this.listeners[listener.eventName].push(listener);
+        this.listeners[name].push(listener);
     }
 }
 

@@ -28,6 +28,34 @@ UnitIcon.prototype.hide = function()
     this.underSprite.visible = false;
 }
 
+UnitIcon.prototype.mouseover = function()
+{
+    this.oldOpacity = this.underSprite.material.opacity;
+    this.underSprite.material.opacity = 0.6;
+}
+
+UnitIcon.prototype.mouseout = function()
+{
+    this.underSprite.material.opacity = this.oldOpacity;
+}
+
+UnitIcon.prototype.select = function()
+{
+    this.oldcolor = this.underSprite.material.color.getHSL();
+    console.log(this.oldcolor);
+
+    this.underSprite.material.opacity = 0.6;
+    this.oldOpacity = 0.6;
+    this.underSprite.material.color.setHSL( 0, 1, 100 );
+}
+
+UnitIcon.prototype.deselect = function()
+{
+    this.underSprite.material.color.setHSL(this.oldcolor.h, this.oldcolor.s, this.oldcolor.l);
+    this.underSprite.material.opacity = 0.3;
+    this.oldOpacity = 0.3;
+}
+
 UnitIcon.prototype.createIcon = function()
 {
     this.group = new THREE.Object3D();

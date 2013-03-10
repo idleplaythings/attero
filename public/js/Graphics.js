@@ -95,7 +95,6 @@
 
     camPos: function()
     {
-        //TODO: add zoom multipliers
         return {x: Graphics.camera.position.x*40, y:Graphics.camera.position.y*40};
     }
 };

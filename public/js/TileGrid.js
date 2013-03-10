@@ -54,6 +54,28 @@ window.TileGrid = {
         UIEvents.onGridClicked(x,y, right);
     },
 
+    gridToViewPortCoordinates: function(pos)
+    {
+        var x = pos.x;
+        var y = pos.y;
+
+        var width = (window.innerWidth/2)*Graphics.zoom;
+        var height = (window.innerHeight/2);
+
+        var camPos = Graphics.camPos();
+
+        x *= 20;
+        y *= 20;
+
+        x +=  (width - camPos.x*Graphics.zoom);
+        y +=  (height + camPos.y);
+
+        x /= Graphics.zoom;
+        y /= Graphics.zoom;
+
+        return {x:x, y:y};
+    },
+
     gridCordinatesToTile: function(pos)
     {
         var x = pos.x;

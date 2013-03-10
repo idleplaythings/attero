@@ -2,10 +2,8 @@
     position:fixed;
     top:0px;
     left:0px;
-    background-color:#272F36;
-    font: 13px Helvetica, arial, freesans, clean, sans-serif;
-    color:#7D858A;
-    font-size:28px;
+    background-image:url(../resource/raster.jpg);
+    background-color:#000000;
     box-shadow:inset 0 0 100px #000000;
     -moz-box-shadow:inset 0 0 100px #000000;
     font-weight: normal;
@@ -17,15 +15,21 @@
     text-align: center;
 }
 
+h2
+{
+    margin:0;
+    letter-spacing: 2px;
+    color: #8f8f8f;
+    padding: 3px 30px 3px 30px;
+}
+
+
 #resourceLoaderOverlay .loadingbar
 {
     width:400px;
-    height:30px;
+    height:20px;
     margin: 0px auto;
-    border:#7D858A ridge 2px;
-    border-radius: 7px;
-    -moz-border-radius: 7px;
-    -webkit-border-radius: 7px;
+    border:#8f8f8f solid 1px;
     background-color: #14191C;
     padding:0px;
 }
@@ -33,14 +37,11 @@
 #resourceLoaderOverlay .loadingbar .bar
 {
     width:0;
-    background-color: #3F6E91;
+    background-color: #474141;
     margin:0px;
-    height:100%;
-    box-shadow:inset 0 0 10px #000000;
-    -moz-box-shadow:inset 0 0 10px #000000;
-    border-radius: 7px;
-    -moz-border-radius: 7px;
-    -webkit-border-radius: 7px;
+    height:16px;
+    border-top:2px solid #14191C;
+    border-bottom:2px solid #14191C;
 }
 
 #resourceLoaderOverlay .container

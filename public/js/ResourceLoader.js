@@ -91,7 +91,7 @@ window.ResourceLoader =
         var what = loadable.what;
 
         var overlay = $('<div id="resourceLoaderOverlay" style="width:'+width+'px;height:'+height+'px;"></div>');
-        var header = $('<div class="container" style="margin-top:'+height*0.4+'px"> <div class="centeredtext" ><span class="what">LOADING: ' + what+'</span></div>'
+        var header = $('<div class="container" style="margin-top:'+height*0.4+'px"> <div class="centeredtext" ><h2 class="what">LOADING: ' + what+'</h2></div>'
             +'<div class="loadingbar"><div class="bar"></div></div></div>');
 
         $(overlay).append(header);

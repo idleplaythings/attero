@@ -1,6 +1,37 @@
 window.UIEvents = {
 
     selectedUnit: null,
+    overTile: null,
+
+    onGameTileMouseover: function(tile)
+    {
+        if (UIEvents.overTile == tile)
+        {
+            return;
+        }
+        else
+        {
+            UIEvents.onGameTileMouseout(UIEvents.overTile);
+            UIEvents.overTile = tile;
+
+            if (tile.subscribedUnit)
+            {
+                tile.subscribedUnit.icon.mouseover();
+                jQuery(".webglCanvas").addClass('pointer')
+                tooltip.show(tile.subscribedUnit);
+            }
+        }
+    },
+
+    onGameTileMouseout: function(tile)
+    {
+        if (tile && tile.subscribedUnit)
+        {
+            tile.subscribedUnit.icon.mouseout();
+        }
+        tooltip.hide();
+        jQuery(".webglCanvas").removeClass('pointer')
+    },
 
     onGameTileClicked: function(tile, right)
     {
@@ -20,7 +51,17 @@ window.UIEvents = {
 
     onUnitClicked: function(unit, right)
     {
+        if (unit.owner != window.playerid)
+        {
+            return;
+        }
+
+        if (UIEvents.selectedUnit)
+            UIEvents.selectedUnit.icon.deselect();
+
         UIEvents.selectedUnit = unit;
+        unit.icon.select();
+
         console.log("selected unit: " + unit.id)
         LineOfSight.calculateLosForUnit(unit);
     },
