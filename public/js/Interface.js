@@ -32,6 +32,7 @@ Interface.prototype.gameTileHighlighter = function(event)
     var tileIndex = this.coordinateService.gridCoordinatesToTileId(coordinates.x, coordinates.y);
     var gameTile = this.tileGrid.gameTiles[tileIndex];
 
-    UIEvents.onGameTileMouseover(gameTile);
+    //TODO: Eventify below
+    //UIEvents.onGameTileMouseover(gameTile);
     //console.log('mouseover gametile x: ' + gameTile.position.x + ', y: ' + gameTile.position.y);
 };

@@ -50,8 +50,7 @@ Dispatcher.prototype.dispatch = function(event, revert)
         event.setId(eventid);
         this.events[eventid] = event;
     }
-
-    console.log("event "+handleFunction+": " + event.id +":"+ event.name);
+    //console.log("event "+handleFunction+": " + event.id +":"+ event.name);
 
     if (! this.listeners[event.name])
         return;

@@ -1,100 +1,116 @@
+var Graphics = function(dispatcher){
 
-    window.Graphics = {
+    this.width = 1000;
+    this.height = 800;
+    this.camera = null;
+    this.scene = new THREE.Scene();
+    this.renderer = null,
+    this.zoom = 1,
+    this.ambientLightColor = 0xffffff,
+    this.light = null;
 
-    width: 1000,
-    height: 800,
-    camera: null,
-    scene: new THREE.Scene(),
-    renderer: null,
-    zoom: 1,
-    ambientLightColor: 0xffffff,
-    light: null,
+    this.dispatcher = dispatcher;
 
-    init: function()
-    {
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-        Graphics.width = width;
-        Graphics.height = height;
-        var zoom = Graphics.zoom;
+    this.listener = new EventListener("ScrollEvent");
+    this.listener.parent = this;
+    this.listener.handle = this.onScroll;
 
-        var camera = new THREE.OrthographicCamera( width / (-80*zoom), width / (80*zoom), height / (80*zoom), height / (-80*zoom), 0.01, 1000 );
+    this.dispatcher.attach(this.listener);
+};
 
-        var gridWidth = TileGrid.getSubTileGridWidht();
+Graphics.prototype.constructor = Graphics;
 
-        var x = (width - gridWidth);
-        var y = (height - gridWidth);
+Graphics.prototype.init = function()
+{
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    this.width = width;
+    this.height = height;
+    var zoom = Graphics.zoom;
 
-        camera.position.z = 200;
-        camera.position.x = (width/2)/40;
-        camera.position.y = (-height/2)/40;
+    var camera = new THREE.OrthographicCamera( width / (-80*zoom), width / (80*zoom), height / (80*zoom), height / (-80*zoom), 0.01, 1000 );
 
-        Graphics.camera = camera;
-        Graphics.scene.add( camera );
+    var gridWidth = TileGrid.getSubTileGridWidht();
 
-        var ambientLight = new THREE.AmbientLight(Graphics.ambientLightColor);
-        Graphics.scene.add(ambientLight);
+    var x = (width - gridWidth);
+    var y = (height - gridWidth);
 
-        Graphics.renderer = new THREE.WebGLRenderer();
-        Graphics.renderer.setSize( width, height );
-        Graphics.renderer.autoClear = false;
+    camera.position.z = 200;
+    camera.position.x = (width/2)/40;
+    camera.position.y = (-height/2)/40;
 
-        $( Graphics.renderer.domElement ).addClass("webglCanvas").appendTo("body");
-    },
+    this.camera = camera;
+    this.scene.add( camera );
 
-    animate: function() {
+    var ambientLight = new THREE.AmbientLight(Graphics.ambientLightColor);
+    this.scene.add(ambientLight);
 
-        requestAnimationFrame( Graphics.animate );
-        AnimationHandler.tick();
-        Graphics.render();
+    this.renderer = new THREE.WebGLRenderer();
+    this.renderer.setSize( width, height );
+    this.renderer.autoClear = false;
 
-    },
+    $(this.renderer.domElement ).addClass("webglCanvas").appendTo("body");
+};
 
-    render: function() {
-        Graphics.renderer.clear();
-        Graphics.renderer.render( WaterLayer.scene, Graphics.camera );
-        Graphics.renderer.render( Graphics.scene, Graphics.camera );
-        Graphics.renderer.render( FogOfWar.scene, Graphics.camera );
-        Graphics.renderer.render( Grid.scene, Graphics.camera );
-    },
+Graphics.prototype.animate = function()
+{
+    requestAnimationFrame( Graphics.animate );
+    AnimationHandler.tick();
+    Graphics.render();
 
-    zoomCamera: function(zoom)
-    {
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-        Graphics.zoom = parseFloat(zoom.toFixed(1));
+};
 
-        Graphics.camera.left = width / (-80*zoom);
-        Graphics.camera.right = width / (80*zoom);
-        Graphics.camera.top = height / (80*zoom);
-        Graphics.camera.bottom = height / (-80*zoom);
+Graphics.prototype.render = function()
+{
+    this.renderer.clear();
+    this.renderer.render( WaterLayer.scene, Graphics.camera );
+    this.renderer.render( Graphics.scene, Graphics.camera );
+    this.renderer.render( FogOfWar.scene, Graphics.camera );
+    this.renderer.render( Grid.scene, Graphics.camera );
+};
 
-        if (UnitHelper)
-            UnitHelper.updateZoom(zoom);
+Graphics.prototype.zoomCamera = function(zoom)
+{
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    this.zoom = parseFloat(zoom.toFixed(1));
 
-        Graphics.camera.updateProjectionMatrix();
-    },
+    this.camera.left = width / (-80*zoom);
+    this.camera.right = width / (80*zoom);
+    this.camera.top = height / (80*zoom);
+    this.camera.bottom = height / (-80*zoom);
 
-    moveCameraToPosition: function(pos)
-    {
-        Graphics.camera.position.x = pos.x;
-        Graphics.camera.position.y = -pos.y;
+    if (UnitHelper)
+        UnitHelper.updateZoom(zoom);
 
-        WaterLayer.light.position.x = Graphics.camera.position.x;
-        WaterLayer.light.position.y = Graphics.camera.position.y;
-    },
+    this.camera.updateProjectionMatrix();
+};
 
-    moveCamera: function (pos){
+Graphics.prototype.moveCameraToPosition = function(pos)
+{
+    this.camera.position.x = pos.x;
+    this.camera.position.y = -pos.y;
 
-        Graphics.camera.position.x -= pos.x/40;
-        Graphics.camera.position.y += pos.y/40;
+    WaterLayer.light.position.x = this.camera.position.x;
+    WaterLayer.light.position.y = this.camera.position.y;
+};
 
-        WaterLayer.light.position.x = Graphics.camera.position.x;
-        WaterLayer.light.position.y = Graphics.camera.position.y;
-    },
+Graphics.prototype.onScroll = function(event)
+{
+    if (event.position)
+        this.parent.moveCamera(event.position);
+};
 
-    camPos: function()
-    {
-        return {x: Graphics.camera.position.x*40, y:Graphics.camera.position.y*40};
-    }
+Graphics.prototype.moveCamera = function (pos){
+
+    this.camera.position.x -= pos.x/40;
+    this.camera.position.y += pos.y/40;
+
+    WaterLayer.light.position.x = this.camera.position.x;
+    WaterLayer.light.position.y = this.camera.position.y;
+};
+
+Graphics.prototype.camPos = function()
+{
+    return {x: this.camera.position.x*40, y:this.camera.position.y*40};
 };

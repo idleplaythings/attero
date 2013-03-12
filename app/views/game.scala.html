@@ -68,6 +68,9 @@
             {
                 window.playerid = @userid;
 
+                window.UIEventDispatcher = new Dispatcher();
+                window.Graphics = new Graphics(UIEventDispatcher);
+
                 Graphics.init();
                 Graphics.animate();
                 WaterLayer.init();
@@ -77,8 +80,6 @@
                 var canvas = jQuery(".webglCanvas");
 
                 canvas.on("click", TileGrid.onGridClicked);
-
-                window.UIEventDispatcher = new Dispatcher();
 
                 var scrolling = new Scrolling(canvas, UIEventDispatcher);
 

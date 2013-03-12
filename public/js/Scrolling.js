@@ -9,7 +9,8 @@ var Scrolling = function(element, dispatcher)
 
     this.init(element);
 
-    this.listener = new EventListener("zoom");
+    this.listener = new EventListener("ZoomEvent");
+    this.listener.parent = this;
     this.listener.handle = this.onZoom;
 
     this.dispatcher.attach(this.listener);
@@ -22,7 +23,7 @@ Scrolling.prototype.constructor =  Scrolling;
 Scrolling.prototype.onZoom = function(event)
 {
     if (event.zoom)
-        this.zoom = event.zoom;
+        this.parent.zoom = event.zoom;
 };
 
 Scrolling.prototype.init = function(element)
@@ -114,6 +115,12 @@ Scrolling.prototype.getScrollingSpeed = function()
 Scrolling.prototype.scroll = function (dx, dy){
     //console.log("dx: " + dx + ", dy: " + dy);
     var speed = this.getScrollingSpeed();
-    Graphics.moveCamera({x:dx*speed, y:dy*speed});
+    var position = {x:dx*speed, y:dy*speed};
+    //Graphics.moveCamera({x:dx*speed, y:dy*speed});
+
+    var scrollEvent = new Event("player", "ScrollEvent");
+    scrollEvent.position = position;
+
+    this.dispatcher.dispatch(scrollEvent);
 };
 

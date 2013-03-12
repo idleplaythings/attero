@@ -48,6 +48,9 @@
             function dynamicResourcesLoaded()
             {
 
+                window.UIEventDispatcher = new Dispatcher();
+                window.Graphics = new Graphics(UIEventDispatcher);
+
                 window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:100px', 'auto', window.availableTextures);
                 window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:100px', 'auto');
                 window.brushMenu = new SideSlideMenuBrushSize('left', 0, 'top:180px', 'auto');
@@ -61,13 +64,12 @@
 
                 var canvas = jQuery(".webglCanvas");
 
-                MouseWheel.hookEvent(canvas.get(0), 'mousewheel', Zooming.mouseWheel);
-
                 canvas.on("click", TileGrid.onGridClicked);
-                canvas.on("mousedown", Scrolling.mousedown);
-                canvas.on("mouseup", Scrolling.mouseup);
-                canvas.on("mouseout", Scrolling.mouseout);
-                canvas.on("mousemove", Scrolling.mousemove);
+
+                var scrolling = new Scrolling(canvas, UIEventDispatcher);
+
+
+                MouseWheel.hookEvent(canvas.get(0), 'mousewheel', Zooming.mouseWheel);
 
                 var tileSize = 20; // this doesn't belong here
                 var coordinasService = new Coordinates(tileSize, TileGrid.tileRowCount);
