@@ -88,7 +88,7 @@ Unit.prototype.moveTo = function(position)
     var move = new MoveOrder(this, position);
     move.execute();
 
-    EventDispatcher.dispatch(new MoveEvent("player", this, move.route));
+    GameEventDispatcher.dispatch(new MoveEvent("player", this, move.route));
 };
 
 Unit.prototype.setPosition = function(position)

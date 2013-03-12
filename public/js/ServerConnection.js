@@ -33,10 +33,10 @@ ServerConnection =
                 ServerConnection.receiveMoveRoute(data);
 
             if (data.type == "MoveInterrupt")
-                EventDispatcher.dispatch(new MoveInterruptEvent("server", data.eventid, data.routeNumber));
+                GameEventDispatcher.dispatch(new MoveInterruptEvent("server", data.eventid, data.routeNumber));
 
             if (data.type == "EnemySpotted")
-                EventDispatcher.dispatch(new EnemySpottedEvent("server", UnitManager.createFromJsonIfNeeded(data.unit)));
+                GameEventDispatcher.dispatch(new EnemySpottedEvent("server", UnitManager.createFromJsonIfNeeded(data.unit)));
         }
     },
 
@@ -60,6 +60,6 @@ ServerConnection =
             };
         }
 
-        EventDispatcher.dispatch(new MoveEvent("server", unit, route));
+        GameEventDispatcher.dispatch(new MoveEvent("server", unit, route));
     }
 };

@@ -51,7 +51,8 @@
         <script src="@routes.Assets.at("js/animation/AnimationHandler.js")"></script>
         <script src="@routes.Assets.at("js/animation/UnitMoveAnimation.js")"></script>
         <script src="@routes.Assets.at("js/animation/UnitAppearAnimation.js")"></script>
-        <script src="@routes.Assets.at("js/EventDispatcher.js")"></script>
+        <script src="@routes.Assets.at("js/events/EventDispatcher.js")"></script>
+        <script src="@routes.Assets.at("js/events/EventListener.js")"></script>
         <script src="@routes.Assets.at("js/events/Event.js")"></script>
         <script src="@routes.Assets.at("js/events/MoveEvent.js")"></script>
         <script src="@routes.Assets.at("js/events/MoveEventListener.js")"></script>
@@ -77,16 +78,17 @@
 
                 canvas.on("click", TileGrid.onGridClicked);
 
-                canvas.on("mousedown", Scrolling.mousedown);
-                canvas.on("mouseup", Scrolling.mouseup);
-                canvas.on("mouseout", Scrolling.mouseout);
-                canvas.on("mousemove", Scrolling.mousemove);
+                window.UIEventDispatcher = new Dispatcher();
 
-                EventDispatcher.attach(new MoveServerMessageEventLister());
-                EventDispatcher.attach(new UnitPositionListener());
-                EventDispatcher.attach(new UnitMoveAnimationListener());
-                EventDispatcher.attach(new MoveInterruptEventLister());
-                EventDispatcher.attach(new UnitAppearAnimationListener());
+                var scrolling = new Scrolling(canvas, UIEventDispatcher);
+
+                window.GameEventDispatcher = new Dispatcher();
+
+                GameEventDispatcher.attach(new MoveServerMessageEventLister());
+                GameEventDispatcher.attach(new UnitPositionListener());
+                GameEventDispatcher.attach(new UnitMoveAnimationListener());
+                GameEventDispatcher.attach(new MoveInterruptEventLister());
+                GameEventDispatcher.attach(new UnitAppearAnimationListener());
 
                 var tileSize = 20; // this doesn't belong here
                 var coordinasService = new Coordinates(tileSize, TileGrid.tileRowCount);
