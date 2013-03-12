@@ -67,7 +67,7 @@
                 canvas.on("click", TileGrid.onGridClicked);
 
                 var scrolling = new Scrolling(canvas, UIEventDispatcher);
-
+                var zooming = new Zooming(canvas, UIEventDispatcher);
 
                 MouseWheel.hookEvent(canvas.get(0), 'mousewheel', Zooming.mouseWheel);
 

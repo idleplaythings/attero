@@ -5,17 +5,13 @@ var Graphics = function(dispatcher){
     this.camera = null;
     this.scene = new THREE.Scene();
     this.renderer = null,
-    this.zoom = 1,
     this.ambientLightColor = 0xffffff,
     this.light = null;
 
     this.dispatcher = dispatcher;
 
-    this.listener = new EventListener("ScrollEvent");
-    this.listener.parent = this;
-    this.listener.handle = this.onScroll;
-
-    this.dispatcher.attach(this.listener);
+    this.dispatcher.attach(new EventListener("ScrollEvent", this, this.onScroll));
+    this.dispatcher.attach(new EventListener("ZoomEvent", this, this.onZoom));
 };
 
 Graphics.prototype.constructor = Graphics;
@@ -26,7 +22,7 @@ Graphics.prototype.init = function()
     var height = window.innerHeight;
     this.width = width;
     this.height = height;
-    var zoom = Graphics.zoom;
+    var zoom = 1;
 
     var camera = new THREE.OrthographicCamera( width / (-80*zoom), width / (80*zoom), height / (80*zoom), height / (-80*zoom), 0.01, 1000 );
 
@@ -73,15 +69,13 @@ Graphics.prototype.zoomCamera = function(zoom)
 {
     var width = window.innerWidth;
     var height = window.innerHeight;
-    this.zoom = parseFloat(zoom.toFixed(1));
 
     this.camera.left = width / (-80*zoom);
     this.camera.right = width / (80*zoom);
     this.camera.top = height / (80*zoom);
     this.camera.bottom = height / (-80*zoom);
 
-    if (UnitHelper)
-        UnitHelper.updateZoom(zoom);
+    //UnitHelper.updateZoom(zoom);
 
     this.camera.updateProjectionMatrix();
 };
@@ -99,6 +93,12 @@ Graphics.prototype.onScroll = function(event)
 {
     if (event.position)
         this.parent.moveCamera(event.position);
+};
+
+Graphics.prototype.onZoom = function(event)
+{
+    if (event.zoom)
+        this.parent.zoomCamera(event.zoom);
 };
 
 Graphics.prototype.moveCamera = function (pos){

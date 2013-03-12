@@ -3,9 +3,9 @@ window.UnitHelper = {
     textureSize: 128,
     unitscale: 0.5,
 
-    updateZoom: function()
+    updateZoom: function(zoom)
     {
-        var scale = UnitHelper.getIconScale();
+        var scale = UnitHelper.getIconScale(zoom);
 
         for (var i in window.units)
         {
@@ -13,10 +13,10 @@ window.UnitHelper = {
         }
     },
 
-    getIconScale: function()
+    getIconScale: function(zoom)
     {
         var size = window.innerWidth > window.innerHeight ?  window.innerHeight : window.innerWidth;
-        return UnitHelper.textureSize / size * Graphics.zoom * UnitHelper.unitscale;
+        return UnitHelper.textureSize / size * zoom * UnitHelper.unitscale;
     }
 };
 
@@ -132,7 +132,7 @@ Unit.prototype.createIcon = function()
 
 
     this.icon.group.position = new THREE.Vector3(pos.x, -pos.y, 3);
-    this.setIconScale(UnitHelper.getIconScale());
+    this.setIconScale(UnitHelper.getIconScale(1));
     Grid.scene.add(this.icon.group);
 };
 

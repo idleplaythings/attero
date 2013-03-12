@@ -9,11 +9,7 @@ var Scrolling = function(element, dispatcher)
 
     this.init(element);
 
-    this.listener = new EventListener("ZoomEvent");
-    this.listener.parent = this;
-    this.listener.handle = this.onZoom;
-
-    this.dispatcher.attach(this.listener);
+    this.dispatcher.attach(new EventListener("ZoomEvent", this, this.onZoom));
 
     this.zoom = 1;
 };
@@ -109,7 +105,7 @@ Scrolling.prototype.mousemove = function(event, offsetLeft, offsetTop)
 
 Scrolling.prototype.getScrollingSpeed = function()
 {
-    return this.scrollingSpeed*(1/Graphics.zoom);
+    return this.scrollingSpeed*(1/this.zoom);
 };
 
 Scrolling.prototype.scroll = function (dx, dy){

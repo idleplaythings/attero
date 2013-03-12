@@ -20,6 +20,7 @@ window.UIEvents = {
         if (!tile)
             return;
 
+        console.log('click');
         UIEvents.onGameTileClicked(tile, right);
     },
 

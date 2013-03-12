@@ -82,6 +82,7 @@
                 canvas.on("click", TileGrid.onGridClicked);
 
                 var scrolling = new Scrolling(canvas, UIEventDispatcher);
+                var zooming = new Zooming(canvas, UIEventDispatcher);
 
                 window.GameEventDispatcher = new Dispatcher();
 
