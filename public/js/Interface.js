@@ -61,6 +61,7 @@ Interface.prototype.gameTileHighlighter = function(event)
     if (this.mouseoverTile === null || this.mouseoverTile != gameTile)
     {
         this.dispatchMouseTileEvent(gameTile, false);
+        this.mouseoverTile = gameTile;
     }
     //console.log('mouseover gametile x: ' + gameTile.position.x + ', y: ' + gameTile.position.y);
 };

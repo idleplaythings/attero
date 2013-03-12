@@ -55,7 +55,7 @@ Graphics.prototype.render = function()
 {
     this.renderer.clear();
     this.renderer.render( WaterLayer.scene, Graphics.camera );
-    this.renderer.render( Graphics.scene, Graphics.camera );
+    this.renderer.render( this.scene, Graphics.camera );
     this.renderer.render( FogOfWar.scene, Graphics.camera );
     this.renderer.render( Grid.scene, Graphics.camera );
 };
