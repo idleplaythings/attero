@@ -19,7 +19,7 @@ window.TileGrid = {
             sTiles.push(TileGrid.gameTiles[i].serialize());
         }
 
-        var sTiles = sTiles.join(";");
+        sTiles = sTiles.join(";");
 
         var data =
         {
