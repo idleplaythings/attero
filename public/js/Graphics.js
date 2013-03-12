@@ -28,12 +28,7 @@ Graphics.prototype.init = function()
 
     var gridWidth = TileGrid.getSubTileGridWidht();
 
-    var x = (width - gridWidth);
-    var y = (height - gridWidth);
-
     camera.position.z = 200;
-    camera.position.x = (width/2)/40;
-    camera.position.y = (-height/2)/40;
 
     this.camera = camera;
     this.scene.add( camera );
@@ -101,10 +96,10 @@ Graphics.prototype.onZoom = function(event)
         this.parent.zoomCamera(event.zoom);
 };
 
-Graphics.prototype.moveCamera = function (pos){
-
-    this.camera.position.x -= pos.x/40;
-    this.camera.position.y += pos.y/40;
+Graphics.prototype.moveCamera = function(pos)
+{
+    this.camera.position.x = pos.x/40;
+    this.camera.position.y = pos.y/40;
 
     WaterLayer.light.position.x = this.camera.position.x;
     WaterLayer.light.position.y = this.camera.position.y;

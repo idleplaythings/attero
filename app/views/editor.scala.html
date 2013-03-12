@@ -23,7 +23,6 @@
         <script src="@routes.Assets.at("js/Three.js")"></script>
         <script src="@routes.Assets.at("js/Graphics.js")"></script>
         <script src="@routes.Assets.at("js/Scrolling.js")"></script>
-        <script src="@routes.Assets.at("js/MouseWheel.js")"></script>
         <script src="@routes.Assets.at("js/Zooming.js")"></script>
         <script src="@routes.Assets.at("js/Landscaping.js")"></script>
         <script src="@routes.Assets.at("js/SideSlideMenu.js")"></script>
@@ -69,13 +68,12 @@
                 var scrolling = new Scrolling(canvas, UIEventDispatcher);
                 var zooming = new Zooming(canvas, UIEventDispatcher);
 
-                MouseWheel.hookEvent(canvas.get(0), 'mousewheel', Zooming.mouseWheel);
-
                 var tileSize = 20; // this doesn't belong here
                 var coordinasService = new Coordinates(tileSize, TileGrid.tileRowCount);
 
-                window.interface = new Interface(coordinasService, TileGrid, canvas, Graphics);
+                window.interface = new Interface(coordinasService, TileGrid, canvas, UIEventDispatcher);
                 window.interface.init();
+                scrolling.init();
 
                 ResourceLoader.remove();
             }

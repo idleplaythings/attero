@@ -60,7 +60,9 @@ Dispatcher.prototype.dispatch = function(event, revert)
         this.listeners[event.name][i][handleFunction](event);
 
         if (event.stopped)
+        {
             break;
+        }
     }
 };
 

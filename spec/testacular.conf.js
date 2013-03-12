@@ -11,6 +11,7 @@ files = [
   JASMINE,
   JASMINE_ADAPTER,
   'public/js/DIContainer.js',
+  'public/js/Scrolling.js',
   'spec/javascripts/*Spec.js'
 ];
 
