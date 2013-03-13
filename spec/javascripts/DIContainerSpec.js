@@ -9,6 +9,14 @@ describe("Dependency Injection Container", function() {
       },
       'full_name': function(dic) {
         return dic.get('first_name') + ' ' + dic.get('last_name');
+      },
+      'birth_date': {
+        '_shared': function() {
+          return new Date("October 13, 1975 11:13:00");
+        }
+      },
+      'pets': function() {
+        return new Array("Miss Kitty Fantastico");
       }
     });
   });
@@ -29,5 +37,19 @@ describe("Dependency Injection Container", function() {
     expect(function() {
       dic.get('foobar');
     }).toThrow('Key "foobar" has not been defined');
+  });
+
+  it("should not return shared instances by default", function() {
+    var first = dic.get('pets');
+    var second = dic.get('pets');
+
+    expect(first).not.toBe(second);
+  });
+
+  it("should return a shared instance if sharing is enabled", function() {
+    var first = dic.get('birth_date');
+    var second = dic.get('birth_date');
+
+    expect(first).toBe(second);
   });
 });
