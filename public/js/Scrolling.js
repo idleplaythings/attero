@@ -9,7 +9,7 @@ var Scrolling = function(element, dispatcher)
     this.position = {x:0, y:0};
     this.element = element;
 
-    this.dispatcher.attach(new EventListener("ZoomEvent", this, this.onZoom));
+    this.dispatcher.attach(new EventListener("ZoomEvent", $.proxy(this.onZoom, this)));
 
     this.zoom = 1;
 };
@@ -19,7 +19,7 @@ Scrolling.prototype.constructor =  Scrolling;
 Scrolling.prototype.onZoom = function(event)
 {
     if (event.zoom)
-        this.parent.zoom = event.zoom;
+        this.zoom = event.zoom;
 };
 
 Scrolling.prototype.init = function()

@@ -10,8 +10,8 @@ function Interface(coordinateService, tileGrid, canvas, dispatcher)
 
     this.mouseoverTile = null;
 
-    this.dispatcher.attach(new EventListener("ZoomEvent", this, this.onZoom));
-    this.dispatcher.attach(new EventListener("ScrollEvent", this, this.onScroll));
+    this.dispatcher.attach(new EventListener("ZoomEvent", $.proxy(this.onZoom, this)));
+    this.dispatcher.attach(new EventListener("ScrollEvent", $.proxy(this.onScroll, this)));
 }
 
 Interface.prototype.init = function()
@@ -26,15 +26,15 @@ Interface.prototype.init = function()
 Interface.prototype.onZoom = function(event)
 {
     if (event.zoom)
-        this.parent.zoom = event.zoom;
+        this.zoom = event.zoom;
 };
 
 Interface.prototype.onScroll = function(event)
 {
     if (event.position)
     {
-        this.parent.pos.x = event.position.x;
-        this.parent.pos.y = event.position.y;
+        this.pos.x = event.position.x;
+        this.pos.y = event.position.y;
     }
 };
 
@@ -42,11 +42,11 @@ Interface.prototype.onClicked = function(event)
 {
     var gameTile = this.getTileFromEvent(event);
 
-    var clickEvent = new Event("player", "ClickEvent");
-    clickEvent.tile = gameTile;
-    clickEvent.domEvent = event;
+    var clickTileEvent = new Event("player", "ClickTileEvent");
+    clickTileEvent.tile = gameTile;
+    clickTileEvent.domEvent = event;
 
-    this.dispatcher.dispatch(clickEvent);
+    this.dispatcher.dispatch(clickTileEvent);
 };
 
 Interface.prototype.gameTileHighlighter = function(event)

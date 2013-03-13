@@ -1,7 +1,6 @@
-var EventListener = function(eventName, parent, handleCallback)
+var EventListener = function(eventName, handleCallback)
 {
     this.eventName = eventName;
-    this.parent = parent;
     this.handleCallback = handleCallback;
 };
 

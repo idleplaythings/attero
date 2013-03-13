@@ -49,11 +49,6 @@
                 window.UIEventDispatcher = new Dispatcher();
                 window.Graphics = new Graphics(UIEventDispatcher);
 
-                window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:100px', 'auto', window.availableTextures);
-                window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:100px', 'auto');
-                window.brushMenu = new SideSlideMenuBrushSize('left', 0, 'top:180px', 'auto');
-                window.tileElementMenu = new SideSlideMenuTileElements('right', 0, 'top:350px', 'auto', window.availableTileElements);
-
 
                 Graphics.init();
                 Graphics.animate();
@@ -63,6 +58,13 @@
                 var canvas = jQuery(".webglCanvas");
 
                 canvas.on("click", TileGrid.onGridClicked);
+
+                var landscaping = new Landscaping(UIEventDispatcher, TileGrid);
+
+                window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:100px', 'auto', window.availableTextures, landscaping);
+                window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:100px', 'auto', landscaping);
+                window.brushMenu = new SideSlideMenuBrushSize('left', 0, 'top:180px', 'auto', landscaping);
+                window.tileElementMenu = new SideSlideMenuTileElements('right', 0, 'top:350px', 'auto', window.availableTileElements, landscaping);
 
                 var scrolling = new Scrolling(canvas, UIEventDispatcher);
                 var zooming = new Zooming(canvas, UIEventDispatcher);

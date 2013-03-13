@@ -10,8 +10,8 @@ var Graphics = function(dispatcher){
 
     this.dispatcher = dispatcher;
 
-    this.dispatcher.attach(new EventListener("ScrollEvent", this, this.onScroll));
-    this.dispatcher.attach(new EventListener("ZoomEvent", this, this.onZoom));
+    this.dispatcher.attach(new EventListener("ScrollEvent", $.proxy(this.onScroll, this)));
+    this.dispatcher.attach(new EventListener("ZoomEvent", $.proxy(this.onZoom, this)));
 };
 
 Graphics.prototype.constructor = Graphics;
@@ -87,13 +87,13 @@ Graphics.prototype.moveCameraToPosition = function(pos)
 Graphics.prototype.onScroll = function(event)
 {
     if (event.position)
-        this.parent.moveCamera(event.position);
+        this.moveCamera(event.position);
 };
 
 Graphics.prototype.onZoom = function(event)
 {
     if (event.zoom)
-        this.parent.zoomCamera(event.zoom);
+        this.zoomCamera(event.zoom);
 };
 
 Graphics.prototype.moveCamera = function(pos)
