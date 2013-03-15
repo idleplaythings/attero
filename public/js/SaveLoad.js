@@ -1,94 +1,101 @@
-var SaveLoad =
+var SaveLoad = function(dispatcher)
 {
-  	saveMap: function(name)
-  	{
+    this.loadMenu = new LoadMenu(dispatcher, this);
 
-  		if (!name)
-  			throw "You need to give a name for the map.";
+    dispatcher.attach(new EventListener("LoadMapEvent", $.proxy(this.onLoad, this)));
+};
 
-  		var data = TileGrid.serialize();
-  		data.name = name;
-  		var json = JSON.stringify(data);
-  		SaveLoad.submitSaveAjax(json);
-  	},
+SaveLoad.prototype.saveMap = function(name)
+{
+	if (!name)
+		throw "You need to give a name for the map.";
 
-  	submitSaveAjax: function(data)
-  	{
-  		$.ajax({
-              type : 'POST',
-              url : '/gamemap',
-              contentType: 'application/json; charset=UTF-8',
-              dataType : 'json',
-              data: data,
-              success : SaveLoad.successSubmit,
-              error : SaveLoad.errorAjax
-          });
-  	},
+	var data = TileGrid.serialize();
+	data.name = name;
+	var json = JSON.stringify(data);
+	this.submitSaveAjax(json);
+};
 
-    createGame: function(unitcount, mapid)
-    {
+SaveLoad.prototype.submitSaveAjax = function(data)
+{
+    $.ajax({
+        type : 'POST',
+        url : '/gamemap',
+        contentType: 'application/json; charset=UTF-8',
+        dataType : 'json',
+        data: data,
+        success : this.successSubmit,
+        error : this.errorAjax
+    });
+};
 
-      if (!mapid || !unitcount)
+SaveLoad.prototype.createGame = function(unitcount, mapid)
+{
+    if (!mapid || !unitcount)
         throw "You need to give a unitcount and map id.";
 
-      var data = TileGrid.serialize();
-      data = {mapid: mapid, unitcount: unitcount};
-      var json = JSON.stringify(data);
-      SaveLoad.submitCreateAjax(json);
-    },
+    var data = TileGrid.serialize();
+    data = {mapid: mapid, unitcount: unitcount};
+    var json = JSON.stringify(data);
+    this.submitCreateAjax(json);
+};
 
-    submitCreateAjax: function(data)
-    {
-      $.ajax({
-              type : 'POST',
-              url : '/creategame',
-              contentType: 'application/json; charset=UTF-8',
-              dataType : 'json',
-              data: data,
-              success : SaveLoad.successSubmit,
-              error : SaveLoad.errorAjax
-          });
-    },
+SaveLoad.prototype.submitCreateAjax = function(data)
+{
+  $.ajax({
+        type : 'POST',
+        url : '/creategame',
+        contentType: 'application/json; charset=UTF-8',
+        dataType : 'json',
+        data: data,
+        success : this.successSubmit,
+        error : this.errorAjax
+    });
+};
 
-    loadMap: function(id)
-    {
-        if (typeof id == "undefined")
-            throw "You need to give a id for the map.";
+SaveLoad.prototype.onLoad = function()
+{
+    this.loadMenu.show();
+};
 
-        SaveLoad.submitLoadAjax(id);
-    },
+SaveLoad.prototype.loadMap = function(id)
+{
+    if (typeof id == "undefined")
+        throw "You need to give a id for the map.";
 
-    submitLoadAjax: function(id)
-    {
-        $.ajax({
-            type : 'GET',
-            url : '/gamemap/'+id,
-            dataType : 'json',
-            data: {},
-            success : SaveLoad.successLoad,
-            error : SaveLoad.errorAjax
-        });
-    },
+    this.submitLoadAjax(id);
+};
 
-    successLoad: function(data){
-        console.dir(data);
-        TileGrid.createFromJson(data);
-        ResourceLoader.loadTiles(SaveLoad.onLoaded);
-    },
+SaveLoad.prototype.submitLoadAjax = function(id)
+{
+    $.ajax({
+        type : 'GET',
+        url : '/gamemap/'+id,
+        dataType : 'json',
+        data: {},
+        success : this.successLoad,
+        error : this.errorAjax
+    });
+};
 
-    onLoaded: function()
-    {
-      ResourceLoader.remove();
-      console.log("loaded");
-    },
+SaveLoad.prototype.successLoad = function(data)
+{
+    TileGrid.createFromJson(data);
+    ResourceLoader.loadTiles(this.onLoaded);
+};
 
-    successSubmit: function(data){
-        console.dir(data);
-    },
+SaveLoad.prototype.onLoaded = function()
+{
+    ResourceLoader.remove();
+};
 
-    errorAjax: function(jqXHR, textStatus, errorThrown){
-        console.dir(jqXHR);
-        console.dir(errorThrown);
-        window.confirm.exception({error:"AJAX error: " +textStatus} , function(){});
-    }
-}
+SaveLoad.prototype.successSubmit = function(data)
+{
+    console.dir(data);
+};
+
+SaveLoad.prototype.errorAjax = function(jqXHR, textStatus, errorThrown){
+    console.dir(jqXHR);
+    console.dir(errorThrown);
+    window.confirm.exception({error:"AJAX error: " +textStatus} , function(){});
+};

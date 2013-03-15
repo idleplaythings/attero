@@ -13,8 +13,6 @@ var Landscaping = function Landscaping(dispatcher, tileGrid)
 
 Landscaping.prototype.onTileClicked = function(event)
 {
-    console.log("Kyl mie kuulen!");
-
     if ( ! event.tile)
         return;
 
@@ -25,25 +23,27 @@ Landscaping.prototype.onTileClicked = function(event)
     {
         case 1:
             if (this.selectedElement)
-                this.changeTexture(tile, 'setSubElementForTile');
+                this.modifyTerrain(tile, 'setSubElementForTile');
             else
-                this.changeTexture(tile, 'setSubTextureForTile');
+                this.modifyTerrain(tile, 'setSubTextureForTile');
             break;
         case 2:
-            this.changeTexture(tile, 'removeSubTextureFromTile');
+            this.modifyTerrain(tile, 'removeSubTextureFromTile');
             break;
         case 3:
-            this.changeElevation(tile, 1);
+            var targetElevation = tile.elevation + 1;
+            this.modifyTerrain(tile, 'changeElevation', targetElevation);
             break;
         case 4:
-            this.changeElevation(tile, -1);
+            var targetElevation = tile.elevation - 1;
+            this.modifyTerrain(tile, 'changeElevation', targetElevation);
             break;
     }
 
     this.updateTiles();
 };
 
-Landscaping.prototype.applyLargeSpray = function(callfunction, tile)
+Landscaping.prototype.applyLargeSpray = function(callfunction, tile, args)
 {
 
     var x = tile.position.x -2;
@@ -56,12 +56,12 @@ Landscaping.prototype.applyLargeSpray = function(callfunction, tile)
                 continue;
 
             if (Math.random() <= 0.1)
-                this.applySmallBrush(callfunction, oTile);
+                this.applySmallBrush(callfunction, oTile, args);
         }
     }
 };
 
-Landscaping.prototype.applyLargeBrush = function(callfunction, tile)
+Landscaping.prototype.applyLargeBrush = function(callfunction, tile, args)
 {
     var x = tile.position.x -1;
     var y = tile.position.y -1;
@@ -72,25 +72,25 @@ Landscaping.prototype.applyLargeBrush = function(callfunction, tile)
             if (!oTile)
                 continue;
 
-            this.applyMediumBrush(callfunction, oTile);
+            this.applyMediumBrush(callfunction, oTile, args);
         }
     }
 };
 
-Landscaping.prototype.applyMediumBrush = function(callfunction, tile)
+Landscaping.prototype.applyMediumBrush = function(callfunction, tile, args)
 {
     var tiles = tile.getAdjacentGameTilesInArray();
     tiles.push(tile);
 
     for (var i in tiles)
     {
-        this.applySmallBrush(callfunction, tiles[i]);
+        this.applySmallBrush(callfunction, tiles[i], args);
     }
 
 
 };
 
-Landscaping.prototype.applySmallBrush = function(callfunction, tile)
+Landscaping.prototype.applySmallBrush = function(callfunction, tile, args)
 {
     var selected, element, maskid, offset;
 
@@ -108,38 +108,38 @@ Landscaping.prototype.applySmallBrush = function(callfunction, tile)
         offset = element.getRandomOffset();
     }
 
-    this.callFunction(callfunction, tile, selected, maskid, offset);
+    this.callFunction(callfunction, tile, selected, maskid, offset, args);
 };
 
-Landscaping.prototype.callFunction = function(callfunction, tile, selected, maskid, offset)
+Landscaping.prototype.callFunction = function(callfunction, tile, selected, maskid, offset, args)
 {
-    this[callfunction](tile, selected, maskid, offset);
+    this[callfunction](tile, selected, maskid, offset, args);
 };
 
-Landscaping.prototype.changeTexture = function(tile, callfunction)
+Landscaping.prototype.modifyTerrain = function(tile, callfunction, args)
 {
     switch (this.selectedBrushSize)
     {
         case 1:
             this.applySmallBrush(
-                callfunction, tile);
+                callfunction, tile, args);
             break;
         case 2:
             this.applyMediumBrush(
-                callfunction, tile);
+                callfunction, tile, args);
             break;
         case 3:
             this.applyLargeBrush(
-                callfunction, tile);
+                callfunction, tile, args);
             break;
         case 4:
             this.applyLargeSpray(
-                callfunction, tile);
+                callfunction, tile, args);
             break;
     }
 };
 
-Landscaping.prototype.removeSubTextureFromTile = function(tile, element, mask, offset)
+Landscaping.prototype.removeSubTextureFromTile = function(tile, element, mask, offset, args)
 {
     tile.subElement = 0;
     tile.subElementOffset = 0;
@@ -147,16 +147,16 @@ Landscaping.prototype.removeSubTextureFromTile = function(tile, element, mask, o
     this.addTileToBeUpdated(tile);
 };
 
-Landscaping.prototype.setSubElementForTile = function(tile, element, mask, offset)
+Landscaping.prototype.setSubElementForTile = function(tile, element, mask, offset, args)
 {
-    window.availableTileElements[element].addToTile(tile, offset);
+    window.availableTileElements[element].addToTile(tile, offset, this);
 
     this.addTileToBeUpdated(tile);
 };
 
-Landscaping.prototype.setSubTextureForTile = function(tile, texture, mask, offset)
+Landscaping.prototype.setSubTextureForTile = function(tile, texture, mask, offset, args)
 {
-    window.availableTextures[texture].addToTile(tile, mask, offset);
+    window.availableTextures[texture].addToTile(tile, mask, offset, this);
 
     this.addTileToBeUpdated(tile);
 };
@@ -169,14 +169,13 @@ Landscaping.prototype.changeTileElement = function(tile)
     this.addTileToBeUpdated(tile);
 };
 
-Landscaping.prototype.changeElevation = function(tile, change)
+Landscaping.prototype.changeElevation = function(tile, selected, maskid, offset, targetElevation)
 {
     var tiles = tile.getAdjacentGameTilesInArray();
 
     var orginalElevation = tile.elevation;
-    var targetElevation = orginalElevation + change;
 
-    console.log("te: " + targetElevation + " oe: " + orginalElevation + " c: " + change);
+    console.log("te: " + targetElevation + " oe: " + orginalElevation);
     for (var i in tiles)
     {
         var t = tiles[i];

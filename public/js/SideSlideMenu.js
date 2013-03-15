@@ -87,11 +87,16 @@ SideSlideMenuTextures.prototype.populateElement = function()
 
 SideSlideMenuTextures.prototype.select = function( event )
 {
+    var element = $(event.srcElement);
     $(".sideSlideMenucontainer .texture").removeClass("selected");
     $(".sideSlideMenucontainer .tileElement").removeClass("selected");
-    $(this).addClass("selected");
-    this.landscaping.selectedTexture = $(this).data("texture");
+    element.addClass("selected");
+    this.landscaping.selectedTexture = element.data("texture");
     this.landscaping.selectedElement = null;
+
+    $(".sideSlideMenucontainer .brush").removeClass("selected");
+    $(".sideSlideMenucontainer .brush.default").addClass("selected");
+    this.landscaping.selectedBrush = 1;
 }
 
 var SideSlideMenuTileElements = function(position, amount, otherPos, height, textures, landscaping)
@@ -161,13 +166,16 @@ SideSlideMenuBrush.prototype.populateElement = function()
     for (var i in this.brushes)
     {
         var selected = '';
+        var c = '';
+
         if (first)
         {
+            c = ' default';
             selected = ' selected';
             first = false;
         }
 
-        $('<div class="slideEntry brush'+selected+'" data-brush="'+i+'" style="background-image:url('+this.brushes[i].src+')"></div>').appendTo(this.container);
+        $('<div class="slideEntry brush'+selected+c+'" data-brush="'+i+'" style="background-image:url('+this.brushes[i].src+')"></div>').appendTo(this.container);
     }
 
     $(".brush", this.container).on("click", $.proxy(this.selectBrush, this));
@@ -175,9 +183,10 @@ SideSlideMenuBrush.prototype.populateElement = function()
 
 SideSlideMenuBrush.prototype.selectBrush = function( event )
 {
+    var element = $(event.srcElement);
     $(".sideSlideMenucontainer .brush").removeClass("selected");
-    $(this).addClass("selected");
-    this.landscaping.selectedBrush = $(this).data("brush")+1;
+    element.addClass("selected");
+    this.landscaping.selectedBrush = element.data("brush")+1;
 }
 
 var SideSlideMenuBrushSize = function(position, amount, otherPos, height, landscaping)
@@ -215,7 +224,8 @@ SideSlideMenuBrushSize.prototype.populateElement = function()
 
 SideSlideMenuBrushSize.prototype.selectBrushSize = function( event )
 {
+    var element = $(event.srcElement);
     $(".sideSlideMenucontainer .brushSize").removeClass("selected");
-    $(this).addClass("selected");
-    this.landscaping.selectedBrushSize = $(this).data("brushsize")+1;
+    element.addClass("selected");
+    this.landscaping.selectedBrushSize = element.data("brushsize")+1;
 }

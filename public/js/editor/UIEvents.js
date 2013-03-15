@@ -1,8 +1,3 @@
-$(function(){
-	$('#saveicon').on('click', UIEvents.onSave);
-});
-
-
 window.UIEvents = {
 
     onGameTileClicked: function(tile, right)
