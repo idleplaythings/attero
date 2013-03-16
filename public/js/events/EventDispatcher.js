@@ -6,7 +6,6 @@ var Dispatcher = function()
 
 Dispatcher.prototype.attach = function(listener, name)
 {
-
     if (name instanceof Array)
     {
         for (var i in name)

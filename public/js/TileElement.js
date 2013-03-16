@@ -39,7 +39,7 @@ TileElement.prototype = {
 
     },
 
-    addToTile: function(tile, offset)
+    addToTile: function(tile, offset, landscaping)
     {
         tile.subElement = this.id;
         tile.subElementOffset = offset;
@@ -99,18 +99,18 @@ RoadTileElement.prototype.addToTexture =
     );
 }
 
-RoadTileElement.prototype.addToTile = function(tile, offset)
+RoadTileElement.prototype.addToTile = function(tile, offset, landscaping)
 {
     //var angle = Math.floor(Math.random()*360);
     tile.subElementAngle = 0;
     tile.subElement = this.id;
     tile.subElementOffset = 0;
 
-    this.updateAdjacentTiles(tile);
-    this.updateTile(tile);
+    this.updateAdjacentTiles(tile, landscaping);
+    this.updateTile(tile, landscaping);
 }
 
-RoadTileElement.prototype.updateTile = function(tile)
+RoadTileElement.prototype.updateTile = function(tile, landscaping)
 {
     var tiles = tile.getAdjacentGameTilesInArrayClockwise();
     tiles = this.ignoreRoads(tiles);
@@ -136,7 +136,7 @@ RoadTileElement.prototype.updateTile = function(tile)
         //tile.subElementOffset = this.many;
     }
 
-    Landscaping.addTileToBeUpdated(tile);
+    landscaping.addTileToBeUpdated(tile);
 }
 
 RoadTileElement.prototype.getRoadsMeetType = function(tiles)
@@ -184,20 +184,18 @@ RoadTileElement.prototype.getRoadsMeetType = function(tiles)
     var angle = TileGrid.getAdjacentTilesArrayAngle(first);
     var details =  {offset:offset, angle:angle};
 
-    console.dir(details);
-
     return details;
 }
 
 
-RoadTileElement.prototype.updateAdjacentTiles = function(tile)
+RoadTileElement.prototype.updateAdjacentTiles = function(tile, landscaping)
 {
     var tiles = tile.getAdjacentGameTilesInArray();
     tiles = this.ignoreRoads(tiles);
 
     for (var i in tiles){
         if (tiles[i] != null)
-            this.updateTile(tiles[i]);
+            this.updateTile(tiles[i], landscaping);
     }
 
 }

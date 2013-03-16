@@ -33,7 +33,7 @@
         <script src="@routes.Assets.at("js/FogOfWar.js")"></script>
         <script src="@routes.Assets.at("js/editor/UIEvents.js")"></script>
         <script src="@routes.Assets.at("js/ContourShadowDefinitions.js")"></script>
-        <script src="@routes.Assets.at("js/confirm.js")"></script>
+        <script src="@routes.Assets.at("js/Confirm.js")"></script>
         <script src="@routes.Assets.at("js/SaveLoad.js")"></script>
         <script src="@routes.Assets.at("js/MathLib.js")"></script>
         <script src="@routes.Assets.at("js/Interface.js")"></script>
@@ -42,6 +42,8 @@
         <script src="@routes.Assets.at("js/events/EventDispatcher.js")"></script>
         <script src="@routes.Assets.at("js/events/EventListener.js")"></script>
         <script src="@routes.Assets.at("js/events/Event.js")"></script>
+        <script src="@routes.Assets.at("js/button/Button.js")"></script>
+        <script src="@routes.Assets.at("js/menu/LoadMenu.js")"></script>
 
         <script>
             function dynamicResourcesLoaded()
@@ -61,9 +63,9 @@
 
                 var landscaping = new Landscaping(UIEventDispatcher, TileGrid);
 
-                window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:100px', 'auto', window.availableTextures, landscaping);
-                window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:100px', 'auto', landscaping);
-                window.brushMenu = new SideSlideMenuBrushSize('left', 0, 'top:180px', 'auto', landscaping);
+                window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:60px', 'auto', window.availableTextures, landscaping);
+                window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:60px', 'auto', landscaping);
+                window.brushMenu = new SideSlideMenuBrushSize('left', 0, 'top:140px', 'auto', landscaping);
                 window.tileElementMenu = new SideSlideMenuTileElements('right', 0, 'top:350px', 'auto', window.availableTileElements, landscaping);
 
                 var scrolling = new Scrolling(canvas, UIEventDispatcher);
@@ -74,6 +76,14 @@
 
                 window.interface = new Interface(coordinasService, TileGrid, canvas, UIEventDispatcher);
                 window.interface.init();
+
+                var saveLoad = new SaveLoad(UIEventDispatcher);
+
+                var topMenuRight = $('.menubar.top .right');
+
+                var loadIcon = new Button(topMenuRight, 'loadicon.png', UIEventDispatcher, new Event("player", "LoadMapEvent"));
+                var loadIcon = new Button(topMenuRight, 'saveicon.png', UIEventDispatcher, new Event("player", "SaveMapEvent"));
+
                 scrolling.init();
 
                 ResourceLoader.remove();
@@ -101,9 +111,7 @@
 					<h2>MAP EDITOR</h2>
 				</td>
 				<td class="right">
-					<button id="loadicon" style="background-image:url(/assets/resource/loadicon.png)">
-					<button id="saveicon" style="background-image:url(/assets/resource/saveicon.png)">
-					<button id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)">
+
 				</td>
 			</tr>
 		</table>

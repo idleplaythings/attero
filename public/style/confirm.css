@@ -1,18 +1,65 @@
 
-.confirm {
-	padding:10px 10px 10px 10px;
+.confirm
+{
+	padding:10px;
     background-color:black;
 	border-radius: 5px 5px 5px 5px;
     -moz-border-radius: 5px 5px 5px 5px;
-    -webkit-border-radius: 5px;
+    -webkit-border-radius: 30px;
 	position:fixed;
-	width:400px;
+	width:300px;
 	left:50%;
 	top:200px;
-	margin-left:-200px;
-	opacity:0.85;
+	margin-left:-150px;
 	z-index:999999;
+    opacity:0.9;
 	display:none;
     text-align: center;
-    color:white;
+    color:#8f8f8f;
+    border: 5px solid #202020;
+    box-shadow: 5px 5px 30px #000000;
+    background-image:url(../resource/raster.jpg);
+}
+
+.confirmoverlay
+{
+    background-color:black;
+    z-index:999998;
+    opacity:0.5;
+    position:absolute;
+    top:0px;
+    left:0px;
+    display:none;
+}
+
+.confirm h2
+{
+    text-transform: uppercase;
+}
+.confirm .msg
+{
+    width:100%;
+    margin-top:10px;
+    background-color: #1c1c1c;
+    border: 2px solid #202020;
+    box-shadow: inset 0px 0px 20px #111111;
+}
+
+.confirm table
+{
+    margin-top:5px;
+    width:100%;
+}
+
+.confirm .buttons
+{
+    width:100%;
+}
+.confirm button.ok
+{
+}
+
+.confirm button.cancel
+{
+    background-color:#3f1b17;
 }

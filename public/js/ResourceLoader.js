@@ -13,7 +13,7 @@ jQuery(function(){
         //41-50 roads
         41:  new RoadTileElement(41, ResourceLoader.loadImage("/assets/textures/road1.png")),
         42:  new RoadTileElement(42, ResourceLoader.loadImage("/assets/textures/road2.png")),
-        43:  new RoadTileElement(43, ResourceLoader.loadImage("/assets/textures/sunkenroad.png")),
+        //43:  new RoadTileElement(43, ResourceLoader.loadImage("/assets/textures/sunkenroad.png")),
         //51-60 fences
         51:  new RoadTileElement(51, ResourceLoader.loadImage("/assets/textures/rockwalls.png"), 50),
         52:  new RoadTileElement(52, ResourceLoader.loadImage("/assets/textures/rockwalls2.png"), 100),
@@ -41,7 +41,7 @@ jQuery(function(){
         43:  new BorderTexture(43, ResourceLoader.loadImage("/assets/textures/field3.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11), 0),
         44:  new BorderTexture(44, ResourceLoader.loadImage("/assets/textures/field4.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11), 5),
         //51-60
-        51:  new WaterTexture(51, ResourceLoader.loadImage("/assets/textures/water.png"), Array(1,2,3,4,5,6,7,8,9), Array(69, 35, 11))
+        //51:  new WaterTexture(51, ResourceLoader.loadImage("/assets/textures/water.png"), Array(1,2,3,4,5,6,7,8,9), Array(69, 35, 11))
 
     };
 
