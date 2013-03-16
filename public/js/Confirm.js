@@ -4,6 +4,7 @@ var Confirm = function Confirm(dispatcher)
 	this.element = null;
 	this.overlay = null;
 	$(window).resize($.proxy(this.resize, this));
+
 };
 
 Confirm.prototype.prepare = function()
