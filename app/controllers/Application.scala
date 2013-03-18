@@ -44,6 +44,20 @@ object Application extends Controller {
       }
   }
 
+  def mapNames() = Action
+  {
+    val mapStorage = new MapStorage();
+    Ok(Json.toJson(mapStorage.getMapNames().map(
+      keyVal =>
+        JsObject(
+          Seq(
+            "id" -> JsNumber(keyVal._1),
+            "name" -> JsString(keyVal._2)
+          )
+        )
+    ).toList));
+  }
+
   def loadMap(id: Long) = Action
   {
       val mapStorage = new MapStorage();
@@ -57,14 +71,15 @@ object Application extends Controller {
   {
     val mapStorage = new MapStorage();
     request =>
-      if (mapStorage.saveMap(GameMap.fromJson(request.body)) != 0)
+
+      val map = GameMap.fromJson(request.body);
+      if (mapStorage.canSave(map))
       {
-        println("ok!");
+        mapStorage.saveMap(map)
         Ok("""{"status": "ok"}""")
       }
       else
       {
-        println("bad req!");
         BadRequest("""{"status": "error"}""")
       }
   }

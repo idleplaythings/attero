@@ -31,6 +31,18 @@ class MapStorage()
     }
   }
 
+  def getMapNames(): Map[Int, String] =
+  {
+    DB.withConnection { implicit c =>
+      val mapSql = SQL("SELECT id, name FROM game_map")
+
+      mapSql()
+          .map(row =>
+          (row[Int]("id"), row[String]("name"))
+        ).toMap;
+    }
+  }
+
   def loadMap(id: Long) : Option[EditorGameMap] =
   {
     DB.withConnection { implicit c =>
@@ -62,7 +74,18 @@ class MapStorage()
     }
   }
 
-  def saveMap(map: SubmittedGameMap) =
+  def canSave(map: SubmittedGameMap): Boolean =
+  {
+    val name = map.name;
+    val reserved = DB.withConnection { implicit c =>
+      SQL("SELECT count(id) as found FROM game_map WHERE name = {name}")
+        .on('name -> map.name).apply().head[Int]("found")
+    }
+
+    return (reserved == 0)
+  }
+
+  def saveMap(map: SubmittedGameMap): Unit =
   {
     map.setTileIds;
     val mapid = DB.withConnection { implicit c =>
@@ -82,7 +105,5 @@ class MapStorage()
       //println(sql);
       SQL(sql).execute()
     }
-
-    1
   }
 }
