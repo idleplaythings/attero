@@ -145,14 +145,32 @@ SideSlideMenuTileElements.prototype.select = function( event )
     this.landscaping.selectedTexture = null;
 }
 
+var Brush = function Brush(id, src, title) {
+    this.id = id;
+    this.src = src;
+    this.title = title;
+}
+
+Brush.prototype.getId = function() {
+    return this.id;
+}
+
+Brush.prototype.getTitle = function() {
+    return this.title;
+}
+
+Brush.prototype.getSrc = function() {
+    return this.src;
+}
+
 var SideSlideMenuBrush = function(position, amount, otherPos, height, landscaping)
 {
     this.brushes = Array
     (
-        {id:1, src:'/assets/textures/brush.png'},
-        {id:2, src:'/assets/textures/eraser.png'},
-        {id:3, src:'/assets/textures/up.png'},
-        {id:4, src:'/assets/textures/down.png'}
+        new Brush(1, '/assets/textures/brush.png', 'Brush'),
+        new Brush(2, '/assets/textures/eraser.png', 'Eraser'),
+        new Brush(3, '/assets/textures/up.png', 'Up'),
+        new Brush(4, '/assets/textures/down.png', 'Down')
     );
     SideSlideMenu.call( this, position, amount, otherPos, height, landscaping );
 }
@@ -175,7 +193,9 @@ SideSlideMenuBrush.prototype.populateElement = function()
             first = false;
         }
 
-        $('<div class="slideEntry brush'+selected+c+'" data-brush="'+i+'" style="background-image:url('+this.brushes[i].src+')"></div>').appendTo(this.container);
+        var div = $('<div class="slideEntry brush'+selected+c+'" style="background-image:url('+this.brushes[i].src+')"></div>');
+        div.data('brush', this.brushes[i]);
+        $(div).appendTo(this.container);
     }
 
     $(".brush", this.container).on("click", $.proxy(this.selectBrush, this));
@@ -186,7 +206,13 @@ SideSlideMenuBrush.prototype.selectBrush = function( event )
     var element = $(event.srcElement);
     $(".sideSlideMenucontainer .brush").removeClass("selected");
     element.addClass("selected");
-    this.landscaping.selectedBrush = element.data("brush")+1;
+    var brush = element.data('brush');
+    this.landscaping.selectedBrush = brush.getId();
+
+    // var ngController = angular.element($('.menubar.bottom')[0]).controller();
+    var ngScope = angular.element($('.menubar.bottom')[0]).scope();
+    ngScope.setTool({ 'brush': brush });
+    ngScope.$apply();
 }
 
 var SideSlideMenuBrushSize = function(position, amount, otherPos, height, landscaping)

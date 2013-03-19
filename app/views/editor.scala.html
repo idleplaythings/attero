@@ -13,6 +13,7 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script src="@routes.Assets.at("js/lib/jquery.ba-throttle-debounce.min.js")"></script>
+        <script src="@routes.Assets.at("js/lib/angular/angular.min.js")"></script>
         <script src="@routes.Assets.at("js/requestAnimFrame.js")"></script>
         <script src="@routes.Assets.at("js/ResourceLoader.js")"></script>
         <script src="@routes.Assets.at("js/Loadable.js")"></script>
@@ -98,10 +99,47 @@
                 ResourceLoader.loadTiles(dynamicResourcesLoaded);
             }
 
+
+function MenuCtrl($scope) {
+
+    $scope.tool = null;
+
+    $scope.setTool = function(tool) {
+        $scope.tool = tool;
+    }
+
+  // $scope.todos = [
+  //   {text:'learn angular', done:true},
+  //   {text:'build an angular app', done:false}];
+
+  // $scope.addTodo = function() {
+  //   $scope.todos.push({text:$scope.todoText, done:false});
+  //   $scope.todoText = '';
+  // };
+
+  // $scope.remaining = function() {
+  //   var count = 0;
+  //   angular.forEach($scope.todos, function(todo) {
+  //     count += todo.done ? 0 : 1;
+  //   });
+  //   return count;
+  // };
+
+  // $scope.archive = function() {
+  //   var oldTodos = $scope.todos;
+  //   $scope.todos = [];
+  //   angular.forEach(oldTodos, function(todo) {
+  //     if (!todo.done) $scope.todos.push(todo);
+  //   });
+  // };
+}
+
+
+
         </script>
 
     </head>
-    <body oncontextmenu="return false;">
+    <body oncontextmenu="return false;" ng-app>
 		<table class="menubar top">
 			<tr>
 				<td class="left">
@@ -118,7 +156,11 @@
         <!-- <canvas id="testcanvas" width="40" height="40" style="position:absolute;z-index:200;border:1px solid white;"></canvas> -->
         <div id="texturecontainer"></div>
 
-        <table class="menubar bottom">
+        <div class="menubar bottom" ng-controller="MenuCtrl">
+            <img src="{{ tool.brush.getSrc() }}"> Selected tool: {{ tool.brush.getTitle() }}
+        </div>
+
+<!--         <table class="menubar bottom">
             <tr>
                 <td class="left">
 
@@ -128,6 +170,6 @@
                 <td class="right">
                 </td>
             </tr>
-        </table>
+        </table> -->
     </body>
 </html>
