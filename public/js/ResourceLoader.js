@@ -69,8 +69,6 @@ window.ResourceLoader =
     {
         TileGrid.initTiles();
 
-        console.log("loading tiles");
-
         ResourceLoader.addLoadable(new LoadTiles(window.tiles));
         ResourceLoader.addLoadable(new LoadTileGrid());
 
@@ -153,12 +151,13 @@ window.ResourceLoader =
         $("#resourceLoaderOverlay .done").hide();
         $("#resourceLoaderOverlay .bar").css("width", "100%");
 
+        ResourceLoader.numberLoaded = 0;
+        ResourceLoader.numberLoading = 0;
+
         if (ResourceLoader.callback && typeof(ResourceLoader.callback) == "function")
         {
             var c = ResourceLoader.callback;
             ResourceLoader.callback = null;
-            ResourceLoader.numberLoaded = 0;
-            ResourceLoader.numberLoading = 0;
             c();
         }
     },
@@ -198,7 +197,7 @@ window.ResourceLoader =
         }
     }
 
-}
+};
 
 
 

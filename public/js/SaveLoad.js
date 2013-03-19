@@ -55,7 +55,20 @@ SaveLoad.prototype.submitCreateAjax = function(data)
 
 SaveLoad.prototype.onLoad = function()
 {
-    this.loadMenu.show();
+    $.ajax({
+        type : 'GET',
+        url : '/mapnames',
+        dataType : 'json',
+        data: {},
+        success : $.proxy(this.onMapNamesLoaded, this),
+        error : this.errorAjax
+    });
+};
+
+SaveLoad.prototype.onMapNamesLoaded = function(data)
+{
+    console.log(data);
+    this.loadMenu.show(data);
 };
 
 SaveLoad.prototype.loadMap = function(id)
@@ -63,30 +76,8 @@ SaveLoad.prototype.loadMap = function(id)
     if (typeof id == "undefined")
         throw "You need to give a id for the map.";
 
-    this.submitLoadAjax(id);
-};
-
-SaveLoad.prototype.submitLoadAjax = function(id)
-{
-    $.ajax({
-        type : 'GET',
-        url : '/gamemap/'+id,
-        dataType : 'json',
-        data: {},
-        success : this.successLoad,
-        error : this.errorAjax
-    });
-};
-
-SaveLoad.prototype.successLoad = function(data)
-{
-    TileGrid.createFromJson(data);
-    ResourceLoader.loadTiles(this.onLoaded);
-};
-
-SaveLoad.prototype.onLoaded = function()
-{
-    ResourceLoader.remove();
+    ResourceLoader.addLoadable(new LoadMap(id));
+    ResourceLoader.run();
 };
 
 SaveLoad.prototype.successSubmit = function(data)
