@@ -79,7 +79,7 @@ class MapStorage()
     val name = map.name;
     val reserved = DB.withConnection { implicit c =>
       SQL("SELECT count(id) as found FROM game_map WHERE name = {name}")
-        .on('name -> map.name).apply().head[Int]("found")
+        .on('name -> map.name).apply().head[Long]("found")
     }
 
     return (reserved == 0)
