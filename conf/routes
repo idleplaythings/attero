@@ -15,6 +15,8 @@ GET     /game/:gameid/:userid       controllers.Application.game(gameid: Long, u
 GET 	/gamemap/:id				controllers.Application.loadMap(id: Long)
 POST 	/gamemap					controllers.Application.saveMap
 
+GET     /mapnames                   controllers.Application.mapNames
+
 POST /creategame                    controllers.Application.createGame
 
 GET /testCalc/:x/:y                 controllers.Application.testCalc(x: Integer, y: Integer)

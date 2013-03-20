@@ -35,8 +35,11 @@ Confirm.prototype.show = function(time)
 
 Confirm.prototype.setMessage = function(header, msg)
 {
-	$('<h2>'+header+'</h2>').prependTo(this.element);
-	$('<p>'+msg+'</p>').prependTo('.msg', this.element);
+	if (header)
+		$('<h2>'+header+'</h2>').prependTo(this.element);
+
+	if (msg)
+		$('<p>'+msg+'</p>').prependTo('.msg', this.element);
 
 	return this;
 };

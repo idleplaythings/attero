@@ -73,14 +73,14 @@ object Application extends Controller {
     request =>
 
       val map = GameMap.fromJson(request.body);
-      if (mapStorage.canSave(map))
+      if (! mapStorage.canSave(map))
       {
-        mapStorage.saveMap(map)
-        Ok("""{"status": "ok"}""")
+        Ok("""{"status": "duplicate name"}""")
       }
       else
       {
-        BadRequest("""{"status": "error"}""")
+        mapStorage.saveMap(map)
+        Ok("""{"status": "ok"}""")
       }
   }
 
