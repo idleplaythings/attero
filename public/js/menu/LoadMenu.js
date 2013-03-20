@@ -25,7 +25,7 @@ LoadMenu.prototype.remove = function()
     return this;
 };
 
-Confirm.prototype.populateMapList = function(data)
+LoadMenu.prototype.populateMapList = function(data)
 {
     $('.maplist', this.element).remove();
 
@@ -35,10 +35,10 @@ Confirm.prototype.populateMapList = function(data)
         $('<div class="mapname" data-mapid="'+data[i].id+'">'+data[i].name+'</div>').on('click', $.proxy(this.onMapNameClicked, this)).appendTo(maplist);
     }
 
-    maplist.appendTo('.msg', this.element);
+    maplist.appendTo(this.element.find('.msg'));
 };
 
-Confirm.prototype.onMapNameClicked = function(event)
+LoadMenu.prototype.onMapNameClicked = function(event)
 {
     this.remove();
 
@@ -47,7 +47,7 @@ Confirm.prototype.onMapNameClicked = function(event)
     this.saveLoad.loadMap(id);
 };
 
-Confirm.prototype.show = function(data)
+LoadMenu.prototype.show = function(data)
 {
     this.populateMapList(data);
     time = 250;

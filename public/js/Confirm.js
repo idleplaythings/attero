@@ -35,11 +35,12 @@ Confirm.prototype.show = function(time)
 
 Confirm.prototype.setMessage = function(header, msg)
 {
+	console.log("");
 	if (header)
 		$('<h2>'+header+'</h2>').prependTo(this.element);
 
 	if (msg)
-		$('<p>'+msg+'</p>').prependTo('.msg', this.element);
+		$('<p>'+msg+'</p>').prependTo(this.element.find('.msg'));
 
 	return this;
 };
@@ -48,8 +49,8 @@ Confirm.prototype.setOk = function(effect)
 {
 	var okElement = $('<td><button class="ok" style="background-image:url(/assets/resource/okicon.png)"></td>');
 
-	okElement.appendTo('.buttons', this.element);
-	this.bindThingToElement(effect, okElement);
+	okElement.appendTo(this.element.find('.buttons'));
+	this.bindThingToElement(effect, okElement.find('button'));
 
 	return this;
 };
@@ -57,8 +58,10 @@ Confirm.prototype.setOk = function(effect)
 Confirm.prototype.setCancel = function(effect)
 {
 	var cancelElement = $('<td><button class="cancel" style="background-image:url(/assets/resource/cancelicon.png)"></td>');
-	cancelElement.appendTo('.buttons', this.element);
-	this.bindThingToElement(effect, cancelElement);
+	cancelElement.appendTo(this.element.find('.buttons'));
+
+	cancelElement.find('button').on('click', $.proxy(this.remove, this));
+	this.bindThingToElement(effect, cancelElement.find('button'));
 
 	return this;
 };
@@ -83,9 +86,6 @@ Confirm.prototype.bindThingToElement = function(thing, element)
 	{
 		throw "Confirm was unable to determine what the 'thing' was!";
 	}
-
-	element.on('click', $.proxy(this.remove, this));
-
 };
 
 Confirm.prototype.remove = function()

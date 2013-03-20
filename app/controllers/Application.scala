@@ -69,9 +69,10 @@ object Application extends Controller {
 
   def saveMap = Action(parse.json(maxLength = 1024 * 2000))
   {
-    val mapStorage = new MapStorage();
     request =>
-
+    {
+      println("Save map");
+      val mapStorage = new MapStorage();
       val map = GameMap.fromJson(request.body);
       if (! mapStorage.canSave(map))
       {
@@ -82,6 +83,7 @@ object Application extends Controller {
         mapStorage.saveMap(map)
         Ok("""{"status": "ok"}""")
       }
+    }
   }
 
   def createGame = Action(parse.json(maxLength = 1024 * 2000))

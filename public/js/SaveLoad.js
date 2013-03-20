@@ -1,32 +1,15 @@
 var SaveLoad = function(dispatcher)
 {
     this.loadMenu = new LoadMenu(dispatcher, this);
+    this.saveMenu = new SaveMenu(dispatcher, this);
 
     dispatcher.attach(new EventListener("LoadMapEvent", $.proxy(this.onLoad, this)));
+    dispatcher.attach(new EventListener("SaveMapEvent", $.proxy(this.onSave, this)));
 };
 
-SaveLoad.prototype.saveMap = function(name)
+SaveLoad.prototype.onSave = function()
 {
-	if (!name)
-		throw "You need to give a name for the map.";
-
-	var data = TileGrid.serialize();
-	data.name = name;
-	var json = JSON.stringify(data);
-	this.submitSaveAjax(json);
-};
-
-SaveLoad.prototype.submitSaveAjax = function(data)
-{
-    $.ajax({
-        type : 'POST',
-        url : '/gamemap',
-        contentType: 'application/json; charset=UTF-8',
-        dataType : 'json',
-        data: data,
-        success : this.successSubmit,
-        error : this.errorAjax
-    });
+    this.saveMenu.show();
 };
 
 SaveLoad.prototype.createGame = function(unitcount, mapid)

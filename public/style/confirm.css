@@ -45,6 +45,18 @@
     box-shadow: inset 0px 0px 20px #111111;
 }
 
+.confirm input
+{
+    color: #8f8f8f;
+    background-color: black;
+    border: 2px solid #8f8f8f;
+    width: 80%;
+    height: 20px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
 .confirm table
 {
     margin-top:5px;

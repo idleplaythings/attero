@@ -45,6 +45,7 @@
         <script src="@routes.Assets.at("js/events/Event.js")"></script>
         <script src="@routes.Assets.at("js/button/Button.js")"></script>
         <script src="@routes.Assets.at("js/menu/LoadMenu.js")"></script>
+        <script src="@routes.Assets.at("js/menu/SaveMenu.js")"></script>
 
         <script>
             function dynamicResourcesLoaded()
@@ -83,7 +84,7 @@
                 var topMenuRight = $('.menubar.top .right');
 
                 var loadIcon = new Button(topMenuRight, 'loadicon.png', UIEventDispatcher, new Event("player", "LoadMapEvent"));
-                var loadIcon = new Button(topMenuRight, 'saveicon.png', UIEventDispatcher, new Event("player", "SaveMapEvent"));
+                var saveIcon = new Button(topMenuRight, 'saveicon.png', UIEventDispatcher, new Event("player", "SaveMapEvent"));
 
                 scrolling.init();
 
