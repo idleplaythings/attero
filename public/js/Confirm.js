@@ -3,8 +3,11 @@ var Confirm = function Confirm(dispatcher)
 	this.dispatcher = dispatcher;
 	this.element = null;
 	this.overlay = null;
-	$(window).resize($.proxy(this.resize, this));
 
+	this.okElement = null;
+	this.cancelElement = null;
+
+	$(window).resize($.proxy(this.resize, this));
 };
 
 Confirm.prototype.prepare = function()
@@ -15,7 +18,7 @@ Confirm.prototype.prepare = function()
 	if (this.overlay)
 		this.overlay.remove();
 
-	this.element = $('<div class="confirm"><div class="msg"></div><table><tr class="buttons"></tr></div></div>').appendTo("body");
+	this.element = $('<div class="confirm"><h2></h2><div class="msgcontainer"><p class="msg"></p><p class="error"></p></div><table><tr class="buttons"></tr></div></div>').appendTo("body");
 
 	var height = window.innerHeight;
     var width = window.innerWidth;
@@ -35,35 +38,40 @@ Confirm.prototype.show = function(time)
 
 Confirm.prototype.setMessage = function(header, msg)
 {
-	console.log("");
 	if (header)
-		$('<h2>'+header+'</h2>').prependTo(this.element);
+		this.element.find('h2').html(header);
 
 	if (msg)
-		$('<p>'+msg+'</p>').prependTo(this.element.find('.msg'));
+		this.element.find('.msg').html(msg);
+
+	return this;
+};
+
+Confirm.prototype.setError = function(msg)
+{
+	this.element.find('.error').html(msg);
 
 	return this;
 };
 
 Confirm.prototype.setOk = function(effect)
 {
-	var okElement = $('<td><button class="ok" style="background-image:url(/assets/resource/okicon.png)"></td>');
+	this.okElement = $('<td><button class="ok" style="background-image:url(/assets/resource/okicon.png)"></td>');
 
-	okElement.appendTo(this.element.find('.buttons'));
-	this.bindThingToElement(effect, okElement.find('button'));
+	this.okElement.appendTo(this.element.find('.buttons'));
+	this.bindThingToElement(effect, this.okElement.find('button'));
 
 	return this;
 };
 
 Confirm.prototype.setCancel = function(effect)
 {
-	var cancelElement = $('<td><button class="cancel" style="background-image:url(/assets/resource/cancelicon.png)"></td>');
-	cancelElement.appendTo(this.element.find('.buttons'));
+	this.cancelElement = $('<td><button class="cancel" style="background-image:url(/assets/resource/cancelicon.png)"></td>');
+	this.cancelElement.appendTo(this.element.find('.buttons'));
 
-	cancelElement.find('button').on('click', $.proxy(this.remove, this));
-	this.bindThingToElement(effect, cancelElement.find('button'));
+	this.cancelElement.find('button').on('click', $.proxy(this.remove, this));
+	this.bindThingToElement(effect, this.cancelElement.find('button'));
 
-	return this;
 };
 
 Confirm.prototype.bindThingToElement = function(thing, element)

@@ -36,7 +36,7 @@
 {
     text-transform: uppercase;
 }
-.confirm .msg
+.confirm .msgcontainer
 {
     width:100%;
     margin-top:10px;
@@ -69,6 +69,12 @@
 }
 .confirm button.ok
 {
+}
+
+.confirm .error
+{
+    color:#d83035;
+    font-size:12px;
 }
 
 .confirm button.cancel

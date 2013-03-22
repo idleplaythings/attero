@@ -82,7 +82,7 @@ class MapStorage()
         .on('name -> map.name).apply().head[Long]("found")
     }
 
-    return (reserved == 0)
+    reserved == 0
   }
 
   def saveMap(map: SubmittedGameMap) =

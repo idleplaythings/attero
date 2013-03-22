@@ -35,7 +35,7 @@ LoadMenu.prototype.populateMapList = function(data)
         $('<div class="mapname" data-mapid="'+data[i].id+'">'+data[i].name+'</div>').on('click', $.proxy(this.onMapNameClicked, this)).appendTo(maplist);
     }
 
-    maplist.appendTo(this.element.find('.msg'));
+    maplist.appendTo(this.element.find('.msgcontainer'));
 };
 
 LoadMenu.prototype.onMapNameClicked = function(event)
