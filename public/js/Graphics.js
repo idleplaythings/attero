@@ -7,11 +7,14 @@ var Graphics = function(dispatcher){
     this.renderer = null,
     this.ambientLightColor = 0xffffff,
     this.light = null;
+    this.zoom = 1;
 
     this.dispatcher = dispatcher;
 
     this.dispatcher.attach(new EventListener("ScrollEvent", $.proxy(this.onScroll, this)));
     this.dispatcher.attach(new EventListener("ZoomEvent", $.proxy(this.onZoom, this)));
+
+    $(window).resize($.proxy(this.resize, this));
 };
 
 Graphics.prototype.constructor = Graphics;
@@ -60,8 +63,15 @@ Graphics.prototype.render = function()
     this.renderer.render( Grid.scene, Graphics.camera );
 };
 
+Graphics.prototype.resize = function()
+{
+    this.zoomCamera(this.zoom);
+    this.renderer.setSize( window.innerWidth, window.innerHeight );
+};
+
 Graphics.prototype.zoomCamera = function(zoom)
 {
+    this.zoom = zoom;
     var width = window.innerWidth;
     var height = window.innerHeight;
 

@@ -32,7 +32,6 @@
         <script src="@routes.Assets.at("js/WaterLayer.js")"></script>
         <script src="@routes.Assets.at("js/Grid.js")"></script>
         <script src="@routes.Assets.at("js/FogOfWar.js")"></script>
-        <script src="@routes.Assets.at("js/editor/UIEvents.js")"></script>
         <script src="@routes.Assets.at("js/ContourShadowDefinitions.js")"></script>
         <script src="@routes.Assets.at("js/Confirm.js")"></script>
         <script src="@routes.Assets.at("js/SaveLoad.js")"></script>
@@ -60,8 +59,6 @@
                 Grid.init();
 
                 var canvas = jQuery(".webglCanvas");
-
-                canvas.on("click", TileGrid.onGridClicked);
 
                 var landscaping = new Landscaping(UIEventDispatcher, TileGrid);
 
