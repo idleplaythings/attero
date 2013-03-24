@@ -21,7 +21,7 @@ TileElement.prototype = {
         return Math.floor(Math.random()*l);
     },
 
-    getImageData: function(offset)
+    getImageData: function(offset, offsety)
     {
         if (this.imageDataArrays[offset])
         {
@@ -31,21 +31,24 @@ TileElement.prototype = {
         var finalContext = finalCanvas.getContext("2d");
 
 
-        var t = offset*40;
-        finalContext.drawImage(this.img, t , 0, 40, 40, 0, 0, 40, 40);
+        var x = offset*40;
+        var y = offsety*40;
+
+        finalContext.drawImage(this.img, x , y, 40, 40, 0, 0, 40, 40);
 
         this.imageDataArrays[offset] = finalContext.getImageData(0, 0, 40, 40);
         return this.imageDataArrays[offset];
 
     },
 
-    addToTile: function(tile, offset, landscaping)
+    addToTile: function(tile, offsetx, offsety, landscaping)
     {
         tile.subElement = this.id;
-        tile.subElementOffset = offset;
+        tile.subElementOffset = offsetx;
+        tile.subElementOffset2 = offsety;
     },
 
-    addToTexture: function(tile, targetData, segment, offset, undershadow)
+    addToTexture: function(tile, targetData, segment, offset, offset2, undershadow)
     {
         if (this.underShadow != undershadow)
             return;
@@ -53,7 +56,7 @@ TileElement.prototype = {
         var pos = tile.getTextureSegmentLocation(segment);
         ImageManipulation.addImageDataToGridTexture(
             targetData,
-            this.getImageData(offset),
+            this.getImageData(offset, offset2),
             pos.x,
             pos.y,
             40,
@@ -78,7 +81,7 @@ var RoadTileElement = function(id, img, concealment, height)
 RoadTileElement.prototype = Object.create( TileElement.prototype );
 
 RoadTileElement.prototype.addToTexture =
-    function(tile, targetData, segment, offset, undershadow)
+    function(tile, targetData, segment, offset, offset2, undershadow)
 {
     //console.log("undershadow: " + undershadow );
     //console.log("this.underShadow: " + this.underShadow );
@@ -90,7 +93,7 @@ RoadTileElement.prototype.addToTexture =
 
     ImageManipulation.addImageDataToGridTexture(
         targetData,
-        this.getImageData(offset, angle),
+        this.getImageData(offset, offset2, angle),
         pos.x,
         pos.y,
         40,
@@ -99,12 +102,13 @@ RoadTileElement.prototype.addToTexture =
     );
 }
 
-RoadTileElement.prototype.addToTile = function(tile, offset, landscaping)
+RoadTileElement.prototype.addToTile = function(tile, offsetx, offsety, landscaping)
 {
     //var angle = Math.floor(Math.random()*360);
     tile.subElementAngle = 0;
     tile.subElement = this.id;
     tile.subElementOffset = 0;
+    tile.subElementOffset2 = offsety;
 
     this.updateAdjacentTiles(tile, landscaping);
     this.updateTile(tile, landscaping);
@@ -236,15 +240,16 @@ RoadTileElement.prototype.ignoreRoads = function(tiles)
 }
 
 
-RoadTileElement.prototype.getImageData = function(offset, angle)
+RoadTileElement.prototype.getImageData = function(offset, offsety, angle)
 {
     var canvas = $('<canvas width="40" height="40"></canvas>').get(0);
     var context = canvas.getContext("2d");
 
     //finalContext.drawImage(this.img, t , 0, 40, 40, 0, 0, 40, 40);
-    var t = offset*40;
+    var x = offset*40;
+    var y = offsety*40;
 
-    ImageManipulation.drawAndRotate(context, t, 0, 40, 40, 40, 40, angle, this.img, false);
+    ImageManipulation.drawAndRotate(context, x, y, 40, 40, 40, 40, angle, this.img, false);
 
     return context.getImageData(0, 0, 40, 40);
 

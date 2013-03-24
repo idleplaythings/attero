@@ -8,6 +8,7 @@ var Graphics = function(dispatcher){
     this.ambientLightColor = 0xffffff,
     this.light = null;
     this.zoom = 1;
+    this.ambientLight = null;
 
     this.dispatcher = dispatcher;
 
@@ -36,8 +37,8 @@ Graphics.prototype.init = function()
     this.camera = camera;
     this.scene.add( camera );
 
-    var ambientLight = new THREE.AmbientLight(Graphics.ambientLightColor);
-    this.scene.add(ambientLight);
+    this.ambientLight = new THREE.AmbientLight(Graphics.ambientLightColor);
+    this.scene.add(this.ambientLight);
 
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize( width, height );

@@ -60,7 +60,7 @@
 
                 var canvas = jQuery(".webglCanvas");
 
-                var landscaping = new Landscaping(UIEventDispatcher, TileGrid);
+                window.landscaping = new Landscaping(UIEventDispatcher, TileGrid);
 
                 window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:60px', 'auto', window.availableTextures, landscaping);
                 window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:60px', 'auto', landscaping);
