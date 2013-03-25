@@ -111,7 +111,7 @@ Landscaping.prototype.applySmallBrush = function(callfunction, tile, args)
 
     }
 
-    offsety = this.offsety;
+    var offsety = this.offsety;
 
     this.callFunction(callfunction, tile, selected, maskid, offset, offsety, args);
 };
@@ -160,7 +160,7 @@ Landscaping.prototype.setSubElementForTile = function(tile, element, mask, offse
     this.addTileToBeUpdated(tile);
 };
 
-Landscaping.prototype.setSubTextureForTile = function(tile, texture, mask, offset, args)
+Landscaping.prototype.setSubTextureForTile = function(tile, texture, mask, offset, offsety, args)
 {
     window.availableTextures[texture].addToTile(tile, mask, offset, offsety, this);
 

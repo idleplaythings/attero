@@ -14,7 +14,6 @@ TileElement.prototype = {
 
 	constructor: TileElement,
 
-
     getRandomOffset: function()
     {
         var l = this.img.width / 40;
@@ -23,9 +22,9 @@ TileElement.prototype = {
 
     getImageData: function(offset, offsety)
     {
-        if (this.imageDataArrays[offset])
+        if (this.imageDataArrays[offset + "x" + offsety])
         {
-            return this.imageDataArrays[offset];
+            return this.imageDataArrays[offset + "x" + offsety];
         }
         var finalCanvas = $('<canvas width="40" height="40"></canvas>').get(0);
         var finalContext = finalCanvas.getContext("2d");
@@ -34,10 +33,12 @@ TileElement.prototype = {
         var x = offset*40;
         var y = offsety*40;
 
+        console.log(x + ", " + y);
+
         finalContext.drawImage(this.img, x , y, 40, 40, 0, 0, 40, 40);
 
-        this.imageDataArrays[offset] = finalContext.getImageData(0, 0, 40, 40);
-        return this.imageDataArrays[offset];
+        this.imageDataArrays[offset + "x" + offsety] = finalContext.getImageData(0, 0, 40, 40);
+        return this.imageDataArrays[offset + "x" + offsety];
 
     },
 
@@ -248,6 +249,8 @@ RoadTileElement.prototype.getImageData = function(offset, offsety, angle)
     //finalContext.drawImage(this.img, t , 0, 40, 40, 0, 0, 40, 40);
     var x = offset*40;
     var y = offsety*40;
+
+    console.log(x + ", " + y);
 
     ImageManipulation.drawAndRotate(context, x, y, 40, 40, 40, 40, angle, this.img, false);
 
