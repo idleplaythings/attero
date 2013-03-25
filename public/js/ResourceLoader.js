@@ -19,7 +19,8 @@ jQuery(function(){
         //43:  new RoadTileElement(43, ResourceLoader.loadImage("/assets/textures/sunkenroad.png")),
         //51-60 fences
         51:  new RoadTileElement(51, ResourceLoader.loadImage("/assets/textures/rockwalls.png"), 50),
-        52:  new RoadTileElement(52, ResourceLoader.loadImage("/assets/textures/rockwalls2.png"), 100)
+        52:  new RoadTileElement(52, ResourceLoader.loadImage("/assets/textures/rockwalls2.png"), 100),
+        53:  new RoadTileElement(53, ResourceLoader.loadImage("/assets/textures/hedge.png"), 50)
 
     };
 
