@@ -10,7 +10,9 @@ basePath = '..';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
+  'public/js/lib/augment.js/augment.min.js',
   'public/js/DIContainer.js',
+  'public/js/ExpiryManager.js',
   'public/js/Scrolling.js',
   'spec/javascripts/*Spec.js'
 ];
