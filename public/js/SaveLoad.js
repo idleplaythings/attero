@@ -60,6 +60,7 @@ SaveLoad.prototype.loadMap = function(id)
         throw "You need to give a id for the map.";
 
     ResourceLoader.addLoadable(new LoadMap(id));
+    location.hash = id;
     ResourceLoader.run();
 };
 

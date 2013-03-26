@@ -33,8 +33,6 @@ TileElement.prototype = {
         var x = offset*40;
         var y = offsety*40;
 
-        console.log(x + ", " + y);
-
         finalContext.drawImage(this.img, x , y, 40, 40, 0, 0, 40, 40);
 
         this.imageDataArrays[offset + "x" + offsety] = finalContext.getImageData(0, 0, 40, 40);
@@ -249,8 +247,6 @@ RoadTileElement.prototype.getImageData = function(offset, offsety, angle)
     //finalContext.drawImage(this.img, t , 0, 40, 40, 0, 0, 40, 40);
     var x = offset*40;
     var y = offsety*40;
-
-    console.log(x + ", " + y);
 
     ImageManipulation.drawAndRotate(context, x, y, 40, 40, 40, 40, angle, this.img, false);
 

@@ -60,7 +60,6 @@ SideSlideMenuTextures.prototype = Object.create( SideSlideMenu.prototype );
 SideSlideMenuTextures.prototype.populateElement = function()
 {
     var perRow = Math.ceil(Object.keys(this.textures).length / 5);
-    console.log(perRow);
     var count = 0;
     var first = true;
 

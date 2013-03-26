@@ -110,6 +110,8 @@ class MapStorage()
       }
 
       println("map id: " + mapid + " inserted");
+
+      mapid
     }
   }
 }

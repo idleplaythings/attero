@@ -25,7 +25,7 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def editor = Action {
+  def editor() = Action {
     Ok(views.html.editor())
   }
 
@@ -80,8 +80,8 @@ object Application extends Controller {
       }
       else
       {
-        mapStorage.saveMap(map)
-        Ok("""{"status": "ok"}""")
+        val id = mapStorage.saveMap(map)
+        Ok("{\"status\": \"ok\", \"id\": \""+id+"\" }")
       }
     }
   }
