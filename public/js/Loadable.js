@@ -45,7 +45,6 @@ LoadMap.prototype.submitLoadAjax = function(id)
 LoadMap.prototype.successLoad = function(data)
 {
     ResourceLoader.onResourceLoaded( null );
-
     TileGrid.createFromJson(data);
     ResourceLoader.loadTiles(this.onLoaded);
     ResourceLoader.startBatch();

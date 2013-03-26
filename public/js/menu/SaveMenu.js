@@ -61,6 +61,9 @@ SaveMenu.prototype.successSave = function(data)
         this.setMessage("Save map", "Map saved succesfully!");
         this.cancelElement.find('button').removeClass('cancel');
         this.cancelElement.find('button').css('background-image', 'url(/assets/resource/okicon.png)');
+
+        location.hash = data.id;
+
         this.cancelElement.show();
     }
 
