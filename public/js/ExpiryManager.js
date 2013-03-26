@@ -3,33 +3,49 @@ var ExpiryManager = function ExpiryManager() {
 };
 
 ExpiryManager.prototype.register = function(id) {
-    this._items = this._items.filter(function(item) {
-        return item.id !== id;
-    });
-
-    this._items.push({
-        id: id,
-        updated: Date.now()
-    });
+    this._removeExistingItem(id);
+    this._addItem(id);
 };
 
 ExpiryManager.prototype.collect = function(minimumAge) {
-    var collect;
-
     if (typeof minimumAge === 'undefined') {
-        collect = this._items.map(function(item) { return item.id; });
-        this._items = [];
-        return collect;
+        return this._collectAll();
     }
 
+    return this._collectOlderThan(minimumAge);
+};
+
+ExpiryManager.prototype._removeExistingItem = function(id) {
+    this._items = this._items.filter(function(item) {
+        return item.id !== id;
+    });
+};
+
+ExpiryManager.prototype._addItem = function(id) {
+    this._items.push({ id: id, updated: Date.now() });
+};
+
+ExpiryManager.prototype._collectAll = function() {
+    var items = this._items;
+
+    this._items = [];
+
+    return items.map(this._mapToId);
+};
+
+ExpiryManager.prototype._collectOlderThan = function(minimumAge) {
+    var items = this._items;
     var timestamp = Date.now();
 
-    this._items.map(function(item) {
-        item.collect = timestamp - item.updated > minimumAge;
+    this._items = items.filter(function(item) {
+        return timestamp - item.updated < minimumAge;
     });
 
-    collect = this._items.filter(function(item) { return item.collect; }).map(function(item) { return item.id; });
-    this._items = this._items.filter(function(item) { return item.collect === false; });
+    return items.filter(function(item) {
+        return timestamp - item.updated > minimumAge;
+    }).map(this._mapToId);
+};
 
-    return collect;
+ExpiryManager.prototype._mapToId = function(item) {
+    return item.id;
 };
