@@ -86,7 +86,7 @@ SideSlideMenuTextures.prototype.populateElement = function()
 
 SideSlideMenuTextures.prototype.select = function( event )
 {
-    var element = $(event.srcElement);
+    var element = $(event.target);
     $(".sideSlideMenucontainer .texture").removeClass("selected");
     $(".sideSlideMenucontainer .tileElement").removeClass("selected");
     element.addClass("selected");
@@ -136,13 +136,17 @@ SideSlideMenuTileElements.prototype.populateElement = function()
 
 SideSlideMenuTileElements.prototype.select = function( event )
 {
-    var element = $(event.srcElement);
+    var element = $(event.target);
     $(".sideSlideMenucontainer .texture").removeClass("selected");
     $(".sideSlideMenucontainer .tileElement").removeClass("selected");
     element.addClass("selected");
     this.landscaping.selectedElement = element.data("element");
     this.landscaping.selectedTexture = null;
-}
+
+    $(".sideSlideMenucontainer .brush").removeClass("selected");
+    $(".sideSlideMenucontainer .brush.default").addClass("selected");
+    this.landscaping.selectedBrush = 1;
+};
 
 var SideSlideMenuBrush = function(position, amount, otherPos, height, landscaping)
 {
@@ -182,7 +186,7 @@ SideSlideMenuBrush.prototype.populateElement = function()
 
 SideSlideMenuBrush.prototype.selectBrush = function( event )
 {
-    var element = $(event.srcElement);
+    var element = $(event.target);
     $(".sideSlideMenucontainer .brush").removeClass("selected");
     element.addClass("selected");
     this.landscaping.selectedBrush = element.data("brush")+1;
@@ -223,7 +227,7 @@ SideSlideMenuBrushSize.prototype.populateElement = function()
 
 SideSlideMenuBrushSize.prototype.selectBrushSize = function( event )
 {
-    var element = $(event.srcElement);
+    var element = $(event.target);
     $(".sideSlideMenucontainer .brushSize").removeClass("selected");
     element.addClass("selected");
     this.landscaping.selectedBrushSize = element.data("brushsize")+1;

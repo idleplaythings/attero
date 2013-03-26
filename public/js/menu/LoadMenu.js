@@ -42,7 +42,7 @@ LoadMenu.prototype.onMapNameClicked = function(event)
 {
     this.remove();
 
-    var element = $(event.srcElement);
+    var element = $(event.target);
     var id = element.data("mapid");
     this.saveLoad.loadMap(id);
 };
