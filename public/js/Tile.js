@@ -90,7 +90,9 @@ Tile.prototype.createTexture = function()
             continue;
 
         var offset = this.subTiles[i].subElementOffset;
-        window.availableTileElements[subElement].addToTexture(this, this.textureData, i, offset, true);
+        var offset2 = this.subTiles[i].subElementOffset2;
+        window.availableTileElements[subElement].addToTexture(
+            this, this.textureData, i, offset, offset2, true);
     }
 
     this.createShadows();
@@ -101,7 +103,9 @@ Tile.prototype.createTexture = function()
             continue;
 
         var offset = this.subTiles[i].subElementOffset;
-        window.availableTileElements[subElement].addToTexture(this, this.textureData, i, offset, false);
+        var offset2 = this.subTiles[i].subElementOffset2;
+        window.availableTileElements[subElement].addToTexture(
+            this, this.textureData, i, offset, offset2, false);
     }
 }
 

@@ -100,6 +100,13 @@ Scrolling.prototype.scroll = function (dx, dy){
 
     this.position.x -= position.x;
     this.position.y += position.y;
+
+    if (this.position.x < 0 )
+        this.position.x = 0;
+
+    if (this.position.y > 0 )
+        this.position.y = 0;
+
     //Graphics.moveCamera({x:dx*speed, y:dy*speed});
 
     var scrollEvent = new Event("player", "ScrollEvent");

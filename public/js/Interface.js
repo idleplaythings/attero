@@ -40,6 +40,7 @@ Interface.prototype.onScroll = function(event)
 
 Interface.prototype.onClicked = function(event)
 {
+    console.log("tileclick");
     var gameTile = this.getTileFromEvent(event);
 
     var clickTileEvent = new Event("player", "ClickTileEvent");

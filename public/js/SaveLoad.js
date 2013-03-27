@@ -1,32 +1,15 @@
 var SaveLoad = function(dispatcher)
 {
     this.loadMenu = new LoadMenu(dispatcher, this);
+    this.saveMenu = new SaveMenu(dispatcher, this);
 
     dispatcher.attach(new EventListener("LoadMapEvent", $.proxy(this.onLoad, this)));
+    dispatcher.attach(new EventListener("SaveMapEvent", $.proxy(this.onSave, this)));
 };
 
-SaveLoad.prototype.saveMap = function(name)
+SaveLoad.prototype.onSave = function()
 {
-	if (!name)
-		throw "You need to give a name for the map.";
-
-	var data = TileGrid.serialize();
-	data.name = name;
-	var json = JSON.stringify(data);
-	this.submitSaveAjax(json);
-};
-
-SaveLoad.prototype.submitSaveAjax = function(data)
-{
-    $.ajax({
-        type : 'POST',
-        url : '/gamemap',
-        contentType: 'application/json; charset=UTF-8',
-        dataType : 'json',
-        data: data,
-        success : this.successSubmit,
-        error : this.errorAjax
-    });
+    this.saveMenu.show();
 };
 
 SaveLoad.prototype.createGame = function(unitcount, mapid)
@@ -55,7 +38,20 @@ SaveLoad.prototype.submitCreateAjax = function(data)
 
 SaveLoad.prototype.onLoad = function()
 {
-    this.loadMenu.show();
+    $.ajax({
+        type : 'GET',
+        url : '/mapnames',
+        dataType : 'json',
+        data: {},
+        success : $.proxy(this.onMapNamesLoaded, this),
+        error : this.errorAjax
+    });
+};
+
+SaveLoad.prototype.onMapNamesLoaded = function(data)
+{
+    console.log(data);
+    this.loadMenu.show(data);
 };
 
 SaveLoad.prototype.loadMap = function(id)
@@ -63,30 +59,9 @@ SaveLoad.prototype.loadMap = function(id)
     if (typeof id == "undefined")
         throw "You need to give a id for the map.";
 
-    this.submitLoadAjax(id);
-};
-
-SaveLoad.prototype.submitLoadAjax = function(id)
-{
-    $.ajax({
-        type : 'GET',
-        url : '/gamemap/'+id,
-        dataType : 'json',
-        data: {},
-        success : this.successLoad,
-        error : this.errorAjax
-    });
-};
-
-SaveLoad.prototype.successLoad = function(data)
-{
-    TileGrid.createFromJson(data);
-    ResourceLoader.loadTiles(this.onLoaded);
-};
-
-SaveLoad.prototype.onLoaded = function()
-{
-    ResourceLoader.remove();
+    ResourceLoader.addLoadable(new LoadMap(id));
+    location.hash = id;
+    ResourceLoader.run();
 };
 
 SaveLoad.prototype.successSubmit = function(data)

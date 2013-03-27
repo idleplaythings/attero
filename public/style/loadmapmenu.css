@@ -1,0 +1,23 @@
+.confirm.loadmapmenu
+{
+    position:absolute;
+    top:100px;
+}
+
+.loadmapmenu .maplist
+{
+    max-height: 400px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.loadmapmenu .mapname
+{
+    cursor:pointer;
+    font-weight:600;
+}
+
+.loadmapmenu .mapname:hover
+{
+    background-color:black;
+}

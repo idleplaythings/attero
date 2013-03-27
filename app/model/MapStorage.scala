@@ -79,31 +79,39 @@ class MapStorage()
     val name = map.name;
     val reserved = DB.withConnection { implicit c =>
       SQL("SELECT count(id) as found FROM game_map WHERE name = {name}")
-        .on('name -> map.name).apply().head[Int]("found")
+        .on('name -> map.name).apply().head[Long]("found")
     }
 
-    return (reserved == 0)
+    reserved == 0
   }
 
-  def saveMap(map: SubmittedGameMap): Unit =
+  def saveMap(map: SubmittedGameMap) =
   {
     map.setTileIds;
-    val mapid = DB.withConnection { implicit c =>
-      SQL("""INSERT INTO game_map (name, width, height)
-                  VALUES ({name}, {width}, {height})""")
+    DB.withTransaction { implicit c =>
+      val mapid = SQL(
+        """INSERT INTO game_map (name, width, height) VALUES ({name}, {width}, {height})""")
         .on('name -> map.name,
           'width -> map.width,
           'height -> map.height)
         .executeInsert().get
-    }
-    println("map id: " + mapid + " inserted");
 
-    DB.withTransaction { implicit c =>
-      val sql: String =
-        """INSERT INTO game_tile (mapid, tileid, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle) VALUES """+"\n" + map.tiles.map(_.toSqlValue(mapid)).mkString(",")
+      var i: Int = 0;
+      var batchSize: Int = 100;
+      while (i < map.tiles.length)
+      {
+        i += batchSize;
 
-      //println(sql);
-      SQL(sql).execute()
+        val tilestring: String = map.tiles.filter( tile => (tile.id >= (i - batchSize) && tile.id < i)).map(_.toSqlValue(mapid)).mkString(",");
+        val sql: String =
+        """INSERT INTO game_tile (mapid, tileid, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle) VALUES """+"\n" + tilestring;
+
+        SQL(sql).execute()
+      }
+
+      println("map id: " + mapid + " inserted");
+
+      mapid
     }
   }
 }

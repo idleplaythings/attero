@@ -7,6 +7,7 @@ GET     /                           controllers.Application.index
 
 #Map Editor
 GET     /editor                     controllers.Application.editor
+GET     /editor/                    controllers.Application.editor
 
 #Game
 GET     /game/:gameid/:userid       controllers.Application.game(gameid: Long, userid: Int)
@@ -14,6 +15,8 @@ GET     /game/:gameid/:userid       controllers.Application.game(gameid: Long, u
 #REST API for loading and saving maps
 GET 	/gamemap/:id				controllers.Application.loadMap(id: Long)
 POST 	/gamemap					controllers.Application.saveMap
+
+GET     /mapnames                   controllers.Application.mapNames
 
 POST /creategame                    controllers.Application.createGame
 

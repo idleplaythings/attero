@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Texture test</title>
+        <title>Editor</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
         <link href="@routes.Assets.at("style/common.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/menubars.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/confirm.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.at("style/loadmapmenu.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/unitstatusicons.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/resourceLoader.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/TextureContainer.css")" rel="stylesheet" type="text/css">
@@ -32,7 +33,6 @@
         <script src="@routes.Assets.at("js/WaterLayer.js")"></script>
         <script src="@routes.Assets.at("js/Grid.js")"></script>
         <script src="@routes.Assets.at("js/FogOfWar.js")"></script>
-        <script src="@routes.Assets.at("js/editor/UIEvents.js")"></script>
         <script src="@routes.Assets.at("js/ContourShadowDefinitions.js")"></script>
         <script src="@routes.Assets.at("js/Confirm.js")"></script>
         <script src="@routes.Assets.at("js/SaveLoad.js")"></script>
@@ -45,13 +45,20 @@
         <script src="@routes.Assets.at("js/events/Event.js")"></script>
         <script src="@routes.Assets.at("js/button/Button.js")"></script>
         <script src="@routes.Assets.at("js/menu/LoadMenu.js")"></script>
+        <script src="@routes.Assets.at("js/menu/SaveMenu.js")"></script>
 
         <script>
-            function dynamicResourcesLoaded()
+
+            function constructControllers()
             {
                 window.UIEventDispatcher = new Dispatcher();
                 window.Graphics = new Graphics(UIEventDispatcher);
+                window.landscaping = new Landscaping(UIEventDispatcher, TileGrid);
+                window.saveLoad = new SaveLoad(UIEventDispatcher);
+            }
 
+            function init()
+            {
 
                 Graphics.init();
                 Graphics.animate();
@@ -59,10 +66,6 @@
                 Grid.init();
 
                 var canvas = jQuery(".webglCanvas");
-
-                canvas.on("click", TileGrid.onGridClicked);
-
-                var landscaping = new Landscaping(UIEventDispatcher, TileGrid);
 
                 window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:60px', 'auto', window.availableTextures, landscaping);
                 window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:60px', 'auto', landscaping);
@@ -78,25 +81,40 @@
                 window.interface = new Interface(coordinasService, TileGrid, canvas, UIEventDispatcher);
                 window.interface.init();
 
-                var saveLoad = new SaveLoad(UIEventDispatcher);
-
                 var topMenuRight = $('.menubar.top .right');
 
                 var loadIcon = new Button(topMenuRight, 'loadicon.png', UIEventDispatcher, new Event("player", "LoadMapEvent"));
-                var loadIcon = new Button(topMenuRight, 'saveicon.png', UIEventDispatcher, new Event("player", "SaveMapEvent"));
+                var saveIcon = new Button(topMenuRight, 'saveicon.png', UIEventDispatcher, new Event("player", "SaveMapEvent"));
 
                 scrolling.init();
-
-                ResourceLoader.remove();
             }
 
 
             function staticResourcesLoaded()
             {
+                constructControllers();
+
                 TileGrid.width = 100;
                 TileGrid.height = 100;
-                TileGrid.createDefaultGameTiles();
-                ResourceLoader.loadTiles(dynamicResourcesLoaded);
+
+                var hash = '';
+                if (location.hash)
+                {
+                    hash = location.hash.replace(/#/, '');
+                    hash = parseInt(hash);
+                }
+
+                if ($.isNumeric(hash) && hash % 1 === 0)
+                {
+                    window.saveLoad.loadMap(hash);
+                }
+                else
+                {
+                    TileGrid.createDefaultGameTiles();
+                    ResourceLoader.loadTiles(function(){ResourceLoader.remove()});
+                }
+
+                init();
             }
 
 
@@ -171,5 +189,19 @@ function MenuCtrl($scope) {
                 </td>
             </tr>
         </table> -->
+
+        <script type="text/javascript">
+
+          var _gaq = _gaq || [];
+          _gaq.push(['_setAccount', 'UA-39126112-2']);
+          _gaq.push(['_trackPageview']);
+
+          (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+          })();
+
+        </script>
     </body>
 </html>

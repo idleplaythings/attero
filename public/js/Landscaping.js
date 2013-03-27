@@ -7,6 +7,8 @@ var Landscaping = function Landscaping(dispatcher, tileGrid)
     this.selectedBrushSize = 1;
     this.updatedTiles = Array();
 
+    this.offsety = 0;
+
     dispatcher.attach(new EventListener("ClickTileEvent", $.proxy(this.onTileClicked, this)));
 
 };
@@ -106,14 +108,17 @@ Landscaping.prototype.applySmallBrush = function(callfunction, tile, args)
         selected = this.selectedElement;
         element = window.availableTileElements[selected];
         offset = element.getRandomOffset();
+
     }
 
-    this.callFunction(callfunction, tile, selected, maskid, offset, args);
+    var offsety = this.offsety;
+
+    this.callFunction(callfunction, tile, selected, maskid, offset, offsety, args);
 };
 
-Landscaping.prototype.callFunction = function(callfunction, tile, selected, maskid, offset, args)
+Landscaping.prototype.callFunction = function(callfunction, tile, selected, maskid, offset, offsety, args)
 {
-    this[callfunction](tile, selected, maskid, offset, args);
+    this[callfunction](tile, selected, maskid, offset, offsety, args);
 };
 
 Landscaping.prototype.modifyTerrain = function(tile, callfunction, args)
@@ -139,24 +144,25 @@ Landscaping.prototype.modifyTerrain = function(tile, callfunction, args)
     }
 };
 
-Landscaping.prototype.removeSubTextureFromTile = function(tile, element, mask, offset, args)
+Landscaping.prototype.removeSubTextureFromTile = function(tile, element, mask, offset, offsety, args)
 {
     tile.subElement = 0;
     tile.subElementOffset = 0;
+    tile.subElementOffset2 = 0;
 
     this.addTileToBeUpdated(tile);
 };
 
-Landscaping.prototype.setSubElementForTile = function(tile, element, mask, offset, args)
+Landscaping.prototype.setSubElementForTile = function(tile, element, mask, offset, offsety, args)
 {
-    window.availableTileElements[element].addToTile(tile, offset, this);
+    window.availableTileElements[element].addToTile(tile, offset, offsety, this);
 
     this.addTileToBeUpdated(tile);
 };
 
-Landscaping.prototype.setSubTextureForTile = function(tile, texture, mask, offset, args)
+Landscaping.prototype.setSubTextureForTile = function(tile, texture, mask, offset, offsety, args)
 {
-    window.availableTextures[texture].addToTile(tile, mask, offset, this);
+    window.availableTextures[texture].addToTile(tile, mask, offset, offsety, this);
 
     this.addTileToBeUpdated(tile);
 };
@@ -169,7 +175,7 @@ Landscaping.prototype.changeTileElement = function(tile)
     this.addTileToBeUpdated(tile);
 };
 
-Landscaping.prototype.changeElevation = function(tile, selected, maskid, offset, targetElevation)
+Landscaping.prototype.changeElevation = function(tile, selected, maskid, offset, offsety, targetElevation)
 {
     var tiles = tile.getAdjacentGameTilesInArray();
 

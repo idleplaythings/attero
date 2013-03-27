@@ -10,6 +10,9 @@ jQuery(function(){
         21:  new TileElement(21, ResourceLoader.loadImage("/assets/textures/cottage1.png"),150),
         //31-40 large houses
         31:  new TileElement(31, ResourceLoader.loadImage("/assets/textures/houses.png"),300, 2),
+        32:  new TileElement(32, ResourceLoader.loadImage("/assets/textures/hall.png"),300, 2),
+        33:  new TileElement(33, ResourceLoader.loadImage("/assets/textures/rowhouses1.png"),300, 2),
+        34:  new TileElement(34, ResourceLoader.loadImage("/assets/textures/rowhouses2.png"),300, 2),
         //41-50 roads
         41:  new RoadTileElement(41, ResourceLoader.loadImage("/assets/textures/road1.png")),
         42:  new RoadTileElement(42, ResourceLoader.loadImage("/assets/textures/road2.png")),
@@ -17,14 +20,17 @@ jQuery(function(){
         //51-60 fences
         51:  new RoadTileElement(51, ResourceLoader.loadImage("/assets/textures/rockwalls.png"), 50),
         52:  new RoadTileElement(52, ResourceLoader.loadImage("/assets/textures/rockwalls2.png"), 100),
-
+        53:  new RoadTileElement(53, ResourceLoader.loadImage("/assets/textures/hedge.png"), 50),
+        //61-70 misc
+        61:  new TileElement(61, ResourceLoader.loadImage("/assets/textures/boulders.png"), 40)
     };
 
     window.textureMasks =
     {
         1:  ResourceLoader.loadImage("/assets/textures/texturemask.png"),
         2:  ResourceLoader.loadImage("/assets/textures/shadowBrushes.png")
-    }
+    };
+
     window.availableTextures =
     {
         //1-20 grasses
@@ -39,7 +45,7 @@ jQuery(function(){
         41:  new BorderTexture(41, ResourceLoader.loadImage("/assets/textures/field.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11), 5),
         42:  new BorderTexture(42, ResourceLoader.loadImage("/assets/textures/field2.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11), 5),
         43:  new BorderTexture(43, ResourceLoader.loadImage("/assets/textures/field3.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11), 0),
-        44:  new BorderTexture(44, ResourceLoader.loadImage("/assets/textures/field4.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11), 5),
+        44:  new BorderTexture(44, ResourceLoader.loadImage("/assets/textures/field4.png"), Array(5,6,7,8,9,10,11,12), Array(69, 35, 11), 5)
         //51-60
         //51:  new WaterTexture(51, ResourceLoader.loadImage("/assets/textures/water.png"), Array(1,2,3,4,5,6,7,8,9), Array(69, 35, 11))
 
@@ -68,8 +74,6 @@ window.ResourceLoader =
     loadTiles: function(callback)
     {
         TileGrid.initTiles();
-
-        console.log("loading tiles");
 
         ResourceLoader.addLoadable(new LoadTiles(window.tiles));
         ResourceLoader.addLoadable(new LoadTileGrid());
@@ -153,12 +157,13 @@ window.ResourceLoader =
         $("#resourceLoaderOverlay .done").hide();
         $("#resourceLoaderOverlay .bar").css("width", "100%");
 
+        ResourceLoader.numberLoaded = 0;
+        ResourceLoader.numberLoading = 0;
+
         if (ResourceLoader.callback && typeof(ResourceLoader.callback) == "function")
         {
             var c = ResourceLoader.callback;
             ResourceLoader.callback = null;
-            ResourceLoader.numberLoaded = 0;
-            ResourceLoader.numberLoading = 0;
             c();
         }
     },
@@ -198,7 +203,7 @@ window.ResourceLoader =
         }
     }
 
-}
+};
 
 
 

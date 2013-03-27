@@ -282,7 +282,7 @@ window.TileGrid = {
 
         TileGrid.removeTileGrid();
         TileGrid.createTexture();
-        console.log("TG init");
+
         var meshes = TileGrid.getTileGridMesh();
         for (var i in meshes)
         {

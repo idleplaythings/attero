@@ -25,7 +25,7 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def editor = Action {
+  def editor() = Action {
     Ok(views.html.editor())
   }
 
@@ -69,19 +69,21 @@ object Application extends Controller {
 
   def saveMap = Action(parse.json(maxLength = 1024 * 2000))
   {
-    val mapStorage = new MapStorage();
     request =>
-
+    {
+      println("Save map");
+      val mapStorage = new MapStorage();
       val map = GameMap.fromJson(request.body);
-      if (mapStorage.canSave(map))
+      if (! mapStorage.canSave(map))
       {
-        mapStorage.saveMap(map)
-        Ok("""{"status": "ok"}""")
+        Ok("""{"status": "duplicate name"}""")
       }
       else
       {
-        BadRequest("""{"status": "error"}""")
+        val id = mapStorage.saveMap(map)
+        Ok("{\"status\": \"ok\", \"id\": \""+id+"\" }")
       }
+    }
   }
 
   def createGame = Action(parse.json(maxLength = 1024 * 2000))
