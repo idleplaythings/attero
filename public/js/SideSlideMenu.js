@@ -166,6 +166,25 @@ Brush.prototype.getSrc = function() {
     return this.src;
 }
 
+var BrushSize = function BrushSize(id, src, title) {
+    this.id = id;
+    this.src = src;
+    this.title = title;
+}
+
+BrushSize.prototype.getId = function() {
+    return this.id;
+}
+
+BrushSize.prototype.getTitle = function() {
+    return this.title;
+}
+
+BrushSize.prototype.getSrc = function() {
+    return this.src;
+}
+
+
 var SideSlideMenuBrush = function(position, amount, otherPos, height, landscaping)
 {
     this.brushes = Array

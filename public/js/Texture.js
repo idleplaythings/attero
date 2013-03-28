@@ -102,6 +102,16 @@ Texture.prototype = {
         var texture = this.getImageData(tile.subTiles[segment].subTextureOffset);
 
         ImageManipulation.addMaskedImageDataToTileTexture(textureImageData, mask, texture);
+    },
+
+    getSrc: function()
+    {
+        return this.img.src;
+    },
+
+    getId: function()
+    {
+        return this.id;
     }
 };
 

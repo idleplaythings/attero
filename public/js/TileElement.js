@@ -62,6 +62,16 @@ TileElement.prototype = {
             40,
             true
         );
+    },
+
+    getSrc: function()
+    {
+        return this.img.src;
+    },
+
+    getId: function()
+    {
+        return this.id;
     }
 };
 
