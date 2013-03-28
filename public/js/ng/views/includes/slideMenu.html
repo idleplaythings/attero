@@ -1,0 +1,7 @@
+<div class="sideSlideMenucontainer left" style="top: 300px">
+    <div ng-repeat="menuRow in menuRows" class="slideRow">
+        <div ng-repeat="menuItem in menuRow">
+            <div class="slideEntry brush" style="background-image:url({{ menuItem.getSrc() }})"></div>
+        </div>
+    </div>
+</div>

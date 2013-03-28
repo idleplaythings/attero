@@ -47,6 +47,10 @@
         <script src="@routes.Assets.at("js/menu/LoadMenu.js")"></script>
         <script src="@routes.Assets.at("js/menu/SaveMenu.js")"></script>
 
+        <script src="@routes.Assets.at("js/ng/run.js")"></script>
+        <script src="@routes.Assets.at("js/ng/services/editorMenuService.js")"></script>
+        <script src="@routes.Assets.at("js/ng/directives/slideMenu.js")"></script>
+
         <script>
 
             function constructControllers()
@@ -116,48 +120,10 @@
 
                 init();
             }
-
-
-function MenuCtrl($scope) {
-
-    $scope.tool = null;
-
-    $scope.setTool = function(tool) {
-        $scope.tool = tool;
-    }
-
-  // $scope.todos = [
-  //   {text:'learn angular', done:true},
-  //   {text:'build an angular app', done:false}];
-
-  // $scope.addTodo = function() {
-  //   $scope.todos.push({text:$scope.todoText, done:false});
-  //   $scope.todoText = '';
-  // };
-
-  // $scope.remaining = function() {
-  //   var count = 0;
-  //   angular.forEach($scope.todos, function(todo) {
-  //     count += todo.done ? 0 : 1;
-  //   });
-  //   return count;
-  // };
-
-  // $scope.archive = function() {
-  //   var oldTodos = $scope.todos;
-  //   $scope.todos = [];
-  //   angular.forEach(oldTodos, function(todo) {
-  //     if (!todo.done) $scope.todos.push(todo);
-  //   });
-  // };
-}
-
-
-
         </script>
 
     </head>
-    <body oncontextmenu="return false;" ng-app>
+    <body oncontextmenu="return false;" ng-app="attero">
 		<table class="menubar top">
 			<tr>
 				<td class="left">
@@ -174,11 +140,9 @@ function MenuCtrl($scope) {
         <!-- <canvas id="testcanvas" width="40" height="40" style="position:absolute;z-index:200;border:1px solid white;"></canvas> -->
         <div id="texturecontainer"></div>
 
-        <div class="menubar bottom" ng-controller="MenuCtrl">
-            <img src="{{ tool.brush.getSrc() }}"> Selected tool: {{ tool.brush.getTitle() }}
-        </div>
+        <div slide-menu="tools" dock="left" columns="2"></div>
 
-<!--         <table class="menubar bottom">
+         <table class="menubar bottom">
             <tr>
                 <td class="left">
 
@@ -188,7 +152,7 @@ function MenuCtrl($scope) {
                 <td class="right">
                 </td>
             </tr>
-        </table> -->
+        </table>
 
         <script type="text/javascript">
 
