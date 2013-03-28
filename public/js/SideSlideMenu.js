@@ -213,9 +213,9 @@ SideSlideMenuBrush.prototype.selectBrush = function( event )
     this.landscaping.selectedBrush = brush.getId();
 
     // var ngController = angular.element($('.menubar.bottom')[0]).controller();
-    var ngScope = angular.element($('.menubar.bottom')[0]).scope();
-    ngScope.setTool({ 'brush': brush });
-    ngScope.$apply();
+    // var ngScope = angular.element($('.menubar.bottom')[0]).scope();
+    // ngScope.setTool({ 'brush': brush });
+    // ngScope.$apply();
 }
 
 var SideSlideMenuBrushSize = function(position, amount, otherPos, height, landscaping)
