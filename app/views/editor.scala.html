@@ -15,6 +15,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script src="@routes.Assets.at("js/lib/jquery.ba-throttle-debounce.min.js")"></script>
         <script src="@routes.Assets.at("js/lib/angular/angular.min.js")"></script>
+        <script src="@routes.Assets.at("js/lib/angular-ui/build/angular-ui.min.js")"></script>
         <script src="@routes.Assets.at("js/requestAnimFrame.js")"></script>
         <script src="@routes.Assets.at("js/ResourceLoader.js")"></script>
         <script src="@routes.Assets.at("js/Loadable.js")"></script>
@@ -48,7 +49,16 @@
         <script src="@routes.Assets.at("js/menu/SaveMenu.js")"></script>
 
         <script src="@routes.Assets.at("js/ng/run.js")"></script>
-        <script src="@routes.Assets.at("js/ng/services/brushMenuService.js")"></script>
+
+        <script src="@routes.Assets.at("js/ng/controllers/editor/toolPreview.js")"></script>
+
+        <script src="@routes.Assets.at("js/ng/services/editor/landscapingTool.js")"></script>
+
+        <script src="@routes.Assets.at("js/ng/services/editor/menu/brush.js")"></script>
+        <script src="@routes.Assets.at("js/ng/services/editor/menu/brushSize.js")"></script>
+        <script src="@routes.Assets.at("js/ng/services/editor/menu/texture.js")"></script>
+        <script src="@routes.Assets.at("js/ng/services/editor/menu/tileElement.js")"></script>
+
         <script src="@routes.Assets.at("js/ng/directives/slideMenu.js")"></script>
 
         <script>
@@ -71,10 +81,10 @@
 
                 var canvas = jQuery(".webglCanvas");
 
-                window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:60px', 'auto', window.availableTextures, landscaping);
-                window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:60px', 'auto', landscaping);
-                window.brushMenu = new SideSlideMenuBrushSize('left', 0, 'top:140px', 'auto', landscaping);
-                window.tileElementMenu = new SideSlideMenuTileElements('right', 0, 'top:350px', 'auto', window.availableTileElements, landscaping);
+                // window.textureMenu = new SideSlideMenuTextures('right', 0, 'top:60px', 'auto', window.availableTextures, landscaping);
+                // window.brushMenu = new SideSlideMenuBrush('left', 0, 'top:60px', 'auto', landscaping);
+                // window.brushMenu = new SideSlideMenuBrushSize('left', 0, 'top:140px', 'auto', landscaping);
+                // window.tileElementMenu = new SideSlideMenuTileElements('right', 0, 'top:350px', 'auto', window.availableTileElements, landscaping);
 
                 var scrolling = new Scrolling(canvas, UIEventDispatcher);
                 var zooming = new Zooming(canvas, UIEventDispatcher);
@@ -140,19 +150,24 @@
         <!-- <canvas id="testcanvas" width="40" height="40" style="position:absolute;z-index:200;border:1px solid white;"></canvas> -->
         <div id="texturecontainer"></div>
 
-        <div slide-menu service="brush" dock="left" columns="2" top="300"></div>
+        <div slide-menu service="brush" dock="left" columns="4" top="60"></div>
+        <div slide-menu service="brushSize" dock="left" columns="4" top="140"></div>
+        <div slide-menu service="texture" dock="left" columns="4" top="340"></div>
+        <div slide-menu service="tileElement" dock="left" columns="4" top="540"></div>
 
-         <table class="menubar bottom">
-            <tr>
-                <td class="left">
+        <div class="menubar bottom" ng-controller="toolPreviewController">
+            <div>
+                <img ng-src="{{ tool.getSrc() }} " />
+            </div>
 
-                </td>
-                <td class="center">
-                </td>
-                <td class="right">
-                </td>
-            </tr>
-        </table>
+            <div ui-if="texture">
+                <img ng-src="{{ texture.img.src }} " />
+            </div>
+
+            <div ui-if="tileElement">
+                <img ng-src="{{ tileElement.img.src }} " />
+            </div>
+        </div>
 
         <script type="text/javascript">
 
