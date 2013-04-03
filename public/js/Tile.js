@@ -84,6 +84,14 @@ Tile.prototype.createTexture = function()
         }
     }
 
+    for (var i in window.availableTileElements)
+    {
+        var element = window.availableTileElements[i];
+        //if (element.underShadow === true)
+        window.availableTileElements[i].addToTileTexture(this, this.textureData);
+    }
+
+    /*
     for (var i in this.subTiles){
         var subElement = this.subTiles[i].subElement;
         if (subElement == 0)
@@ -94,9 +102,11 @@ Tile.prototype.createTexture = function()
         window.availableTileElements[subElement].addToTexture(
             this, this.textureData, i, offset, offset2, true);
     }
+    */
 
     this.createShadows();
 
+    /*
     for (var i in this.subTiles){
         var subElement = this.subTiles[i].subElement;
         if (subElement == 0)
@@ -107,7 +117,8 @@ Tile.prototype.createTexture = function()
         window.availableTileElements[subElement].addToTexture(
             this, this.textureData, i, offset, offset2, false);
     }
-}
+    */
+};
 
 Tile.prototype.getTextureSegmentLocation = function(segment)
 {
