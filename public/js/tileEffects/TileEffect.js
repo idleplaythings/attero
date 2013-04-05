@@ -17,6 +17,7 @@ DropShadowTileEffect.prototype = Object.create( TileEffect.prototype );
 
 DropShadowTileEffect.prototype.addEffectToImageData = function(imagedata)
 {
+    console.log("shadowing");
     var data = imagedata.data;
     var pixels = (imagedata.width * imagedata.height*4) + 4;
 

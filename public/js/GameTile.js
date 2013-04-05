@@ -172,34 +172,35 @@ GameTile.prototype.getElevationDifference = function()
         if (tile === null)
         {
             elevations[i] = 0;
-            continue
+            continue;
         }
+
         var tileElevation = tile.elevation;
 
         if (tileElevation > elevation)
             elevations[i] = 'u';
         else if (tileElevation < elevation)
-            elevations[i] = 0;
+            elevations[i] = 'd';
         else
             elevations[i] = 0;
     }
     //console.dir(elevations);
     return elevations;
 
-}
+};
 
 GameTile.prototype.getElevationDifferenceString = function()
 {
     return this.getElevationDifference().join('');
-}
+};
 
 
 GameTile.prototype.getShadowData = function(pos, highlight)
 {
-    var elevationString = this.getElevationDifferenceString();
-
-    if (elevationString === '00000000')
+    if (this.elevation % 2 === 0)
         return false;
+
+    var elevationString = this.getElevationDifferenceString();
 
     var list = ContourShadows;
 

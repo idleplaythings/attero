@@ -40,5 +40,10 @@ window.Grid =
 
         Grid.scene.add(Grid.mesh);
 
+    },
+
+    setOpacity: function(opacity)
+    {
+        Grid.material.opacity = opacity;
     }
 };

@@ -11,8 +11,8 @@ jQuery(function(){
         //31-40 large houses
         31:  new TileElement({id:31, img:ResourceLoader.loadImage("/assets/textures/houses.png"),concealment:300, height:2}),
         32:  new TileElement({id:32, img:ResourceLoader.loadImage("/assets/textures/hall.png"),concealment:300, height:2}),
-        33:  new TileElement({id:33, img:ResourceLoader.loadImage("/assets/textures/rowhouses1.png"),concealment:300, height:2}),
-        34:  new TileElement({id:34, img:ResourceLoader.loadImage("/assets/textures/rowhouses2.png"),concealment:300, height:2}),
+        33:  new TileElement({id:33, img:ResourceLoader.loadImage("/assets/textures/rowhouses1.png"),concealment:300, height:2}, Array(new DropShadowTileEffect())),
+        34:  new TileElement({id:34, img:ResourceLoader.loadImage("/assets/textures/rowhouses2.png"),concealment:300, height:2}, Array(new DropShadowTileEffect())),
         //41-50 roads
         41:  new RoadTileElement({id:41, img:ResourceLoader.loadImage("/assets/textures/road1.png")}),
         42:  new RoadTileElement({id:42, img:ResourceLoader.loadImage("/assets/textures/road2.png")}),
@@ -22,7 +22,7 @@ jQuery(function(){
         52:  new RoadTileElement({id:52, img:ResourceLoader.loadImage("/assets/textures/rockwalls2.png"), concealment:100}, Array(new DropShadowTileEffect())),
         53:  new RoadTileElement({id:53, img:ResourceLoader.loadImage("/assets/textures/hedge.png"), concealment:50}, Array(new DropShadowTileEffect())),
         //61-70 misc
-        61:  new TileElement({id:61, img:ResourceLoader.loadImage("/assets/textures/boulders.png"), concealment:40})
+        61:  new TileElement({id:61, img:ResourceLoader.loadImage("/assets/textures/boulders.png"), concealment:40}, Array(new DropShadowTileEffect()))
     };
 
     window.textureMasks =
