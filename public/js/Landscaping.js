@@ -220,45 +220,93 @@ Landscaping.prototype.doElevationChange = function(tile, targetElevation)
         {
             t.elevation += (targetElevation - t.elevation) /2;
         }
-    }
-
-    for (i in tiles)
-    {
-        var t = tiles[i];
-
-        if (this.shouldLevelSlope(t, tile))
-        {
-            t.elevation = targetElevation;
-        }
-
         this.addTileToBeUpdated(t);
     }
 };
 
-Landscaping.prototype.shouldLevelSlope = function(tile, targetTile)
+Landscaping.prototype.levelSlopes = function()
 {
-    var tiles = tile.getAdjacentGameTilesInArrayClockwise();
-
-    for (var i in tiles)
+    for (var i in TileGrid.gameTiles)
     {
-        var t = tiles[i];
+        var tile = TileGrid.gameTiles[i];
 
-        if (t.position.x == targetTile.position.x && t.position.y == targetTile.position.y)
+        if (tile.elevation % 2 === 0)
+            continue;
+
+        var tiles = tile.getAdjacentGameTilesInArrayClockwise();
+
+        this.levelMiddleSlopes(tile, tiles);
+    }
+
+    for (var i in TileGrid.gameTiles)
+    {
+        var tile = TileGrid.gameTiles[i];
+
+        if (tile.elevation % 2 === 0)
+            continue;
+
+        var tiles = tile.getAdjacentGameTilesInArrayClockwise();
+
+        this.levelLonelySlopes(tile, tiles);
+    }
+};
+
+Landscaping.prototype.levelLonelySlopes = function(tile, adjacents)
+{
+    var highest = -999999;
+    var found = Array();
+    var number = 0;
+
+    for (var j in adjacents)
+    {
+        var t  = adjacents[j];
+        if (!t)
+            continue;
+
+        if (t.elevation > highest)
+            highest = t.elevation;
+
+        if (t.elevation != tile.elevation)
         {
-            var oi = parseInt(i, 10)+4;
-            if (oi>7)
-                oi -= 8;
-
-            var ot = tiles[oi];
-
-            if (t.elevation == ot.elevation)
-                return true;
-
-            return false;
+            if (!found[t.elevation])
+            {
+                found[t.elevation] = true;
+                number++;
+            }
         }
     }
 
-    return false;
+    if (number > 1)
+        return;
+
+    if (highest > tile.elevation)
+        tile.elevation++;
+    else
+        tile.elevation--;
+};
+
+Landscaping.prototype.levelMiddleSlopes = function(tile, adjacents)
+{
+    for (var j=1; j<4; j+=2)
+    {
+        var t  = adjacents[j];
+        var ot = adjacents[j+4];
+
+        if (!t || !ot)
+            continue;
+
+        if (t.elevation == ot.elevation && t.elevation > tile.elevation)
+        {
+            tile.elevation++;
+            break;
+        }
+
+        if (t.elevation == ot.elevation && t.elevation < tile.elevation)
+        {
+            tile.elevation--;
+            break;
+        }
+    }
 };
 
 Landscaping.prototype.changeElevation = function(tile, selected, maskid, offset, offsety, targetElevation)
@@ -268,13 +316,14 @@ Landscaping.prototype.changeElevation = function(tile, selected, maskid, offset,
 
 Landscaping.prototype.updateTiles = function()
 {
+    this.levelSlopes();
+
     for (var i in this.updatedTiles)
     {
         var tile = this.updatedTiles[i];
         tile.createTexture();
         TileGrid.updateTexture(tile);
     }
-
 };
 
 Landscaping.prototype.addTileToBeUpdated = function(gametile)

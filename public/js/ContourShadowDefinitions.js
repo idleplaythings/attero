@@ -36,8 +36,10 @@ Contours =
 
     mutilateRegExp: function(reg)
     {
-        var reg = reg.replace(/e/g,"(d|0)");
-        var reg = reg.replace(/o/g,"(u|0)");
+        reg = reg.replace(/e/g,"(d|0)");
+        reg = reg.replace(/o/g,"(u|0)");
+        reg = reg.replace(/l/g,"(u|d)");
+
         return '^'+reg+'$';
     }
 };
@@ -48,8 +50,12 @@ ContourHighlights = [];
 Contours.middleShadow = {s:4, c:Contours.sColor, a:Contours.sAlpha};
 Contours.middleHighlight = {s:4, c:Contours.hColor, a:Contours.hAlpha};
 
+ContourShadows['uuu00d00'] = false;
+
+
 //highlight corner
 ContourHighlights['....0.0u'] = {s:8, c:Contours.hColor, a:Contours.hAlpha};
+
 ContourHighlights['.0u.0...'] = {s:2, c:Contours.hColor, a:Contours.hAlpha};
 
 //shadow corner
@@ -59,17 +65,27 @@ ContourShadows['...0.u0.'] = {s:6, c:Contours.sColor, a:Contours.sAlpha};
 //inverse shadow corner
 
 ContourShadows['.0du0.u.'] = {s:2, c:Contours.sColor, a:Contours.sAlpha};
-ContourShadows['.u.u0.0d'] = {s:8, c:Contours.sColor, a:Contours.sAlpha};
-ContourHighlights['.u.0ud0.'] = {s:6, c:Contours.hColor, a:Contours.hAlpha};
-//inverse highlight corner
 
-ContourHighlights['d0.0u.u.'] = {s:1, c:Contours.hColor, a:Contours.hAlpha};
+ContourShadows['.l.l0.0d'] = {s:8, c:Contours.sColor, a:Contours.sAlpha};
+
+ContourHighlights['.u.0.d0.'] = {s:6, c:Contours.hColor, a:Contours.hAlpha};
+
+//diagonal highlight
+ContourHighlights['..0.u0u.'] = {s:0, c:Contours.hColor, a:Contours.hAlpha};
+
+//inverse highlight corner
+ContourHighlights['.0.0l.lu'] = {s:1, c:Contours.hColor, a:Contours.hAlpha};
 ContourHighlights['.u.0u00.'] = {s:6, c:Contours.hColor, a:Contours.hAlpha};
 
 //straight highlights
 ContourHighlights['.e.00.u.'] = Contours.middleHighlight;
+ContourHighlights['.d.00...'] = Contours.middleHighlight;
+
 ContourHighlights['.0.eu.0.'] = Contours.middleHighlight;
+ContourHighlights['.0.d..0.'] = Contours.middleHighlight;
 
 //straight shadows
 ContourShadows['.u.00.e.'] = Contours.middleShadow;
 ContourShadows['.0.ue.0.'] = Contours.middleShadow;
+
+ContourShadows['.0..d.0.'] = Contours.middleShadow;
