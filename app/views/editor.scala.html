@@ -157,16 +157,8 @@
         <div slide-menu service="tileElement" dock="left" columns="4" top="540"></div>
 
         <div class="menubar bottom" ng-controller="toolPreviewController">
-            <div>
-                <img ng-src="{{ tool.getSrc() }} " />
-            </div>
-
-            <div ui-if="texture">
-                <img ng-src="{{ texture.img.src }} " />
-            </div>
-
-            <div ui-if="tileElement">
-                <img ng-src="{{ tileElement.img.src }} " />
+            <div class="preview-container">
+                <canvas id="tile-element-preview" width="100px" height="100px" style="background-color: black;"></canvas>
             </div>
         </div>
 
