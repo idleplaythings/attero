@@ -5,14 +5,14 @@ var GameTile = function (args)
     }
 
     this.position = args.position;
-    this.subTexture = (args.subTexture) ? args.subTexture : 1;
-    this.subTextureOffset = (args.subTextureOffset) ? args.subTextureOffset : 1;
-    this.subTextureMask = (args.subTextureMask) ? args.subTextureMask : 1;
+    this.subTexture = (args.subTexture) ?  parseInt(args.subTexture, 10) : 1;
+    this.subTextureOffset = (args.subTextureOffset) ? parseInt(args.subTextureOffset, 10) : 1;
+    this.subTextureMask = (args.subTextureMask) ? parseInt(args.subTextureMask, 10) : 1;
     this.elevation = (args.elevation) ? parseInt(args.elevation) : 0;
     this.subElement = (args.subElement) ? parseInt(args.subElement) : 0;
-    this.subElementOffset = (args.subElementOffset) ? args.subElementOffset : 0;
-    this.subElementOffset2 = (args.subElementVariance) ? args.subElementVariance : 0;
-    this.subElementAngle = (args.subElementAngle) ? args.subElementAngle : 0;
+    this.subElementOffset = (args.subElementOffset) ? parseInt(args.subElementOffset,10) : 0;
+    this.subElementOffset2 = (args.subElementVariance) ? parseInt(args.subElementVariance, 10) : 0;
+    this.subElementAngle = (args.subElementAngle) ? parseInt(args.subElementAngle, 10) : 0;
 
     this.concealment = 0;
     this.elementHeight = 0;

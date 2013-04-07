@@ -22,11 +22,11 @@ TileElement.prototype = {
         return Math.floor(Math.random()*l);
     },
 
-    getImageData: function(offset, offsety)
+    getImageData: function(offset, offsety, angle)
     {
-        if (this.imageDataArrays[offset + "x" + offsety])
+        if (this.imageDataArrays[offset + "x" + offsety + "a" + angle])
         {
-            return this.imageDataArrays[offset + "x" + offsety];
+            return this.imageDataArrays[offset + "x" + offsety + "a" + angle];
         }
         var finalCanvas = $('<canvas width="40" height="40"></canvas>').get(0);
         var finalContext = finalCanvas.getContext("2d");
@@ -35,12 +35,13 @@ TileElement.prototype = {
         var x = offset*40;
         var y = offsety*40;
 
-        finalContext.drawImage(this.img, x , y, 40, 40, 0, 0, 40, 40);
+        ImageManipulation.drawAndRotate(finalContext, x, y, 40, 40, 40, 40, angle, this.img, false);
+        //finalContext.drawImage(this.img, x , y, 40, 40, 0, 0, 40, 40);
 
         var imageData = finalContext.getImageData(0, 0, 40, 40);
 
-        this.imageDataArrays[offset + "x" + offsety] = imageData;
-        return this.imageDataArrays[offset + "x" + offsety];
+        this.imageDataArrays[offset + "x" + offsety + "a" + angle] = imageData;
+        return this.imageDataArrays[offset + "x" + offsety + "a" + angle];
 
     },
 
@@ -49,6 +50,27 @@ TileElement.prototype = {
         tile.subElement = this.id;
         tile.subElementOffset = offsetx;
         tile.subElementOffset2 = offsety;
+    },
+
+    getPreview: function(canvas, offsetx, offsety, angle)
+    {
+        var context = canvas.getContext("2d");
+        var width = $(canvas).width();
+        var height = $(canvas).height();
+
+        var previewImageData = context.createImageData(100, 100);
+
+        ImageManipulation.addImageDataToGridTexture(
+            previewImageData,
+            this.getImageData(offsetx, offsety, angle),
+            30,
+            30,
+            width,
+            40,
+            true
+        );
+
+        context.putImageData(previewImageData, 0, 0);
     },
 
     addToTileTexture: function(tile, targetData)
@@ -92,20 +114,24 @@ TileElement.prototype = {
         }
     },
 
-    addToTexture: function(tile, targetData, segment)
+    addToTexture: function(tile, targetData, segment, targetSize)
     {
+        if (!targetSize)
+            targetSize = 60;
+
         var offsetx = tile.subTiles[segment].subElementOffset;
         var offsety = tile.subTiles[segment].subElementOffset2;
+        var angle = tile.subTiles[segment].subElementAngle;
         var pos = tile.getTextureSegmentLocation(segment);
-        pos.x += 10;
-        pos.y += 10;
+        pos.x += (targetSize - 40) / 2;
+        pos.y += (targetSize - 40) / 2;
 
         ImageManipulation.addImageDataToGridTexture(
             targetData,
-            this.getImageData(offsetx, offsety),
+            this.getImageData(offsetx, offsety, angle),
             pos.x,
             pos.y,
-            60,
+            targetSize,
             40,
             true
         );
@@ -135,26 +161,6 @@ var RoadTileElement = function(args, effects)
 };
 
 RoadTileElement.prototype = Object.create( TileElement.prototype );
-
-RoadTileElement.prototype.addToTexture = function(tile, targetData, segment)
-{
-    var angle = tile.subTiles[segment].subElementAngle;
-    var offsetx = tile.subTiles[segment].subElementOffset;
-    var offsety = tile.subTiles[segment].subElementOffset2;
-    var pos = tile.getTextureSegmentLocation(segment);
-    pos.x += 10;
-    pos.y += 10;
-
-    ImageManipulation.addImageDataToGridTexture(
-        targetData,
-        this.getImageData(offsetx, offsety, angle),
-        pos.x,
-        pos.y,
-        60,
-        40,
-        true
-    );
-};
 
 RoadTileElement.prototype.addToTile = function(tile, offsetx, offsety, landscaping)
 {
@@ -291,21 +297,4 @@ RoadTileElement.prototype.ignoreRoads = function(tiles)
     }
 
     return tiles;
-};
-
-
-RoadTileElement.prototype.getImageData = function(offset, offsety, angle)
-{
-    var canvas = $('<canvas width="40" height="40"></canvas>').get(0);
-    var context = canvas.getContext("2d");
-
-    //finalContext.drawImage(this.img, t , 0, 40, 40, 0, 0, 40, 40);
-    var x = offset*40;
-    var y = offsety*40;
-
-    ImageManipulation.drawAndRotate(context, x, y, 40, 40, 40, 40, angle, this.img, false);
-
-    var imageData = context.getImageData(0, 0, 40, 40);
-
-    return imageData;
 };

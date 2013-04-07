@@ -31,29 +31,55 @@ Texture.prototype = {
         return;
     },
 
-    getImageData: function(offset)
+    getPreview: function(canvas, offsetx, offsety, angle)
     {
-        if (this.imageDataArrays[offset])
+        var context = canvas.getContext("2d");
+        var width = $(canvas).width();
+        var height = $(canvas).height();
+
+        var previewImageData = context.createImageData(100, 100);
+
+        ImageManipulation.addImageDataToGridTexture(
+            previewImageData,
+            this.getImageData(offsetx, offsety, angle),
+            30,
+            30,
+            width,
+            40,
+            true
+        );
+
+        context.putImageData(previewImageData, 0, 0);
+    },
+
+    getImageData: function(offsetx, offsety)
+    {
+        if (this.imageDataArrays[offsetx +'x'+ offsety])
         {
-            return this.imageDataArrays[offset];
+            return this.imageDataArrays[offsetx +'x'+ offsety];
         }
         var finalCanvas = $('<canvas width="40" height="40"></canvas>').get(0);
         var finalContext = finalCanvas.getContext("2d");
 
 
-        var t = offset*40;
-        finalContext.drawImage(this.img, t , 0, 40, 40, 0, 0, 40, 40);
+        var x = offsetx*40;
+        var y = offsety*40;
 
-        this.imageDataArrays[offset] = finalContext.getImageData(0, 0, 40, 40);
-        return this.imageDataArrays[offset];
+        console.log(offsety);
+
+        finalContext.drawImage(this.img, x, y, 40, 40, 0, 0, 40, 40);
+
+        this.imageDataArrays[offsetx +'x'+ offsety] = finalContext.getImageData(0, 0, 40, 40);
+        return this.imageDataArrays[offsetx +'x'+ offsety];
 
     },
 
-    addToTile: function(tile, maskid, offset)
+    addToTile: function(tile, maskid, offsetx, offsety)
     {
         tile.subTextureMask = maskid;
         tile.subTexture = this.id;
-        tile.subTextureOffset = offset;
+        tile.subTextureOffset = offsetx;
+        //tile.subTextureOffsety = offsety;
     },
 
     addToTileTexture: function(tile, targetData)
@@ -98,8 +124,12 @@ Texture.prototype = {
 
         var mask = context.getImageData(0, 0, 40, 40);
 
+        //TODO: texture needs offsety too!
         //get texture imagedata
-        var texture = this.getImageData(tile.subTiles[segment].subTextureOffset);
+        var texture = this.getImageData(
+            tile.subTiles[segment].subTextureOffset,
+            0
+        );
 
         ImageManipulation.addMaskedImageDataToTileTexture(textureImageData, mask, texture);
     },
