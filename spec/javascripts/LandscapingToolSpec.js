@@ -1,9 +1,13 @@
 describe("Landscaping Tool", function() {
   it("should return constructor parameters", function() {
-    var tool = new LandscapingTool(1, "/foo/bar", "Some Tool")
+    var id = 1;
+    var src = "/foo/bar";
+    var title = "Some Tool";
 
-    expect(tool.getId()).toEqual(1);
-    expect(tool.getTitle()).toEqual("Some Tool");
-    expect(tool.getSrc()).toEqual("/foo/bar");
+    var tool = new LandscapingTool(id, src, title);
+
+    expect(tool.getId()).toEqual(id);
+    expect(tool.getTitle()).toEqual(title);
+    expect(tool.getSrc()).toEqual(src);
   });
 });

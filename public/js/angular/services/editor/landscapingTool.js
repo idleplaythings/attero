@@ -25,7 +25,7 @@ angular.module('attero')
         var texture = null;
         var tileElement = null;
 
-        var methods = {
+        return {
             getTool: function() {
                 return tool;
             },
@@ -69,6 +69,4 @@ angular.module('attero')
                 tileElement = null;
             }
         }
-
-        return methods;
     }]);
