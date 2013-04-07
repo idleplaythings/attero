@@ -49,7 +49,7 @@ Texture.prototype = {
 
     },
 
-    addToTile: function(tile, maskid, offset, landscaping)
+    addToTile: function(tile, maskid, offset)
     {
         tile.subTextureMask = maskid;
         tile.subTexture = this.id;

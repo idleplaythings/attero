@@ -24,7 +24,7 @@ angular.module('attero')
                 columns: '=',
                 top: '='
             },
-            templateUrl: '/assets/js/ng/views/includes/slideMenu.html',
+            templateUrl: '/assets/js/angular/views/includes/slideMenu.html',
             replace: true,
             link: function (scope, element, attrs) {
                 scope.menuService = getMenuService(attrs.service);
