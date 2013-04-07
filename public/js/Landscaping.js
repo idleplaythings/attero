@@ -33,11 +33,19 @@ Landscaping.prototype.onTileClicked = function(event)
             this.modifyTerrain(tile, 'removeSubTextureFromTile');
             break;
         case 3:
-            var targetElevation = tile.elevation + 1;
+            var targetElevation = tile.elevation + 2;
+
+            if (targetElevation & 2 !== 0)
+                targetElevation--;
+
             this.modifyTerrain(tile, 'changeElevation', targetElevation);
             break;
         case 4:
-            var targetElevation = tile.elevation - 1;
+            var targetElevation = tile.elevation - 2;
+
+            if (targetElevation & 2 !== 0)
+                targetElevation++;
+
             this.modifyTerrain(tile, 'changeElevation', targetElevation);
             break;
     }
@@ -175,44 +183,147 @@ Landscaping.prototype.changeTileElement = function(tile)
     this.addTileToBeUpdated(tile);
 };
 
-Landscaping.prototype.changeElevation = function(tile, selected, maskid, offset, offsety, targetElevation)
+Landscaping.prototype.doElevationChange = function(tile, targetElevation)
 {
     var tiles = tile.getAdjacentGameTilesInArray();
 
-    var orginalElevation = tile.elevation;
-
-    console.log("te: " + targetElevation + " oe: " + orginalElevation);
     for (var i in tiles)
     {
         var t = tiles[i];
         var tElevation = t.elevation;
 
-        if (Math.abs(tElevation - targetElevation) > 1)
+        if (tElevation == targetElevation)
+            continue;
+
+        if (Math.abs(tElevation - targetElevation) > 2 && tElevation % 2 === 0)
         {
-            console.log("Elevation not possible");
+            //console.log("Elevation not possible. Elevation: " + tElevation + " target: " + targetElevation);
+            return false;
+        }
+
+        if (Math.abs(tElevation - targetElevation) > 1 && tElevation % 2 !== 0)
+        {
+            //console.log("Elevation not possible (SLOPE). Elevation: " + tElevation + " target: " + targetElevation);
             return false;
         }
 
     }
+
     tile.elevation = targetElevation;
     this.addTileToBeUpdated(tile);
 
     for (i in tiles)
     {
         var t = tiles[i];
+
+        if (Math.abs(t.elevation - targetElevation) == 2)
+        {
+            t.elevation += (targetElevation - t.elevation) /2;
+        }
         this.addTileToBeUpdated(t);
     }
 };
 
+Landscaping.prototype.levelSlopes = function()
+{
+    for (var i in TileGrid.gameTiles)
+    {
+        var tile = TileGrid.gameTiles[i];
+
+        if (tile.elevation % 2 === 0)
+            continue;
+
+        var tiles = tile.getAdjacentGameTilesInArrayClockwise();
+
+        this.levelMiddleSlopes(tile, tiles);
+    }
+
+    for (var i in TileGrid.gameTiles)
+    {
+        var tile = TileGrid.gameTiles[i];
+
+        if (tile.elevation % 2 === 0)
+            continue;
+
+        var tiles = tile.getAdjacentGameTilesInArrayClockwise();
+
+        this.levelLonelySlopes(tile, tiles);
+    }
+};
+
+Landscaping.prototype.levelLonelySlopes = function(tile, adjacents)
+{
+    var highest = -999999;
+    var found = Array();
+    var number = 0;
+
+    for (var j in adjacents)
+    {
+        var t  = adjacents[j];
+        if (!t)
+            continue;
+
+        if (t.elevation > highest)
+            highest = t.elevation;
+
+        if (t.elevation != tile.elevation)
+        {
+            if (!found[t.elevation])
+            {
+                found[t.elevation] = true;
+                number++;
+            }
+        }
+    }
+
+    if (number > 1)
+        return;
+
+    if (highest > tile.elevation)
+        tile.elevation++;
+    else
+        tile.elevation--;
+};
+
+Landscaping.prototype.levelMiddleSlopes = function(tile, adjacents)
+{
+    for (var j=1; j<4; j+=2)
+    {
+        var t  = adjacents[j];
+        var ot = adjacents[j+4];
+
+        if (!t || !ot)
+            continue;
+
+        if (t.elevation == ot.elevation && t.elevation > tile.elevation)
+        {
+            tile.elevation++;
+            break;
+        }
+
+        if (t.elevation == ot.elevation && t.elevation < tile.elevation)
+        {
+            tile.elevation--;
+            break;
+        }
+    }
+};
+
+Landscaping.prototype.changeElevation = function(tile, selected, maskid, offset, offsety, targetElevation)
+{
+    this.doElevationChange(tile, targetElevation);
+};
+
 Landscaping.prototype.updateTiles = function()
 {
+    this.levelSlopes();
+
     for (var i in this.updatedTiles)
     {
         var tile = this.updatedTiles[i];
         tile.createTexture();
         TileGrid.updateTexture(tile);
     }
-
 };
 
 Landscaping.prototype.addTileToBeUpdated = function(gametile)

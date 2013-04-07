@@ -1,14 +1,16 @@
 
-var TileElement = function(id, img, concealment, height )
+var TileElement = function(args, effects)
 {
-    this.id = id;
-    this.img = img;
+    this.id = args.id;
+    this.img = args.img;
     this.underShadow = false;
-    this.concealment = concealment || 0;
-    this.height = height || 1;
+    this.concealment = args.concealment || 0;
+    this.height = args.height || 1;
+
+    this.effects = effects;
 
     this.imageDataArrays = Array();
-}
+};
 
 TileElement.prototype = {
 
@@ -35,7 +37,9 @@ TileElement.prototype = {
 
         finalContext.drawImage(this.img, x , y, 40, 40, 0, 0, 40, 40);
 
-        this.imageDataArrays[offset + "x" + offsety] = finalContext.getImageData(0, 0, 40, 40);
+        var imageData = finalContext.getImageData(0, 0, 40, 40);
+
+        this.imageDataArrays[offset + "x" + offsety] = imageData;
         return this.imageDataArrays[offset + "x" + offsety];
 
     },
@@ -47,18 +51,61 @@ TileElement.prototype = {
         tile.subElementOffset2 = offsety;
     },
 
-    addToTexture: function(tile, targetData, segment, offset, offset2, undershadow)
+    addToTileTexture: function(tile, targetData)
     {
-        if (this.underShadow != undershadow)
-            return;
+        var elementImageData = window.maskContext.createImageData(60,60);
+        var added = false;
 
+        for (var i in tile.subTiles){
+            var subElement = tile.subTiles[i].subElement;
+            if (subElement != this.id)
+                continue;
+
+            added = true;
+
+            this.addToTexture(tile, elementImageData, i);
+        }
+
+        if (added)
+        {
+            //console.log(elementImageData);
+
+            //var testcanvas = $('<canvas width="60px" height="60px" style="position:absolute; left:0px; top:0px; z-index:99999999; border:1px solid red; background-color:white">');
+            //testcanvas.get(0).getContext("2d").putImageData(elementImageData, 0, 0);
+            //testcanvas.appendTo("body");
+
+            for (var i in this.effects)
+            {
+                this.effects[i].addEffectToImageData(elementImageData);
+            }
+            //ImageManipulation.addImageDataToTileTexture(targetData, elementImageData);
+
+            ImageManipulation.addImageDataToGridTexture(
+                targetData,
+                elementImageData,
+                -10,
+                -10,
+                40,
+                60,
+                true
+            );
+        }
+    },
+
+    addToTexture: function(tile, targetData, segment)
+    {
+        var offsetx = tile.subTiles[segment].subElementOffset;
+        var offsety = tile.subTiles[segment].subElementOffset2;
         var pos = tile.getTextureSegmentLocation(segment);
+        pos.x += 10;
+        pos.y += 10;
+
         ImageManipulation.addImageDataToGridTexture(
             targetData,
-            this.getImageData(offset, offset2),
+            this.getImageData(offsetx, offsety),
             pos.x,
             pos.y,
-            40,
+            60,
             40,
             true
         );
@@ -75,9 +122,9 @@ TileElement.prototype = {
     }
 };
 
-var RoadTileElement = function(id, img, concealment, height)
+var RoadTileElement = function(args, effects)
 {
-    TileElement.call( this, id, img, concealment, height);
+    TileElement.call( this, args, effects);
     this.underShadow = true;
     this.straight = 0;
     this.left90 = 2;
@@ -85,31 +132,29 @@ var RoadTileElement = function(id, img, concealment, height)
     this.right135 = 4;
     this.right90 = 1;
     this.many = 5;
-}
+};
 
 RoadTileElement.prototype = Object.create( TileElement.prototype );
 
-RoadTileElement.prototype.addToTexture =
-    function(tile, targetData, segment, offset, offset2, undershadow)
+RoadTileElement.prototype.addToTexture = function(tile, targetData, segment)
 {
-    //console.log("undershadow: " + undershadow );
-    //console.log("this.underShadow: " + this.underShadow );
-    if (this.underShadow != undershadow)
-        return;
-
     var angle = tile.subTiles[segment].subElementAngle;
+    var offsetx = tile.subTiles[segment].subElementOffset;
+    var offsety = tile.subTiles[segment].subElementOffset2;
     var pos = tile.getTextureSegmentLocation(segment);
+    pos.x += 10;
+    pos.y += 10;
 
     ImageManipulation.addImageDataToGridTexture(
         targetData,
-        this.getImageData(offset, offset2, angle),
+        this.getImageData(offsetx, offsety, angle),
         pos.x,
         pos.y,
-        40,
+        60,
         40,
         true
     );
-}
+};
 
 RoadTileElement.prototype.addToTile = function(tile, offsetx, offsety, landscaping)
 {
@@ -121,7 +166,7 @@ RoadTileElement.prototype.addToTile = function(tile, offsetx, offsety, landscapi
 
     this.updateAdjacentTiles(tile, landscaping);
     this.updateTile(tile, landscaping);
-}
+};
 
 RoadTileElement.prototype.updateTile = function(tile, landscaping)
 {
@@ -150,7 +195,7 @@ RoadTileElement.prototype.updateTile = function(tile, landscaping)
     }
 
     landscaping.addTileToBeUpdated(tile);
-}
+};
 
 RoadTileElement.prototype.getRoadsMeetType = function(tiles)
 {
@@ -198,7 +243,7 @@ RoadTileElement.prototype.getRoadsMeetType = function(tiles)
     var details =  {offset:offset, angle:angle};
 
     return details;
-}
+};
 
 
 RoadTileElement.prototype.updateAdjacentTiles = function(tile, landscaping)
@@ -211,7 +256,7 @@ RoadTileElement.prototype.updateAdjacentTiles = function(tile, landscaping)
             this.updateTile(tiles[i], landscaping);
     }
 
-}
+};
 
 RoadTileElement.prototype.ignoreRoads = function(tiles)
 {
@@ -246,7 +291,7 @@ RoadTileElement.prototype.ignoreRoads = function(tiles)
     }
 
     return tiles;
-}
+};
 
 
 RoadTileElement.prototype.getImageData = function(offset, offsety, angle)
@@ -260,6 +305,7 @@ RoadTileElement.prototype.getImageData = function(offset, offsety, angle)
 
     ImageManipulation.drawAndRotate(context, x, y, 40, 40, 40, 40, angle, this.img, false);
 
-    return context.getImageData(0, 0, 40, 40);
+    var imageData = context.getImageData(0, 0, 40, 40);
 
-}
+    return imageData;
+};

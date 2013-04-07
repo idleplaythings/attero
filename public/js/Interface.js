@@ -64,7 +64,10 @@ Interface.prototype.gameTileHighlighter = function(event)
         this.dispatchMouseTileEvent(gameTile, false);
         this.mouseoverTile = gameTile;
     }
-    //console.log('mouseover gametile x: ' + gameTile.position.x + ', y: ' + gameTile.position.y);
+    //console.log('mouseover gametile x: ' + gameTile.position.x + ', y: ' + gameTile.position.y
+    //    + ' e: ' + gameTile.elevation + ' elevation string: ' + gameTile.getElevationDifferenceString());
+
+    //Contours.testMatches(gameTile.getElevationDifferenceString());
 };
 
 Interface.prototype.dispatchMouseTileEvent = function(tile, out)

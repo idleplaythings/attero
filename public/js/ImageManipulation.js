@@ -83,6 +83,12 @@ ImageManipulation =
                     data[bigPixel-4] = data[bigPixel-4] * (1-m) + textureData[pixel-4] * m;
                     data[bigPixel-3] = data[bigPixel-3] * (1-m) + textureData[pixel-3] * m;
                     data[bigPixel-2] = data[bigPixel-2] * (1-m) + textureData[pixel-2] * m;
+
+                    var alpha = data[bigPixel-1] + textureData[pixel-1];
+                    if (alpha > 255)
+                        alpha = 255;
+
+                    data[bigPixel-1] = alpha;
                 }
                 else
                 {

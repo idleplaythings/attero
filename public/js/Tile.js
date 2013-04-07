@@ -84,30 +84,22 @@ Tile.prototype.createTexture = function()
         }
     }
 
-    for (var i in this.subTiles){
-        var subElement = this.subTiles[i].subElement;
-        if (subElement == 0)
-            continue;
-
-        var offset = this.subTiles[i].subElementOffset;
-        var offset2 = this.subTiles[i].subElementOffset2;
-        window.availableTileElements[subElement].addToTexture(
-            this, this.textureData, i, offset, offset2, true);
+    for (var i in window.availableTileElements)
+    {
+        var element = window.availableTileElements[i];
+        if (element.underShadow === true)
+            window.availableTileElements[i].addToTileTexture(this, this.textureData);
     }
 
     this.createShadows();
 
-    for (var i in this.subTiles){
-        var subElement = this.subTiles[i].subElement;
-        if (subElement == 0)
-            continue;
-
-        var offset = this.subTiles[i].subElementOffset;
-        var offset2 = this.subTiles[i].subElementOffset2;
-        window.availableTileElements[subElement].addToTexture(
-            this, this.textureData, i, offset, offset2, false);
+    for (var i in window.availableTileElements)
+    {
+        var element = window.availableTileElements[i];
+        if (element.underShadow === false)
+            window.availableTileElements[i].addToTileTexture(this, this.textureData);
     }
-}
+};
 
 Tile.prototype.getTextureSegmentLocation = function(segment)
 {
