@@ -185,11 +185,17 @@ Landscaping.prototype.changeTileElement = function(tile)
 
 Landscaping.prototype.doElevationChange = function(tile, targetElevation)
 {
+    if (!tile)
+        return;
+
     var tiles = tile.getAdjacentGameTilesInArray();
 
     for (var i in tiles)
     {
         var t = tiles[i];
+        if (!t)
+            continue;
+
         var tElevation = t.elevation;
 
         if (tElevation == targetElevation)
@@ -215,6 +221,8 @@ Landscaping.prototype.doElevationChange = function(tile, targetElevation)
     for (i in tiles)
     {
         var t = tiles[i];
+        if (!t)
+            continue;
 
         if (Math.abs(t.elevation - targetElevation) == 2)
         {
