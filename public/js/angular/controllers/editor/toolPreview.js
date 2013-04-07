@@ -11,15 +11,24 @@ angular.module('attero')
     })
     .controller('toolPreviewController', [ '$scope', 'landscapingToolService', 'tileElementPreviewService', function($scope, landscapingToolService, tileElementPreviewService) {
         $scope.landscapingToolService = landscapingToolService;
+        $scope.tileElement = null;
         $scope.angle = 0;
         $scope.offsetX = 0;
         $scope.offsetY = 0;
 
-        $scope.$watch('landscapingToolService.getTileElement()', function(tileElement) {
-            if (tileElement === null) {
+        var renderPreview = function renderPreview() {
+            if ($scope.tileElement === null) {
                 return false;
             }
 
-            tileElementPreviewService.renderPreviewForTileElement(tileElement, $scope.offsetX, $scope.offsetY, $scope.angle);
+            tileElementPreviewService.renderPreviewForTileElement($scope.tileElement, $scope.offsetX, $scope.offsetY, $scope.angle);
+        };
+
+        $scope.$watch('landscapingToolService.getTileElement()', function(tileElement) {
+            $scope.tileElement = tileElement;
+            renderPreview();
         });
+        $scope.$watch('angle', renderPreview);
+        $scope.$watch('offsetX', renderPreview);
+        $scope.$watch('offsetY', renderPreview);
     }]);
