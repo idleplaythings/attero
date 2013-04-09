@@ -16,10 +16,19 @@ TileElement.prototype = {
 
 	constructor: TileElement,
 
+    getRowCount: function()
+    {
+        return this.img.height / 40;
+    },
+
+    getColumnCount: function()
+    {
+        return this.img.width / 40;
+    },
+
     getRandomOffset: function()
     {
-        var l = this.img.width / 40;
-        return Math.floor(Math.random()*l);
+        return Math.floor(Math.random()*this.getColumnCount());
     },
 
     getImageData: function(offset, offsety, angle)
