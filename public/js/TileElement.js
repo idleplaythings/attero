@@ -107,7 +107,8 @@ TileElement.prototype = {
 
             for (var i in this.effects)
             {
-                this.effects[i].addEffectToImageData(elementImageData);
+                if (this.effects[i])
+                    this.effects[i].addEffectToImageData(elementImageData);
             }
             //ImageManipulation.addImageDataToTileTexture(targetData, elementImageData);
 

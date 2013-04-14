@@ -13,10 +13,10 @@ import play.api.Play.current
 
 import play.api.libs.iteratee._
 import akka.actor._
-import repositories.UnitRepository
 import scala.concurrent.duration._
 import models.GameManager
 import models.repositories.UnitRepository
+import models.repositories.TileRepository
 import models.MapStorage
 
 object Application extends Controller {
@@ -26,7 +26,8 @@ object Application extends Controller {
   }
 
   def editor() = Action {
-    Ok(views.html.editor())
+    val tileDef = TileRepository.getTileDefinitionForClient();
+    Ok(views.html.editor(Json.stringify(tileDef)))
   }
 
   def game(gameid: Long, userid: Int) = Action { implicit request =>

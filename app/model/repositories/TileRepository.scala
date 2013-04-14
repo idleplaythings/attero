@@ -5,6 +5,8 @@ import anorm.SqlParser._
 import play.api.db._
 import play.api.Play.current
 import models.tiles._
+import play.api.libs.json._
+import play.api.libs.json.Json._
 
 class TileRepository(gameid: Long) extends Repository(gameid)
 {
@@ -105,5 +107,54 @@ object TileRepository
             (row[Int]("texture").toByte, row[Int]("element").toByte, row[Int]("elevation").toByte)
           ).toArray;
         }
+    }
+
+    def getTileDefinitionForClient(): JsValue =
+    {
+        DB.withConnection { implicit c =>
+          val tileSql = SQL("""
+            SELECT
+                id,
+                type,
+                name,
+                img,
+                brush,
+                difficulty,
+                hide,
+                cover,
+                concealment,
+                height,
+                traits,
+                effects
+            FROM
+                tile_member
+            ORDER BY id ASC""")();
+
+            sqlTileDefToJson(tileSql);
+        }
+    }
+
+    def sqlTileDefToJson(rows: Stream[anorm.SqlRow]): JsValue =
+    {
+        val members = rows.map(row =>
+            JsObject(
+              Seq(
+                "id" -> JsNumber(row[Int]("id")),
+                "type" -> JsString(row[String]("type")),
+                "name" -> JsString(row[String]("name")),
+                "img" -> JsString(row[String]("img")),
+                "brush" -> JsString(row[Option[String]]("brush").getOrElse("")),
+                "difficulty" -> JsNumber(row[Int]("difficulty")),
+                "hide" -> JsNumber(row[Int]("hide")),
+                "cover" -> JsNumber(row[Int]("cover")),
+                "concealment" -> JsNumber(row[Int]("concealment")),
+                "height" -> JsNumber(row[Int]("height")),
+                "traits" -> JsString(row[String]("traits")),
+                "effects" -> JsString(row[String]("effects"))
+              )
+            )
+        ).toArray;
+
+        Json.toJson(members)
     }
 }

@@ -14,10 +14,10 @@ angular.module('attero')
         spray: new BrushSize(4, '/assets/textures/spray.png', 'Spray')
     })
     .factory('landscapingTextures', function() {
-        return window.availableTextures
+        return window.TileRepository.getTextures();
     })
     .factory('landscapingTileElements', function() {
-        return window.availableTileElements
+        return window.TileRepository.getElements();
     })
     .factory('landscapingToolService', ['$rootScope', 'landscapingTools', 'landscapingBrushSizes', function($rootScope, tools, brushSizes) {
         var tool = tools.up;

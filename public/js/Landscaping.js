@@ -107,14 +107,14 @@ Landscaping.prototype.applySmallBrush = function(callfunction, tile, args)
     if ( this.selectedTexture )
     {
         selected = this.selectedTexture;
-        element = window.availableTextures[selected];
+        element = window.TileRepository.getTexture(selected);
         maskid = element.getRandomMask();
         offset = element.getRandomOffset();
     }
     else if ( this.selectedElement )
     {
         selected = this.selectedElement;
-        element = window.availableTileElements[selected];
+        element = window.TileRepository.getElement(selected);
         offset = element.getRandomOffset();
 
     }
@@ -163,14 +163,14 @@ Landscaping.prototype.removeSubTextureFromTile = function(tile, element, mask, o
 
 Landscaping.prototype.setSubElementForTile = function(tile, element, mask, offset, offsety, args)
 {
-    window.availableTileElements[element].addToTile(tile, offset, offsety, this);
+    window.TileRepository.getElement(element).addToTile(tile, offset, offsety, this);
 
     this.addTileToBeUpdated(tile);
 };
 
 Landscaping.prototype.setSubTextureForTile = function(tile, texture, mask, offset, offsety, args)
 {
-    window.availableTextures[texture].addToTile(tile, mask, offset, offsety, this);
+    window.TileRepository.getTexture(texture).addToTile(tile, mask, offset, offsety, this);
 
     this.addTileToBeUpdated(tile);
 };
@@ -178,7 +178,7 @@ Landscaping.prototype.setSubTextureForTile = function(tile, texture, mask, offse
 Landscaping.prototype.changeTileElement = function(tile)
 {
     tile.element = this.selectedElement;
-    tile.elementOffset = window.availableTileElements[tile.element].getRandomOffset();
+    tile.elementOffset = window.TileRepository.getElement(tile.element).getRandomOffset();
 
     this.addTileToBeUpdated(tile);
 };

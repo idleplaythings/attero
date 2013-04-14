@@ -7,15 +7,15 @@ TileEffect.prototype.constructor = TileEffect;
 
 TileEffect.prototype.addEffectToImageData = function(imagedata){};
 
-var DropShadowTileEffect = function()
+var TileEffectShadow = function()
 {
     this.offset = {x:4, y:4};
     this.opacity = 0.3;
 };
 
-DropShadowTileEffect.prototype = Object.create( TileEffect.prototype );
+TileEffectShadow.prototype = Object.create( TileEffect.prototype );
 
-DropShadowTileEffect.prototype.addEffectToImageData = function(imagedata)
+TileEffectShadow.prototype.addEffectToImageData = function(imagedata)
 {
     console.log("shadowing");
     var data = imagedata.data;
@@ -63,7 +63,7 @@ DropShadowTileEffect.prototype.addEffectToImageData = function(imagedata)
     imagedata.data = data;
 };
 
-DropShadowTileEffect.prototype.getPixelByOffset = function(index, size)
+TileEffectShadow.prototype.getPixelByOffset = function(index, size)
 {
     var x = index % size;
     var y = Math.floor(index / size);

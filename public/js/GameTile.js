@@ -25,17 +25,12 @@ var GameTile = function (args)
 
 GameTile.prototype.calculateLosProperties = function()
 {
-    var element = window.availableTileElements[this.subElement]
+    if (this.subElement === 0)
+        return;
 
-    if (element)
-    {
-        this.elementHeight = element.height;
-        this.concealment = element.concealment;
-    }
-    else
-    {
-        return 0;
-    }
+    var element = window.TileRepository.getElement(this.subElement)
+    this.elementHeight = element.height;
+    this.concealment = element.concealment;
 }
 
 GameTile.prototype.getLosConcealmentInByteScale = function(conc)
@@ -90,7 +85,7 @@ GameTile.prototype.serialize = function()
 
 GameTile.prototype.randomizeTile = function()
 {
-    var texture = window.availableTextures[this.subTexture];
+    var texture = window.TileRepository.getTexture(this.subTexture);
     this.subTextureOffset = texture.getRandomOffset();
     //console.log(this.subTextureOffset);
     this.subTextureMask = texture.getRandomMask();

@@ -1,3 +1,5 @@
+@(tileDefinition:String)
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -22,7 +24,7 @@
         <script src="@routes.Assets.at("js/Tile.js")"></script>
         <script src="@routes.Assets.at("js/GameTile.js")"></script>
         <script src="@routes.Assets.at("js/TileGrid.js")"></script>
-        <script src="@routes.Assets.at("js/Texture.js")"></script>
+        <script src="@routes.Assets.at("js/TileTexture.js")"></script>
         <script src="@routes.Assets.at("js/Three.js")"></script>
         <script src="@routes.Assets.at("js/Graphics.js")"></script>
         <script src="@routes.Assets.at("js/Scrolling.js")"></script>
@@ -48,6 +50,8 @@
         <script src="@routes.Assets.at("js/menu/LoadMenu.js")"></script>
         <script src="@routes.Assets.at("js/menu/SaveMenu.js")"></script>
         <script src="@routes.Assets.at("js/tileEffects/TileEffect.js")"></script>
+        <script src="@routes.Assets.at("js/repository/TileRepository.js")"></script>
+        <script src="@routes.Assets.at("js/repository/TileTrait.js")"></script>
 
 
         <script src="@routes.Assets.at("js/editor/landscaper/tools/LandscapingTool.js")"></script>
@@ -64,6 +68,8 @@
         <script src="@routes.Assets.at("js/angular/directives/slideMenu.js")"></script>
 
         <script>
+
+            window.TileRepository = new TileRepository("@tileDefinition", ResourceLoader);
 
             function constructControllers()
             {
@@ -132,6 +138,23 @@
 
                 init();
             }
+
+            jQuery(function(){
+
+                window.textureMasks =
+                {
+                    1:  ResourceLoader.loadImage("/assets/textures/texturemask.png"),
+                    2:  ResourceLoader.loadImage("/assets/textures/shadowBrushes.png")
+                };
+
+                window.unitTilesets =
+                {
+                    "ge_tanks": ResourceLoader.loadImage("/assets/units/stug_III.png"),
+                    "ge_infantry": ResourceLoader.loadImage("/assets/units/ge_infantry.png")
+                }
+
+                ResourceLoader.run(staticResourcesLoaded);
+            });
         </script>
 
     </head>

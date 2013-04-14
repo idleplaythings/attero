@@ -71,33 +71,33 @@ Tile.prototype.createTexture = function()
     var centerTexture = this.subTiles[4].subTexture;
 
     var t = this.subTiles[4].subTextureOffset*40;
-    finalContext.drawImage(window.availableTextures[centerTexture].img, t , 0, 40, 40, 0, 0, 40, 40);
+    finalContext.drawImage(window.TileRepository.getTexture(centerTexture).img, t , 0, 40, 40, 0, 0, 40, 40);
     //finalContext.fillRect(5,5,20,20)
     this.textureData = finalContext.getImageData(0, 0, 40, 40);
 
     if (! this.hasOnlyOneTexture() )
     {
-        for (var i in window.availableTextures)
+        for (var i in window.TileRepository.getTextures())
         {
-            if (this.hasThisTexture(window.availableTextures[i].id))
-                window.availableTextures[i].addToTileTexture(this, this.textureData);
+            if (this.hasThisTexture(window.TileRepository.getTexture(i).id))
+                window.TileRepository.getTexture(i).addToTileTexture(this, this.textureData);
         }
     }
 
-    for (var i in window.availableTileElements)
+    for (var i in window.TileRepository.getElements())
     {
-        var element = window.availableTileElements[i];
+        var element = window.TileRepository.getElement(i);
         if (element.underShadow === true)
-            window.availableTileElements[i].addToTileTexture(this, this.textureData);
+            element.addToTileTexture(this, this.textureData);
     }
 
     this.createShadows();
 
-    for (var i in window.availableTileElements)
+    for (var i in window.TileRepository.getElements())
     {
-        var element = window.availableTileElements[i];
+        var element = window.TileRepository.getElement(i);
         if (element.underShadow === false)
-            window.availableTileElements[i].addToTileTexture(this, this.textureData);
+            element.addToTileTexture(this, this.textureData);
     }
 };
 

@@ -75,7 +75,7 @@ SideSlideMenuTextures.prototype.populateElement = function()
         var texture = this.textures[i];
         count++;
         $('<div class="slideEntry texture'+selected+'" data-texture="'+texture.id+'" style="background-image:url('+texture.img.src+')"></div>').appendTo(this.container);
-        //$(window.availableTextures[i].img).data("texture", i).appendTo("#texturecontainer");
+        //$(window.TileRepository.getTexture(i).img).data("texture", i).appendTo("#texturecontainer");
         if (count % perRow == 0){
             $('</br>').appendTo(this.container);
         }
@@ -124,7 +124,7 @@ SideSlideMenuTileElements.prototype.populateElement = function()
         var texture = this.textures[i];
         count++;
         $('<div class="slideEntry tileElement'+selected+'" data-element="'+texture.id+'" style="background-image:url('+texture.img.src+');"></div>').appendTo(this.container);
-        //$(window.availableTextures[i].img).data("texture", i).appendTo("#texturecontainer");
+        //$(window.TileRepository.getTexture(i).img).data("texture", i).appendTo("#texturecontainer");
         if (count % perRow == 0){
             $('</br>').appendTo(this.container);
         }
