@@ -98,7 +98,8 @@
                 var zooming = new Zooming(canvas, UIEventDispatcher);
 
                 var tileSize = 20; // this doesn't belong here
-                var coordinasService = new Coordinates(tileSize, TileGrid.tileRowCount);
+
+                var coordinasService = new Coordinates(tileSize, TileGrid.getMapSizeInGameTiles().width);
 
                 window.interface = new Interface(coordinasService, TileGrid, canvas, UIEventDispatcher);
                 window.interface.init();
@@ -116,8 +117,8 @@
             {
                 constructControllers();
 
-                TileGrid.width = 100;
-                TileGrid.height = 100;
+                TileGrid.width = 201;
+                TileGrid.height = 201;
 
                 var hash = '';
                 if (location.hash)

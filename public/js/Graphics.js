@@ -116,7 +116,17 @@ Graphics.prototype.moveCamera = function(pos)
     WaterLayer.light.position.y = this.camera.position.y;
 };
 
-Graphics.prototype.camPos = function()
+Graphics.prototype.camPosInWindow = function()
 {
     return {x: this.camera.position.x*40, y:this.camera.position.y*40};
+};
+
+Graphics.prototype.camPosIn3d = function()
+{
+    return {x: this.camera.position.x, y:this.camera.position.y};
+};
+
+Graphics.prototype.camPosInGame = function()
+{
+    return {x: this.camera.position.x * 2, y:this.camera.position.y * -2};
 };

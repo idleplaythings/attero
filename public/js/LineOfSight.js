@@ -53,7 +53,9 @@ window.LineOfSight =
 
     getTilemap: function()
     {
-        var size = (TileGrid.tileRowCount*2)+1;
+        var mapDimensions = TileGrid.getMapSizeInGameTiles();
+        var size = mapDimensions.width;
+
         var finalCanvas =
             $('<canvas width="'+size+'" height="'+size+'"></canvas>').get(0);
         //$(finalCanvas).appendTo('#texturecontainer');

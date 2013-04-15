@@ -128,8 +128,6 @@ class GameManager()
       SQL("""
         CREATE TABLE """ +dbName+ """.game_tile (
           "tileid" integer DEFAULT NULL,
-          "x" integer DEFAULT 0,
-          "y" integer DEFAULT 0,
           "texture" smallint DEFAULT NULL,
           "toffset" smallint DEFAULT NULL,
           "tmask" smallint DEFAULT NULL,
@@ -138,11 +136,7 @@ class GameManager()
           "eoffset" smallint DEFAULT NULL,
           "evariance" smallint DEFAULT NULL,
           "eangle" smallint DEFAULT NULL,
-          "concealment" smallint DEFAULT NULL,
-          "cover" smallint DEFAULT NULL,
-          "terrain" smallint DEFAULT NULL,
-          "height" smallint DEFAULT 1,
-          PRIMARY KEY ("tileid", "x", "y")
+          PRIMARY KEY ("tileid")
         )
       """).execute();
 
@@ -161,16 +155,25 @@ class GameManager()
         .on(
           'gameid -> gameid,
           'name -> map.name,
-          'width -> ((map.width*2)+1),
-          'height -> ((map.height*2)+1)
+          'width -> map.width*2,
+          'height -> map.height
         )
         .executeInsert()
 
       map.setTileIds;
-      val sql: String ="""INSERT INTO """ +dbName+ """.game_tile
-        (tileid, x, y, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle, concealment, cover, terrain, height) VALUES """+"\n" + map.tiles.map(_.toSqlValueWithDetails(map)).mkString(",");
 
-      SQL(sql).execute()
+      var i: Int = 0;
+      var batchSize: Int = 100;
+      while (i < map.tiles.length)
+      {
+        i += batchSize;
+
+        val tilestring: String = map.tiles.filter( tile => (tile.id >= (i - batchSize) && tile.id < i)).map(_.toGameSqlValue()).mkString(",");
+        val sql: String =
+        """INSERT INTO """ +dbName+ """.game_tile (tileid, texture, toffset, tmask, elevation, element, eoffset, evariance, eangle) VALUES """+"\n" + tilestring;
+
+        SQL(sql).execute()
+      }
 
       for (i <- 0 until units.length)
       {

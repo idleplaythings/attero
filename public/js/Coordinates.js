@@ -1,8 +1,9 @@
 
-function Coordinates(tileSize, tileRowCount)
+function Coordinates(tileSize, mapWidth)
 {
+    console.log("mapWidth: " + mapWidth);
     this.tileSize = tileSize;
-    this.tileRowCount = tileRowCount;
+    this.mapWidth = mapWidth;
 }
 
 Coordinates.prototype.viewPortToGridCoordinates = function(offsetLeft, offsetTop, viewPortWidth, viewPortHeight, cameraX, cameraY, zoom, x, y)
@@ -22,8 +23,7 @@ Coordinates.prototype.viewPortToGridCoordinates = function(offsetLeft, offsetTop
 
 Coordinates.prototype.gridCoordinatesToTileId = function(x, y)
 {
-    var width = this.tileRowCount * 2 + 1;
-    var index = Math.floor((y + 10) / this.tileSize) * width + Math.floor((x + 10) / this.tileSize);
+    var index = Math.floor((y + 10) / this.tileSize) * this.mapWidth + Math.floor((x + 10) / this.tileSize);
 
     return index;
 };

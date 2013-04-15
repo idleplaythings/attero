@@ -1,8 +1,8 @@
 window.TileGrid = {
 
     context:null,
-    tileRowCount: 100,
-    tileColumnCount: 100,
+    width: 201,
+    height: 201,
     subSegmentSize: 25,
     THREEMesh: null,
     THREEMeshes: null,
@@ -23,12 +23,28 @@ window.TileGrid = {
 
         var data =
         {
-            width: TileGrid.tileRowCount,
-            height: TileGrid.tileColumnCount,
+            width: TileGrid.width,
+            height: TileGrid.height,
             tiles: sTiles
         };
 
         return data;
+    },
+
+    getMapSizeInGameTiles: function()
+    {
+        return {
+            width: TileGrid.width,
+            height: TileGrid.height
+        };
+    },
+
+    getMapSizeIn3d: function()
+    {
+        return {
+            width: (TileGrid.width-1)/2,
+            height: (TileGrid.height-1)/2
+        };
     },
 
     onGridClicked: function(event)
@@ -43,7 +59,7 @@ window.TileGrid = {
         var width = window.innerWidth/2;
         var height = window.innerHeight/2;
 
-        var camPos = Graphics.camPos();
+        var camPos = Graphics.camPosInWindow();
 
         x -= width - (camPos.x*Graphics.zoom);
         y -= height + (camPos.y*Graphics.zoom);
@@ -62,7 +78,7 @@ window.TileGrid = {
         var width = (window.innerWidth/2)*Graphics.zoom;
         var height = (window.innerHeight/2);
 
-        var camPos = Graphics.camPos();
+        var camPos = Graphics.camPosInWindow();
 
         x *= 20;
         y *= 20;
@@ -83,7 +99,9 @@ window.TileGrid = {
 
         //console.log("clicked " + x +","+ y);
         var tileSize = 20;
-        var width = (TileGrid.tileRowCount*2)+1;
+
+        var mapDimensions = TileGrid.getMapSizeInGameTiles();
+        var width = mapDimensions.width;
 
         var i = Math.floor((y+10)/tileSize)*(width) + Math.floor((x+10)/tileSize);
 
@@ -100,7 +118,8 @@ window.TileGrid = {
 
     getTileGridWidht: function()
     {
-        return TileGrid.tileRowCount*40;
+        var mapDimensions = TileGrid.getMapSizeIn3d();
+        return mapDimensions.width*40;
     },
 
     getSubTileGridWidht: function()
@@ -111,10 +130,12 @@ window.TileGrid = {
     getTileGridMesh: function()
     {
 
+        var mapDimensions = TileGrid.getMapSizeIn3d();
+
         var scale = 1;
-        var rowCount = TileGrid.tileRowCount;
+        var rowCount = mapDimensions.width;
         var subSegmentSize = TileGrid.subSegmentSize;
-        var subSegmentsPerLine = TileGrid.tileRowCount/subSegmentSize;
+        var subSegmentsPerLine = mapDimensions.width/subSegmentSize;
 
         if (!this.THREETextures)
         {
@@ -166,9 +187,10 @@ window.TileGrid = {
 
     createTexture: function()
     {
+        var mapDimensions = TileGrid.getMapSizeIn3d();
         var subSegments = TileGrid.getSubTextureCount();
         var subSegmentSize = TileGrid.subSegmentSize;
-        var subSegmentsPerLine = TileGrid.tileRowCount/subSegmentSize;
+        var subSegmentsPerLine = mapDimensions.width/subSegmentSize;
 
         //console.log("subSegments: " + subSegments);
         for (var i=0; i<subSegments; i++ )
@@ -215,8 +237,9 @@ window.TileGrid = {
 
     updateTexture: function(tile)
     {
+        var mapDimensions = TileGrid.getMapSizeIn3d();
         var subSegmentSize = TileGrid.subSegmentSize;
-        var subSegmentsPerLine = TileGrid.tileRowCount/subSegmentSize;
+        var subSegmentsPerLine = mapDimensions.width/subSegmentSize;
 
         var x = tile.position.x;
         var y = tile.position.y;
@@ -245,12 +268,14 @@ window.TileGrid = {
 
     getTileCount: function()
     {
-        return TileGrid.tileRowCount*TileGrid.tileRowCount;
+        var mapDimensions = TileGrid.getMapSizeIn3d();
+        return mapDimensions.width * mapDimensions.height;
     },
 
     getGameTileCount: function()
     {
-        return ((TileGrid.tileRowCount*2)+1) * ((TileGrid.tileColumnCount*2)+1);
+        var mapDimensions = TileGrid.getMapSizeInGameTiles();
+        return mapDimensions.width * mapDimensions.height;
     },
 
     getContext: function()
@@ -300,11 +325,13 @@ window.TileGrid = {
 
     createGametilesFromJson: function(tiles)
     {
+        var mapDimensions = TileGrid.getMapSizeInGameTiles();
+
         var tiles = tiles.split(";");
         TileGrid.gameTiles = Array();
 
         var gameTileCount = TileGrid.getGameTileCount();
-        var gameTileRowCount = (TileGrid.tileRowCount*2)+1;
+        var gameTileRowCount = mapDimensions.width;
         for (var i =0; i<gameTileCount;i++)
         {
             var x = i % gameTileRowCount;
@@ -331,10 +358,11 @@ window.TileGrid = {
 
     createDefaultGameTiles: function()
     {
+        var mapDimensions = TileGrid.getMapSizeInGameTiles();
         TileGrid.gameTiles = Array();
 
         var gameTileCount = TileGrid.getGameTileCount();
-        var gameTileRowCount = (TileGrid.tileRowCount*2)+1;
+        var gameTileRowCount = mapDimensions.width;
         for (var i =0; i<gameTileCount;i++)
         {
             var x = i % gameTileRowCount;
@@ -348,14 +376,15 @@ window.TileGrid = {
 
     initTiles: function()
     {
+        var mapDimensions = TileGrid.getMapSizeIn3d();
         window.tiles = Array();
 
         var tileCount = TileGrid.getTileCount();
         while( tileCount-- )
         {
-            var x = (tileCount+1) % TileGrid.tileRowCount;
-            var y = Math.floor(tileCount / TileGrid.tileRowCount);
-            var i = y*TileGrid.tileRowCount + x;
+            var x = (tileCount+1) % mapDimensions.width;
+            var y = Math.floor(tileCount / mapDimensions.width);
+            var i = y*mapDimensions.width + x;
 
             window.tiles[i] = new Tile(x, y);
         }
@@ -363,7 +392,8 @@ window.TileGrid = {
 
     getTileByXY: function(x, y)
     {
-        var i = y*TileGrid.tileRowCount + x;
+        var mapDimensions = TileGrid.getMapSizeIn3d();
+        var i = y*mapDimensions.width + x;
         if (!window.tiles[i])
         {
             //console.log("Tile not found: i: " + i + "("+x+","+y+")");
@@ -375,13 +405,14 @@ window.TileGrid = {
 
     getGameTileByXY: function(x, y)
     {
+        var mapDimensions = TileGrid.getMapSizeInGameTiles();
         if (x < 0 || y < 0)
             return null;
 
-        if (x > (TileGrid.tileRowCount*2)+1 || y > (TileGrid.tileColumnCount*2)+1)
+        if (x > mapDimensions.width || y > mapDimensions.height)
             return null;
 
-        var i = y*((TileGrid.tileRowCount*2)+1) + x;
+        var i = y*mapDimensions.width + x;
         if (!TileGrid.gameTiles[i])
         {
             //console.log("Gametile not found: i: " + i + "("+x+","+y+")");

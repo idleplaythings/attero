@@ -43,6 +43,10 @@ Interface.prototype.onClicked = function(event)
     console.log("tileclick");
     var gameTile = this.getTileFromEvent(event);
 
+    console.log(gameTile)
+    if ( ! gameTile)
+        return;
+
     var clickTileEvent = new Event("player", "ClickTileEvent");
     clickTileEvent.tile = gameTile;
     clickTileEvent.domEvent = event;
@@ -59,15 +63,16 @@ Interface.prototype.gameTileHighlighter = function(event)
         this.dispatchMouseTileEvent(this.mouseoverTile, true);
     }
 
-    if (this.mouseoverTile === null || this.mouseoverTile != gameTile)
+    if (gameTile && (this.mouseoverTile === null || this.mouseoverTile != gameTile))
     {
+        console.log('mouseover gametile x: ' + gameTile.position.x + ', y: ' + gameTile.position.y
+        + ' e: ' + gameTile.elevation + ' elevation string: ' + gameTile.getElevationDifferenceString());
+
+        Contours.testMatches(gameTile.getElevationDifferenceString());
+
         this.dispatchMouseTileEvent(gameTile, false);
         this.mouseoverTile = gameTile;
     }
-    console.log('mouseover gametile x: ' + gameTile.position.x + ', y: ' + gameTile.position.y
-        + ' e: ' + gameTile.elevation + ' elevation string: ' + gameTile.getElevationDifferenceString());
-
-    Contours.testMatches(gameTile.getElevationDifferenceString());
 };
 
 Interface.prototype.dispatchMouseTileEvent = function(tile, out)
@@ -92,6 +97,8 @@ Interface.prototype.getTileFromEvent = function(event)
         event.pageX,
         event.pageY
     );
+
+
     var tileIndex = this.coordinateService.gridCoordinatesToTileId(coordinates.x, coordinates.y);
     return this.tileGrid.gameTiles[tileIndex];
 };

@@ -10,9 +10,9 @@ MoveInterruptEventLister.prototype.handle = function(event)
     var routeNumber = event.routeNumber;
     //console.log("Handling move event interrup, routeNumber: " + routeNumber);
 
-    var originalEvent = window.EventDispatcher.events[event.eventid];
+    var originalEvent = window.GameEventDispatcher.events[event.eventid];
 
-    window.EventDispatcher.revertEverythingAfter(originalEvent);
+    window.GameEventDispatcher.revertEverythingAfter(originalEvent);
 
     //console.log(originalEvent.route);
     var howmany = originalEvent.route.length - routeNumber + 1;

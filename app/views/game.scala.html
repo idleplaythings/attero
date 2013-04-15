@@ -1,4 +1,4 @@
-@(userid: Int, gameid: Long, map:String, units:String)(implicit request: RequestHeader)
+@(userid: Int, gameid: Long, map:String, units:String, tileDefinition:String)(implicit request: RequestHeader)
 
 <!DOCTYPE html>
 <html>
@@ -22,7 +22,7 @@
         <script src="@routes.Assets.at("js/Tile.js")"></script>
         <script src="@routes.Assets.at("js/GameTile.js")"></script>
         <script src="@routes.Assets.at("js/TileGrid.js")"></script>
-        <script src="@routes.Assets.at("js/Texture.js")"></script>
+        <script src="@routes.Assets.at("js/TileTexture.js")"></script>
         <script src="@routes.Assets.at("js/three.min.js")"></script>
         <script src="@routes.Assets.at("js/Graphics.js")"></script>
         <script src="@routes.Assets.at("js/Scrolling.js")"></script>
@@ -61,14 +61,25 @@
         <script src="@routes.Assets.at("js/Interface.js")"></script>
         <script src="@routes.Assets.at("js/Coordinates.js")"></script>
         <script src="@routes.Assets.at("js/UnitTooltip.js")"></script>
+        <script src="@routes.Assets.at("js/tileEffects/TileEffect.js")"></script>
+        <script src="@routes.Assets.at("js/repository/TileRepository.js")"></script>
+        <script src="@routes.Assets.at("js/repository/TileTrait.js")"></script>
 
         <script>
-            function dynamicResourcesLoaded()
-            {
-                window.playerid = @userid;
 
+            window.TileRepository = new TileRepository("@tileDefinition", ResourceLoader);
+
+            function constructControllers()
+            {
                 window.UIEventDispatcher = new Dispatcher();
                 window.Graphics = new Graphics(UIEventDispatcher);
+                window.landscaping = new Landscaping(UIEventDispatcher, TileGrid);
+                window.UnitManager = new UnitManager(UIEventDispatcher);
+            }
+
+            function init()
+            {
+                window.playerid = @userid;
 
                 Graphics.init();
                 Graphics.animate();
@@ -80,25 +91,25 @@
 
                 canvas.on("click", TileGrid.onGridClicked);
 
-                var scrolling = new Scrolling(canvas, UIEventDispatcher);
-                var zooming = new Zooming(canvas, UIEventDispatcher);
+                var scrolling = new Scrolling(canvas, window.UIEventDispatcher);
+                var zooming = new Zooming(canvas, window.UIEventDispatcher);
 
                 window.GameEventDispatcher = new Dispatcher();
 
                 GameEventDispatcher.attach(new MoveServerMessageEventLister());
                 GameEventDispatcher.attach(new UnitPositionListener());
-                GameEventDispatcher.attach(new UnitMoveAnimationListener());
+                GameEventDispatcher.attach(new UnitMoveAnimationListener(scrolling));
                 GameEventDispatcher.attach(new MoveInterruptEventLister());
-                GameEventDispatcher.attach(new UnitAppearAnimationListener());
+                GameEventDispatcher.attach(new UnitAppearAnimationListener(scrolling));
 
                 var tileSize = 20; // this doesn't belong here
-                var coordinasService = new Coordinates(tileSize, TileGrid.tileRowCount);
+                var coordinasService = new Coordinates(tileSize, TileGrid.getMapSizeInGameTiles().width);
 
-                window.interface = new Interface(coordinasService, TileGrid, canvas, UIEventDispatcher);
+                window.interface = new Interface(coordinasService, TileGrid, canvas, window.UIEventDispatcher);
                 window.interface.init();
                 scrolling.init();
 
-                UnitManager.createFromString("@units");
+                window.UnitManager.createFromString("@units");
 
                 ServerConnection.connect("@routes.Application.gameserver(userid, gameid).webSocketURL()");
 
@@ -108,6 +119,8 @@
 
             function staticResourcesLoaded()
             {
+                constructControllers();
+
                 console.log("static loaded");
                 TileGrid.width = 100;
                 TileGrid.height = 100;
@@ -116,8 +129,25 @@
 
                 TileGrid.createFromJson(JSON.parse(mapString));
                 console.log("tiles created");
-                ResourceLoader.loadTiles(dynamicResourcesLoaded);
+                ResourceLoader.loadTiles(init);
             }
+
+            jQuery(function(){
+
+                window.textureMasks =
+                {
+                    1:  ResourceLoader.loadImage("/assets/textures/texturemask.png"),
+                    2:  ResourceLoader.loadImage("/assets/textures/shadowBrushes.png")
+                };
+
+                window.unitTilesets =
+                {
+                    "ge_tanks": ResourceLoader.loadImage("/assets/units/stug_III.png"),
+                    "ge_infantry": ResourceLoader.loadImage("/assets/units/ge_infantry.png")
+                }
+
+                ResourceLoader.run(staticResourcesLoaded);
+            });
 
         </script>
 

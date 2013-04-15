@@ -63,8 +63,9 @@ UnitPositionListener.prototype.reverse = function(event)
     event.unit.setPosition(pos);
 }
 
-var UnitMoveAnimationListener = function()
+var UnitMoveAnimationListener = function(scrolling)
 {
+    this.scrolling = scrolling;
     MoveEventLister.call(this);
 }
 
@@ -74,9 +75,9 @@ UnitMoveAnimationListener.prototype.handle = function(event)
 {
     var wait = (event.origin == "player");
 
-    event.animation = new UnitMoveAnimation(event.unit, event.route.slice(), wait);
+    event.animation = new UnitMoveAnimation(event.unit, event.route.slice(), wait, this.scrolling);
     AnimationHandler.addAnimation(event.animation);
-}
+};
 
 UnitMoveAnimationListener.prototype.reverse = function(event)
 {

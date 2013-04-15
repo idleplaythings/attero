@@ -10,8 +10,9 @@ window.FogOfWar =
     {
         console.log("FogOfWar init");
 
-        var width = TileGrid.tileRowCount +0.5;
-        var height = TileGrid.tileColumnCount + 0.5;
+        var mapDimensions = TileGrid.getMapSizeIn3d();
+        var width = mapDimensions.width +0.5;
+        var height = mapDimensions.height + 0.5;
 
         var y =width/2 -0.25;//
         var x =height/2 -0.25;//
@@ -34,7 +35,7 @@ window.FogOfWar =
             transparent:true,
             depthTest:false,
             depthWrite:false,
-            opacity:0.5,
+            opacity:0.5
             //wireframe:true
         });
 
@@ -54,8 +55,9 @@ window.FogOfWar =
         //fogtexture.magFilter = THREE.NearestFilter;
         //fogtexture.minFilter = THREE.NearestMipMapNearestFilter;
 
-        var width = (TileGrid.tileRowCount*2)+1;
-        var height = (TileGrid.tileColumnCount*2)+1;
+        var mapDimensions = TileGrid.getMapSizeIn3d();
+        var width = mapDimensions.width;
+        var height = mapDimensions.height;
 
         FogOfWar.uniforms = {
             xStep: {type: "f", value: 1/width/20},

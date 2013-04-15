@@ -31,7 +31,7 @@ Scrolling.prototype.init = function()
     this.element.on("mouseout", $.proxy(this.mouseout, this));
     this.element.on("mousemove", $.proxy(this.mousemove, this));
 
-    this.scrollTo({x:window.innerWidth/2, y:-window.innerHeight/2});
+    this.scrollToWindow({x:window.innerWidth/2, y:-window.innerHeight/2});
 };
 
 Scrolling.prototype.mousedown = function(event)
@@ -108,19 +108,29 @@ Scrolling.prototype.scroll = function (dx, dy){
         this.position.y = 0;
 
     //Graphics.moveCamera({x:dx*speed, y:dy*speed});
-
-    var scrollEvent = new Event("player", "ScrollEvent");
-    scrollEvent.position = this.position;
-
-    this.dispatcher.dispatch(scrollEvent);
+    this.dispatch(this.position);
 };
 
-Scrolling.prototype.scrollTo = function(pos)
+Scrolling.prototype.scrollToWindow = function(pos)
 {
     this.position.x = pos.x;
     this.position.y = pos.y;
     //Graphics.moveCamera({x:dx*speed, y:dy*speed});
 
+    this.dispatch(this.position);
+};
+
+Scrolling.prototype.scrollTo3d = function(pos)
+{
+    this.position.x = pos.x*40;
+    this.position.y = pos.y*40;
+    //Graphics.moveCamera({x:dx*speed, y:dy*speed});
+
+    this.dispatch(this.position);
+};
+
+Scrolling.prototype.dispatch = function(pos)
+{
     var scrollEvent = new Event("player", "ScrollEvent");
     scrollEvent.position = this.position;
 

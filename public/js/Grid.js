@@ -7,18 +7,20 @@ window.Grid =
 
     init: function()
     {
-        var width = TileGrid.tileRowCount +0.5;
-        var height = TileGrid.tileColumnCount + 0.5;
+        var mapDimensions = TileGrid.getMapSizeIn3d();
+        var width = mapDimensions.width +0.5;
+        var height = mapDimensions.height + 0.5;
 
         var subSegments = TileGrid.getSubTextureCount();
         var subSegmentSize = TileGrid.subSegmentSize;
-        var subSegmentsPerLine = TileGrid.tileRowCount/subSegmentSize;
+        var subSegmentsPerLine = mapDimensions.width/subSegmentSize;
 
         var y =width/2 - 0.25;//
         var x =height/2 - 0.25;//
 
-        var wcount = (TileGrid.tileRowCount*2)+1;
-        var hcount = (TileGrid.tileColumnCount*2)+1;
+        var mapDimensionsInGameTiles = TileGrid.getMapSizeInGameTiles();
+        var wcount = mapDimensionsInGameTiles.width;
+        var hcount = mapDimensionsInGameTiles.height;
         var geometry = new THREE.PlaneGeometry(
                     width, height, wcount, hcount );
 

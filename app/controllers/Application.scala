@@ -40,7 +40,8 @@ object Application extends Controller {
           userid,
           gameid,
           Json.stringify(map.toJSON),
-          unitRepository.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"))
+          unitRepository.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"),
+          Json.stringify(TileRepository.getTileDefinitionForClient()))
         )
       }
   }

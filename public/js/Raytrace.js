@@ -93,6 +93,7 @@ Raytrace.prototype.calculateCornerConcealment = function(coords)
     if (
         corner1
         && corner2
+        && corner1.subElement !== 0
         && window.TileRepository.getElement(corner1.subElement) instanceof RoadTileElement
         && corner2.subElement == corner1.subElement
         )

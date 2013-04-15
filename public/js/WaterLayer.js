@@ -7,7 +7,7 @@ window.WaterLayer =
     {
         var subSegments = TileGrid.getSubTextureCount();
         var subSegmentSize = TileGrid.subSegmentSize;
-        var subSegmentsPerLine = TileGrid.tileRowCount/subSegmentSize;
+        var subSegmentsPerLine = TileGrid.getMapSizeIn3d().width/subSegmentSize;
 
         //console.log("subSegments: " + subSegments);
         for (var i=0; i<subSegments; i++ )

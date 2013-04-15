@@ -2,7 +2,7 @@ var UnitTooltip = function()
 {
     this.element = null;
     this.distanceFromUnit = {x:0, y:-200};
-    this.coordinateService = new Coordinates(20, TileGrid.tileRowCount);
+    this.coordinateService = new Coordinates(20, TileGrid.getMapSizeIn3d().width);
 }
 
 UnitTooltip.prototype.getElement = function()

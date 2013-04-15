@@ -24,12 +24,12 @@ abstract class GameMap(
 
   def getXForTile(i:Int): Int =
   {
-    i % ((this.width*2)+1)
+    i % this.width
   }
 
   def getYForTile(i:Int): Int =
   {
-    math.floor(i / ((this.height*2)+1)).toInt;
+    math.floor(i / this.height).toInt;
   }
 
   def toJSON(): JsObject =

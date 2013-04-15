@@ -9,12 +9,25 @@ var UnitIcon = function(unit, textureImg)
     this.overSprite = null;
 
     this.group = null;
-}
+};
+
+UnitIcon.prototype.getPositionIn3d = function()
+{
+    return this.unit.icon.group.position;
+};
+
+UnitIcon.prototype.getPositionInGame = function()
+{
+    return {
+        x:this.unit.icon.group.position.x*2,
+        y:this.unit.icon.group.position.y*-2
+    };
+};
 
 UnitIcon.prototype.setAzimuth = function(azimuth)
 {
     this.unitSprite.rotation  = MathLib.degreeToRadian(MathLib.addToAzimuth(360, -azimuth));
-}
+};
 
 UnitIcon.prototype.show = function()
 {
@@ -149,7 +162,7 @@ VehicleUnitIcon.prototype = Object.create( UnitIcon.prototype );
 
 VehicleUnitIcon.prototype.createUnitTexture = function()
 {
-    var size = UnitHelper.textureSize;
+    var size = window.UnitManager.textureSize;
     var finalCanvas =
         $('<canvas width="'+size+'" height="'+size+'"></canvas>').get(0);
     //$(finalCanvas).appendTo('#texturecontainer');
@@ -193,7 +206,7 @@ InfantryUnitIcon.prototype = Object.create( UnitIcon.prototype );
 
 InfantryUnitIcon.prototype.createUnitTexture = function()
 {
-    var size = UnitHelper.textureSize;
+    var size = window.UnitManager.textureSize;
     var finalCanvas =
         $('<canvas width="'+size+'" height="'+size+'"></canvas>').get(0);
     //$(finalCanvas).appendTo('#texturecontainer');
@@ -232,7 +245,7 @@ InfantryUnitIcon.prototype.getTextureOffsetForMember = function(memberType)
 
 InfantryUnitIcon.prototype.getMemberPosition = function(index)
 {
-    var origo = Math.floor(UnitHelper.textureSize/2);
+    var origo = Math.floor(window.UnitManager.textureSize/2);
     if (index < 2)
     {
         var angle =  ((index*180)+90);
