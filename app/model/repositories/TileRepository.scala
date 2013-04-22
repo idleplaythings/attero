@@ -16,7 +16,9 @@ class TileRepository(gameid: Long) extends Repository(gameid)
 
     val tiles: Array[(Byte,Byte,Byte)] = TileRepository.getTiles(gameid);
 
-    lazy val tileConcealments: Array[Short] = tiles.map(ActiveGameTile.getTileConcealment(_)).toArray;
+    val tileDefinition: TileDefinition = new TileDefinition();
+
+    lazy val tileConcealments: Array[Short] = tiles.map(ActiveGameTile.getTileConcealment(_, tileDefinition)).toArray;
 
     def getTileConcealment(pos: (Int, Int)): (Int, Int, Int, Int, Boolean) =
     {
@@ -43,7 +45,7 @@ class TileRepository(gameid: Long) extends Repository(gameid)
         else
         {
             val tileid = getTileIdFromXY(pos);
-            Some(ActiveGameTile.buildTile(tileid, pos, this.tiles(tileid)))
+            Some(ActiveGameTile.buildTile(tileid, pos, this.tiles(tileid), tileDefinition))
         }
     }
 
@@ -107,54 +109,5 @@ object TileRepository
             (row[Int]("texture").toByte, row[Int]("element").toByte, row[Int]("elevation").toByte)
           ).toArray;
         }
-    }
-
-    def getTileDefinitionForClient(): JsValue =
-    {
-        DB.withConnection { implicit c =>
-          val tileSql = SQL("""
-            SELECT
-                id,
-                type,
-                name,
-                img,
-                brush,
-                difficulty,
-                hide,
-                cover,
-                concealment,
-                height,
-                traits,
-                effects
-            FROM
-                tile_member
-            ORDER BY id ASC""")();
-
-            sqlTileDefToJson(tileSql);
-        }
-    }
-
-    def sqlTileDefToJson(rows: Stream[anorm.SqlRow]): JsValue =
-    {
-        val members = rows.map(row =>
-            JsObject(
-              Seq(
-                "id" -> JsNumber(row[Int]("id")),
-                "type" -> JsString(row[String]("type")),
-                "name" -> JsString(row[String]("name")),
-                "img" -> JsString(row[String]("img")),
-                "brush" -> JsString(row[Option[String]]("brush").getOrElse("")),
-                "difficulty" -> JsNumber(row[Int]("difficulty")),
-                "hide" -> JsNumber(row[Int]("hide")),
-                "cover" -> JsNumber(row[Int]("cover")),
-                "concealment" -> JsNumber(row[Int]("concealment")),
-                "height" -> JsNumber(row[Int]("height")),
-                "traits" -> JsString(row[String]("traits")),
-                "effects" -> JsString(row[String]("effects"))
-              )
-            )
-        ).toArray;
-
-        Json.toJson(members)
     }
 }

@@ -20,7 +20,8 @@ var GameTile = function (args)
     this.calculateLosProperties();
     this.losConcealment = 0;
 
-    this.subscribedUnit = null;
+    this.containedUnits = Array();
+    this.nextForSelection = null;
 }
 
 GameTile.prototype.calculateLosProperties = function()
@@ -50,24 +51,48 @@ GameTile.prototype.getLosConcealmentInByteScale = function(conc)
         return 130;
 
     return 180;
-}
+};
 
 GameTile.prototype.unSubscribeUnitToTile = function(unit)
 {
-    this.subscribedUnit = null;
-}
+    if ( ! this.containedUnits[unit.id])
+        throw "Trying to unsubscribe unit from tile that is not subscribed to the tile.";
+
+    this.containedUnits[unit.id] = null;
+    this.nextForSelection = null;
+};
 
 GameTile.prototype.subscribeUnitToTile = function(unit)
 {
-    if (this.subscribedUnit != null && this.subscribedUnit.id == unit.id)
+    if (this.containedUnits[unit.id])
         throw "Can't subscribe same unit to same tile more than once";
 
-    if (this.subscribedUnit != null)
-        console.log("TODO: support multiple units in same tile");
-        //throw "Can't subscribe more than one unit per tile";
+    this.containedUnits[unit.id] = unit;
+    this.nextForSelection = null;
+};
 
-    this.subscribedUnit = unit;
-}
+GameTile.prototype.selectUnitFromTile= function()
+{
+    var selected = null;
+    for (var i in this.containedUnits)
+    {
+        var unit = this.containedUnits[i];
+
+        if (selected)
+        {
+            this.nextForSelection = unit;
+            break;
+        }
+
+        if (this.nextForSelection === null || this.nextForSelection.id === unit.id)
+        {
+            this.nextForSelection = null;
+            selected = unit;
+        }
+    }
+
+    return selected;
+};
 
 GameTile.prototype.serialize = function()
 {

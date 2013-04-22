@@ -17,6 +17,7 @@ import scala.concurrent.duration._
 import models.GameManager
 import models.repositories.UnitRepository
 import models.repositories.TileRepository
+import models.tiles.TileDefinition
 import models.MapStorage
 
 object Application extends Controller {
@@ -26,7 +27,7 @@ object Application extends Controller {
   }
 
   def editor() = Action {
-    val tileDef = TileRepository.getTileDefinitionForClient();
+    val tileDef = TileDefinition.getTileDefinitionForClient();
     Ok(views.html.editor(Json.stringify(tileDef)))
   }
 
@@ -41,7 +42,7 @@ object Application extends Controller {
           gameid,
           Json.stringify(map.toJSON),
           unitRepository.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"),
-          Json.stringify(TileRepository.getTileDefinitionForClient()))
+          Json.stringify(TileDefinition.getTileDefinitionForClient()))
         )
       }
   }

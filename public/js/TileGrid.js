@@ -47,6 +47,7 @@ window.TileGrid = {
         };
     },
 
+    /*
     onGridClicked: function(event)
     {
         var x = event.pageX - this.offsetLeft;
@@ -69,6 +70,7 @@ window.TileGrid = {
 
         UIEvents.onGridClicked(x,y, right);
     },
+    */
 
     gridToViewPortCoordinates: function(pos)
     {

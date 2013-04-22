@@ -2,6 +2,8 @@ var UnitManager = function UnitManager(dispatcher)
 {
     window.units = Array();
 
+    this.selectedUnit = null;
+
     this.typeDefinitions = {
         1: "GeInfantry",
         2: "StugIII"
@@ -10,7 +12,32 @@ var UnitManager = function UnitManager(dispatcher)
     this.textureSize = 128;
     this.unitscale = 0.5;
 
+    this.dispatcher = dispatcher;
+
     dispatcher.attach(new EventListener("ZoomEvent", $.proxy(this.onZoom, this)));
+    dispatcher.attach(new EventListener("ClickTileEvent", $.proxy(this.onTileClicked, this)));
+};
+
+UnitManager.prototype.onTileClicked = function(event)
+{
+    var tile = event.tile;
+    var toBeSelected = tile.selectUnitFromTile();
+
+    if (
+        toBeSelected !== null
+        && (this.selectedUnit === null || toBeSelected.id !== this.selectedUnit.id)
+        && window.playerid == toBeSelected.owner)
+    {
+        if (this.selectedUnit)
+            this.selectedUnit.icon.deselect();
+
+        this.selectedUnit = toBeSelected;
+        this.selectedUnit.icon.select();
+        console.log("things should happen");
+        console.log(this.selectedUnit);
+
+        return;
+    }
 };
 
 UnitManager.prototype.onZoom = function(event)

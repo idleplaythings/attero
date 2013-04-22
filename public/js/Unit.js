@@ -77,7 +77,7 @@ Unit.prototype.setPosition = function(position)
 
     this.position = position;
     TileGrid.getGameTileByXY(this.position.x, this.position.y).subscribeUnitToTile(this);
-}
+};
 
 Unit.prototype.setIconPosition = function(position)
 {
