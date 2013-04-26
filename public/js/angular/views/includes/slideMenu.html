@@ -1,4 +1,4 @@
-<div class="sideSlideMenucontainer left">
+<div class="sideSlideMenucontainer" ng-class="dock">
     <div ng-repeat="row in rows" class="slideRow">
         <div ng-repeat="item in row">
             <div class="slideEntry brush" ng-class="{selected: item==selected}" style="background-image:url({{ item.getSrc() }})" ng-click="select(item)"></div>
