@@ -53,7 +53,7 @@ class GameManager()
 
       if (owner == 2)
       {
-        x = map.width*2;
+        x = map.width-1;
         y = count2;
       }
 
@@ -155,7 +155,7 @@ class GameManager()
         .on(
           'gameid -> gameid,
           'name -> map.name,
-          'width -> map.width*2,
+          'width -> map.width,
           'height -> map.height
         )
         .executeInsert()

@@ -67,6 +67,14 @@ Unit.prototype.moveTo = function(position)
     GameEventDispatcher.dispatch(new MoveEvent("player", this, move.route));
 };
 
+Unit.prototype.debugMoveTo = function(position)
+{
+    console.log("ATTENTION: This is a debug move. No message to server sent. Game is now desyched!");
+    this.lookAt(position);
+    this.setPosition(position);
+    this.setIconPosition(position);
+};
+
 Unit.prototype.setPosition = function(position)
 {
     position.x = parseInt(position.x, 10);

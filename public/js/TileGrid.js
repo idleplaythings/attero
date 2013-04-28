@@ -329,11 +329,13 @@ window.TileGrid = {
     {
         var mapDimensions = TileGrid.getMapSizeInGameTiles();
 
-        var tiles = tiles.split(";");
+        tiles = tiles.split(";");
+
         TileGrid.gameTiles = Array();
 
         var gameTileCount = TileGrid.getGameTileCount();
         var gameTileRowCount = mapDimensions.width;
+
         for (var i =0; i<gameTileCount;i++)
         {
             var x = i % gameTileRowCount;
@@ -346,7 +348,7 @@ window.TileGrid = {
                 subTexture: details[0],
                 subTextureOffset: details[1],
                 subTextureMask: details[2],
-                elevation: parseInt(details[3]),
+                elevation: parseInt(details[3], 10),
                 subElement: details[4],
                 subElementOffset: details[5],
                 subElementVariance: details[6],

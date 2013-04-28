@@ -5,43 +5,99 @@ var Raytrace = function(start, end)
 
     this.starttile = TileGrid.getGameTileByXY(start.x, start.y);
     this.startElevation = this.starttile.elevation;
+
     this.unitheight = LineOfSight.unitheight;
     this.sumConcealment = 0;
+    this.elevationConcealment = 0;
     this.degradation = 0;
     this.angleTreshold = null;
     this.currentElevation = this.startElevation;
 
-}
+    this.encounteredUniques = [];
+
+    this.cornerA = null;
+    this.cornerB = null;
+
+};
 
 Raytrace.prototype.run = function()
 {
     this.starttile.losConcealment = 0;
     this.bresenhamRaytrace(this.start, this.end);
-}
+};
 
-Raytrace.prototype.visit = function(coords)
+Raytrace.prototype.visit = function(a)
 {
-    if (coords.length > 1)
-        this.visitCorner(coords);
-
-    this.visitTile(coords.pop())
-}
-
-Raytrace.prototype.visitTile = function(pos)
-{
-    var tile = TileGrid.getGameTileByXY(pos.x, pos.y);
+    var tile = TileGrid.getGameTileByXY(a.x, a.y);
     if (!tile)
         return;
 
-    var distance = Math.floor(MathLib.distance(this.start, tile.position));
+    var distance = MathLib.distance(this.start, a);
 
-    tile.losConcealment = this.sumConcealment + this.degradation;
+    this.calculateDegradation(distance);
+    this.calculateAngleTreshold(distance, tile.elevation);
+    this.elevationConcealment = this.getElevationVisibility(distance, tile.elevation);
+    this.setTileConcealment(tile, distance);
+    this.calculateConcealment(tile, 1);
+};
+
+Raytrace.prototype.visitCorner = function(a, b)
+{
+    var tileA = TileGrid.getGameTileByXY(a.x, a.y);
+    var tileB = TileGrid.getGameTileByXY(b.x, b.y);
+
+    if ( ! tileA || ! tileB )
+        return;
+
+    var cornerPos = {x:0, y:0};
+    cornerPos.x = (a.x + b.x) / 2;
+    cornerPos.y = (a.y + b.y) / 2;
+
+    var distance = MathLib.distance(this.start, cornerPos);
+    var elevation = Math.floor((tileA.elevation + tileB.elevation) / 2);
+
+    this.calculateAngleTreshold(distance, elevation);
+    this.calculateConcealment(tileA, 0.2);
+    this.calculateConcealment(tileB, 0.2);
+};
+
+Raytrace.prototype.setTileConcealment = function(tile, distance)
+{
+        var concealment = (this.sumConcealment + this.elevationConcealment + this.degradation);
+        if (tile.losConcealment > concealment)
+            tile.losConcealment = concealment;
+};
+
+Raytrace.prototype.calculateDegradation = function(distance)
+{
     this.degradation = distance * LineOfSight.visibilityDegradationPerTile;
-    this.sumConcealment += tile.concealment * this.getElevationMultiplier(tile);
-    this.calculateAngleTreshold(distance, tile.elevation - (this.startElevation+this.unitheight));
-    tile.losConcealment += this.checkElevationVisibility(distance, tile.elevation - this.startElevation);
+};
 
-}
+Raytrace.prototype.calculateConcealment = function(tile, multi)
+{
+    var concealment = tile.concealment;
+    var elementid = tile.subElement;
+
+    if (elementid !== 0)
+    {
+        element = TileRepository.getElement(elementid);
+
+        if (element.unique)
+        {
+            if ($.inArray(elementid, this.encounteredUniques))
+            {
+                concealment = 0;
+            }
+            else
+            {
+                this.encounteredUniques.push = elementid;
+                multi = 1;
+            }
+        }
+    }
+
+    this.sumConcealment += concealment * this.getElevationMultiplier(tile) * multi;
+};
 
 Raytrace.prototype.getElevationMultiplier = function(tile)
 {
@@ -54,85 +110,49 @@ Raytrace.prototype.getElevationMultiplier = function(tile)
         return 0;
     }
     return 1;
-}
+};
 
-Raytrace.prototype.visitCorner = function(coords)
+Raytrace.prototype.calculateAngleTreshold = function(distance, elevation)
 {
-    var corner1 = TileGrid.getGameTileByXY(coords[1].x, coords[1].y);
-    var corner2 = TileGrid.getGameTileByXY(coords[2].x, coords[2].y);
-    var tile = TileGrid.getGameTileByXY(coords[3].x, coords[3].y);
+    var observerEyeLevel = (this.startElevation+this.unitheight);
+    var targetFloorLevel = elevation;
 
-    this.calculateCornerConcealment(coords);
+    var toFloorLevel = targetFloorLevel - observerEyeLevel;
 
-    if (corner1 && corner2 && tile)
-    {
-        var distance = Math.floor(MathLib.distance(this.start, tile.position)-0.7);
-        var elevation = (corner1.elevation + corner2.elevation)*0.5;
-        this.calculateAngleTreshold(distance, elevation - (this.startElevation+this.unitheight));
-
-        if (distance > 100)
-        {
-            this.degradation = distance * LineOfSight.visibilityDegradationPerTile;
-
-            corner1.losConcealment = this.sumConcealment + this.degradation;
-            corner1.losConcealment += this.checkElevationVisibility(distance, corner1.elevation - this.startElevation);
-
-            corner2.losConcealment = this.sumConcealment + this.degradation;
-            corner2.losConcealment += this.checkElevationVisibility(distance, corner2.elevation - this.startElevation);
-        }
-    }
-}
-
-Raytrace.prototype.calculateCornerConcealment = function(coords)
-{
-    var start = TileGrid.getGameTileByXY(coords[0].x, coords[0].y);
-    var corner1 = TileGrid.getGameTileByXY(coords[1].x, coords[1].y);
-    var corner2 = TileGrid.getGameTileByXY(coords[2].x, coords[2].y);
-    var end = TileGrid.getGameTileByXY(coords[3].x, coords[3].y);
-
-    if (
-        corner1
-        && corner2
-        && corner1.subElement !== 0
-        && window.TileRepository.getElement(corner1.subElement) instanceof RoadTileElement
-        && corner2.subElement == corner1.subElement
-        )
-    {
-        //console.log("continious");
-        if (((!end || end.subElement != corner1.subElement) && (!start || start.subElement != corner1.subElement)))
-        {
-            var elevationMul = (this.getElevationMultiplier(corner1) + this.getElevationMultiplier(corner2))/2
-            this.sumConcealment += corner1.concealment * elevationMul;
-        }
-    }
-    else
-    {
-        if (corner1)
-            this.sumConcealment += corner1.concealment * 0.2 * this.getElevationMultiplier(corner1);
-
-        if (corner2)
-            this.sumConcealment += corner2.concealment * 0.2 * this.getElevationMultiplier(corner2);
-    }
-}
-
-Raytrace.prototype.calculateAngleTreshold = function(distance, elevationDifference)
-{
-    var newangleTreshold = MathLib.calculateAngle(elevationDifference, distance);
+    var newangleTreshold = MathLib.calculateAngle(toFloorLevel, distance);
     if (this.angleTreshold === null || newangleTreshold > this.angleTreshold)
     {
         this.angleTreshold = newangleTreshold;
-        //console.log("new angletreshold: " + angleTreshold + " distance: " + distance + "elevation diffrence: " + elevationDifference);
+        //console.log("new angletreshold: " + this.angleTreshold + " distance: " + distance + "elevation diffrence: " + toFloorLevel);
     }
-}
+};
 
-Raytrace.prototype.checkElevationVisibility = function(distance, elevationDifference)
+Raytrace.prototype.getElevationVisibility = function(distance, elevation)
 {
-        //console.log(+ MathLib.calculateAngle(elevationDifference, distance)+ " distance: " + distance+ "elevation diffrence: " + elevationDifference);
-    if (MathLib.calculateAngle(elevationDifference, distance) < this.angleTreshold)
+    var observerEyeLevel = (this.startElevation+this.unitheight);
+    var targetFloorLevel = elevation;
+    var targetWaistLevel = elevation + (this.unitheight/2);
+
+    var toFloorLevel = targetFloorLevel - observerEyeLevel;
+
+    if (MathLib.calculateAngle(toFloorLevel, distance) < this.angleTreshold)
+    {
+        var toWaistLevel = targetWaistLevel - observerEyeLevel;
+
+        //console.log("waist level angle: " + MathLib.calculateAngle(toWaistLevel, distance)
+        //    + " angle threshold: " +this.angleTreshold);
+        if (MathLib.calculateAngle(toWaistLevel, distance) >= this.angleTreshold)
+        {
+            //console.log("waist näkyy");
+            return 50;
+        }
+
         return 100;
+    }
 
     return 0;
-}
+};
+
 
 Raytrace.prototype.bresenhamRaytrace = function(start, end, visitfunction)
 {
@@ -150,12 +170,12 @@ Raytrace.prototype.bresenhamRaytrace = function(start, end, visitfunction)
     while(true)
     {
         var e2 = 2*err;
-        var coords = Array();
+
+        //console.log("e2: " + e2 + " dy: " +dy + " dx: " +dx);
+
         if (e2 >-dy && e2 < dx)
         {
-            coords.push({x:x0, y:y0});
-            coords.push({x:x0+sx, y:y0});
-            coords.push({x:x0, y:y0+sy});
+            this.visitCorner({x:x0+sx, y:y0}, {x:x0, y:y0+sy});
         }
 
         if (e2 >-dy)
@@ -170,10 +190,9 @@ Raytrace.prototype.bresenhamRaytrace = function(start, end, visitfunction)
             y0  += sy;
         }
 
-        coords.push({x:x0, y:y0});
-        this.visit(coords);
+        this.visit({x:x0, y:y0});
 
         if ((x0==x1) && (y0==y1))
             break;
     }
-}
+};

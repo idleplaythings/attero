@@ -2,8 +2,8 @@ window.LineOfSight =
 {
     visibilityDegradationPerTile: 0.5,
     distance: 200,
-    degreeIncrement: 0.25,
-    unitheight: 0.5,
+    degreeIncrement: 2,
+    unitheight: 1.5,
     cornerWeight: 0.5,
 
     clearLineOfSight: function()
@@ -37,10 +37,10 @@ window.LineOfSight =
         var startElevation = unittile.elevation;
         var unitheight = LineOfSight.unitheight;
 
-        for (var i = 0; i < 360; i += LineOfSight.degreeIncrement)
+        for (var i = 0; i < 3600; i += LineOfSight.degreeIncrement)
         {
-            //var i = unit.azimuth;
-            var pos = MathLib.getPointInDirection(LineOfSight.distance, i, unit.position.x, unit.position.y );
+            //var i = unit.azimuth*10;
+            var pos = MathLib.getPointInDirection(LineOfSight.distance, i/10, unit.position.x, unit.position.y );
 
             var ray = new Raytrace(unit.position, pos);
             ray.run();

@@ -25,12 +25,17 @@ class MoveEventListener(val unitRepository: UnitRepository, val tileRepository: 
         val unit:GameUnit = unitRepository.getUnit(event.unitid);
         var tile:ActiveGameTile = tileRepository.getTileByXY(event.x, event.y) match {
             case Some(t) => t;
-            case None => throw new IllegalArgumentException("Trying to move outside of tilegrid");
+            case None =>
+            {
+                event.stopPropagation();
+                event.interruptRoute();
+                throw new IllegalArgumentException("Trying to move outside of tilegrid");
+            }
         }
 
 
         //println("processing move event for unit " + unit.id + "moving from: " + unit.getPosition + " to " + tile.getPosition);
-        if (canMoveTo(unit, tile))
+        if (canMoveTo(unit, tile, event))
         {
             moveTo(unit, tile, event.turretFacing, event.unitFacing);
             event.setExecuted();
@@ -55,11 +60,14 @@ class MoveEventListener(val unitRepository: UnitRepository, val tileRepository: 
         //event.UiEventStream = Json.parse("{ \"unitId\": \"" + event.unitid + "\", \"x\": " + event.x + ", \"y\": " + event.y + " }") +: event.UiEventStream
     }
 
-    private def canMoveTo(unit:GameUnit, tile:ActiveGameTile): Boolean =
+    private def canMoveTo(unit:GameUnit, tile:ActiveGameTile, event: MoveEvent): Boolean =
     {
         if (MathLib.distance(unit.getPosition, tile.getPosition) >= 2)
+        {
+            event.stopPropagation();
+            event.interruptRoute();
             throw new IllegalArgumentException("Unit trying to teleport from tile: " + unit.getPosition + " to " + tile.getPosition)
-
+        }
         unit.canMove(tile);
     }
 

@@ -72,15 +72,17 @@ object TileMember
 
     def resolveTileTraits(traits: String): Array[TileTrait] =
     {
-        traits.split(",").map(resolveTileTrait(_));
+        traits.split(",").map(resolveTileTrait(_)).filterNot(_.isEmpty).map(_.get);
     }
 
-    def resolveTileTrait(tileTrait: String): TileTrait =
+    def resolveTileTrait(tileTrait: String): Option[TileTrait] =
     {
+        println(tileTrait);
         tileTrait match {
-            case continuous if continuous == "continuous" => new TileTraitContinuous()
-            case unique if unique == "unique" => new TileTraitUnique()
-            case wall if wall == "wall" => new TileTraitWall()
+            case continuous if continuous == "continuous" => Some(new TileTraitContinuous())
+            case unique if unique == "unique" => Some(new TileTraitUnique())
+            case wall if wall == "wall" => Some(new TileTraitWall())
+            case _ => None
         }
 
     }

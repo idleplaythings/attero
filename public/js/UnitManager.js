@@ -23,10 +23,44 @@ UnitManager.prototype.onTileClicked = function(event)
     var tile = event.tile;
     var toBeSelected = tile.selectUnitFromTile();
 
-    if (
-        toBeSelected !== null
-        && (this.selectedUnit === null || toBeSelected.id !== this.selectedUnit.id)
-        && window.playerid == toBeSelected.owner)
+
+    if (toBeSelected !== null) //Select unit
+    {
+        console.log("unitid: " + toBeSelected.id);
+        if (window.playerid == toBeSelected.owner)
+        {
+            this.selectUnit(tile, toBeSelected);
+        }
+        else
+        {
+            this.targetEnemyTile(tile);
+        }
+
+    }
+    else
+    {
+        this.targetEmptyTile(tile);
+    }
+};
+
+UnitManager.prototype.targetEmptyTile = function(tile)
+{
+    if (this.selectedUnit !== null)
+    {
+        this.selectedUnit.moveTo(tile.position);
+    }
+};
+
+UnitManager.prototype.targetEnemyTile = function(tile)
+{
+    console.log("I should target enemy tile now!");
+};
+
+UnitManager.prototype.selectUnit = function(tile, toBeSelected)
+{
+    LineOfSight.clearLineOfSight();
+    LineOfSight.calculateLosForUnit(toBeSelected);
+    if (this.selectedUnit === null || toBeSelected.id !== this.selectedUnit.id)
     {
         if (this.selectedUnit)
             this.selectedUnit.icon.deselect();

@@ -9,14 +9,29 @@ import play.api.libs.json.Json._
 
 class TileDefinition
 {
+    val emptyElement = new TileElement(
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        Array());
+
     def getTexture(id: Int): TileTexture =
     {
-        this.tileTextures.get(id).asInstanceOf[TileTexture];
+        this.tileTextures.get(id) match {
+            case Some(tex) => tex.asInstanceOf[TileTexture]
+            case None => throw new IllegalArgumentException("Didn't find texture id '"+id+"'")
+        }
     }
 
     def getElement(id: Int): TileElement =
     {
-        this.tileTextures.get(id).asInstanceOf[TileElement];
+        this.tileElements.get(id) match {
+            case Some(ele) => ele.asInstanceOf[TileElement]
+            case _ => this.emptyElement
+        }
     }
 
     lazy private val tileElements: Map[Int, TileMember] = TileDefinition.getTileElements;
@@ -39,7 +54,7 @@ object TileDefinition
                 cover,
                 concealment,
                 height,
-                traits,
+                traits
             FROM
                 tile_member
             WHERE
@@ -62,7 +77,7 @@ object TileDefinition
                 cover,
                 concealment,
                 height,
-                traits,
+                traits
             FROM
                 tile_member
             WHERE

@@ -14,6 +14,14 @@ TileTrait.prototype.usedBy = function(e)
     }
 };
 
+var TileTraitUnique = function TileTraitUnique()
+{
+    this.unique = true;
+};
+
+TileTraitUnique.prototype = Object.create( TileTrait.prototype );
+
+
 var TileTraitContinuous = function TileTraitContinuous()
 {
     this.continuous = true;
