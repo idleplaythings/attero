@@ -24,7 +24,7 @@ angular.module('attero')
                 columns: '=',
                 top: '='
             },
-            templateUrl: '/assets/js/angular/views/includes/slideMenu.html',
+            templateUrl: '/assets/js/angular/features/ui/slideMenu/views/menu.html',
             replace: true,
             controller: function($scope) {
                 $scope.select = function(item) {

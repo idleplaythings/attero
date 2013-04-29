@@ -59,14 +59,19 @@
         <script src="@routes.Assets.at("js/editor/landscaper/tools/ElevateTool.js")"></script>
 
         <script src="@routes.Assets.at("js/angular/run.js")"></script>
-        <script src="@routes.Assets.at("js/angular/controllers/editor/toolPreview.js")"></script>
         <script src="@routes.Assets.at("js/angular/services/editor/landscapingTool.js")"></script>
         <script src="@routes.Assets.at("js/angular/services/editor/menu/brush.js")"></script>
         <script src="@routes.Assets.at("js/angular/services/editor/menu/brushSize.js")"></script>
         <script src="@routes.Assets.at("js/angular/services/editor/menu/texture.js")"></script>
         <script src="@routes.Assets.at("js/angular/services/editor/menu/tileElement.js")"></script>
-        <script src="@routes.Assets.at("js/angular/directives/tileElementGrid.js")"></script>
-        <script src="@routes.Assets.at("js/angular/directives/tileElementPreview.js")"></script>
+
+
+        <script src="@routes.Assets.at("js/angular/features/ui/slideMenu/directives/menu.js")"></script>
+
+        <script src="@routes.Assets.at("js/angular/features/editor/tileElementConfig/directives/tileElementPreview.js")"></script>
+        <script src="@routes.Assets.at("js/angular/features/editor/tileElementConfig/controllers/toolPreview.js")"></script>
+        <script src="@routes.Assets.at("js/angular/features/editor/tileElementConfig/directives/tileElementGrid.js")"></script>
+
         <script src="@routes.Assets.at("js/angular/directives/slideMenu.js")"></script>
 
         <script>
@@ -187,7 +192,9 @@
             <div class="preview-container">
                 <canvas id="tile-element-preview" width="100px" height="100px" style="background-color: black;"></canvas>
             </div>
-            <div>
+            <div tile-element-selector class="tile-element-selector" ui-if="tileElement">
+                <canvas id="tile-element-preview" width="100px" height="100px" style="background-color: black;"></canvas>
+
                 Angle:
                 <input ng-model="angle" placeholder="Angle" /><br />
                 X offset:
@@ -195,9 +202,8 @@
                 Y offset:
                 <input ng-model="offsetY" placeholder="Y offset" />
 
-                <div ui-if="tileElement">
-                    <div tile-element-grid source="tileElement" />
-                </div>
+
+                <div tile-element-grid source="tileElement" />
             </div>
         </div>
 
