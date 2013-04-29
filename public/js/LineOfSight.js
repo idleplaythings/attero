@@ -42,7 +42,7 @@ window.LineOfSight =
             //var i = unit.azimuth*10;
             var pos = MathLib.getPointInDirection(LineOfSight.distance, i/10, unit.position.x, unit.position.y );
 
-            var ray = new Raytrace(unit.position, pos);
+            var ray = new LOSRaytrace(unit.position, pos);
             ray.run();
         }
 

@@ -59,7 +59,7 @@ class Raytrace(val start: (Int, Int), val target: (Int, Int), val tileRepository
         val (concealment, element, tileElevation, height, unique) = tileRepository.getTileConcealment(pos);
 
         if (element == 0)
-            return 0;
+            return 0;//NOOOOO! This is wrong
 
         if (unique == true && encountered.contains(element))
             return 0;

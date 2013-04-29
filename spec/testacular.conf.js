@@ -10,14 +10,17 @@ basePath = '..';
 files = [
   JASMINE,
   JASMINE_ADAPTER,
+  'spec/fixtures/*.js',
   'public/js/lib/augment.js/augment.min.js',
   'spec/javascripts/*Providers/*.js',
+  'public/js/MathLib.js',
   'public/js/DIContainer.js',
   'public/js/ExpiryManager.js',
   'public/js/Scrolling.js',
   'public/js/Landscaper.js',
   'public/js/editor/landscaper/tools/LandscapingTool.js',
   'public/js/editor/landscaper/tools/*.js',
+  'public/js/raytracing/UnitToUnitRaytrace.js',
   'spec/javascripts/*Spec.js'
 ];
 

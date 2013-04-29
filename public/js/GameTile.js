@@ -8,8 +8,8 @@ var GameTile = function (args)
     this.subTexture = (args.subTexture) ?  parseInt(args.subTexture, 10) : 1;
     this.subTextureOffset = (args.subTextureOffset) ? parseInt(args.subTextureOffset, 10) : 1;
     this.subTextureMask = (args.subTextureMask) ? parseInt(args.subTextureMask, 10) : 1;
-    this.elevation = (args.elevation) ? parseInt(args.elevation) : 0;
-    this.subElement = (args.subElement) ? parseInt(args.subElement) : 0;
+    this.elevation = (args.elevation) ? parseInt(args.elevation, 10) : 0;
+    this.subElement = (args.subElement) ? parseInt(args.subElement, 10) : 0;
     this.subElementOffset = (args.subElementOffset) ? parseInt(args.subElementOffset,10) : 0;
     this.subElementOffset2 = (args.subElementVariance) ? parseInt(args.subElementVariance, 10) : 0;
     this.subElementAngle = (args.subElementAngle) ? parseInt(args.subElementAngle, 10) : 0;
@@ -22,17 +22,24 @@ var GameTile = function (args)
 
     this.containedUnits = Array();
     this.nextForSelection = null;
-}
+};
 
 GameTile.prototype.calculateLosProperties = function()
 {
+    var texture = window.TileRepository.getTexture(this.subTexture);
+    this.concealment = texture.concealment;
+    this.elementHeight = texture.height;
+
     if (this.subElement === 0)
         return;
 
-    var element = window.TileRepository.getElement(this.subElement)
-    this.elementHeight = element.height;
-    this.concealment = element.concealment;
-}
+    var element = window.TileRepository.getElement(this.subElement);
+
+    if ( element.height > this.elementHeight)
+        this.elementHeight = element.height;
+
+    this.concealment += element.concealment;
+};
 
 GameTile.prototype.getLosConcealmentInByteScale = function(conc)
 {
