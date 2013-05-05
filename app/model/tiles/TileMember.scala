@@ -77,7 +77,6 @@ object TileMember
 
     def resolveTileTrait(tileTrait: String): Option[TileTrait] =
     {
-        println(tileTrait);
         tileTrait match {
             case continuous if continuous == "continuous" => Some(new TileTraitContinuous())
             case unique if unique == "unique" => Some(new TileTraitUnique())

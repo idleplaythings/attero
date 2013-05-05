@@ -77,14 +77,33 @@ Unit.prototype.debugMoveTo = function(position)
 
 Unit.prototype.setPosition = function(position)
 {
-    position.x = parseInt(position.x, 10);
-    position.y = parseInt(position.y, 10);
-
     if (this.position)
         TileGrid.getGameTileByXY(this.position.x, this.position.y).unSubscribeUnitToTile(this);
 
     this.position = position;
-    TileGrid.getGameTileByXY(this.position.x, this.position.y).subscribeUnitToTile(this);
+
+    if (position)
+    {
+        position.x = parseInt(position.x, 10);
+        position.y = parseInt(position.y, 10);
+        TileGrid.getGameTileByXY(this.position.x, this.position.y).subscribeUnitToTile(this);
+    }
+};
+
+Unit.prototype.hideUnit = function()
+{
+    if (this.position)
+        TileGrid.getGameTileByXY(this.position.x, this.position.y).unSubscribeUnitToTile(this);
+
+    this.hideIcon();
+};
+
+Unit.prototype.showUnit = function()
+{
+    if (this.position)
+        TileGrid.getGameTileByXY(this.position.x, this.position.y).subscribeUnitToTile(this);
+
+    this.showIcon();
 };
 
 Unit.prototype.setIconPosition = function(position)
@@ -94,12 +113,12 @@ Unit.prototype.setIconPosition = function(position)
         var pos = TileGrid.gameCordinatesTo3d(position);
         this.icon.group.position = new THREE.Vector3(pos.x, -pos.y, 3);
     }
-}
+};
 
 Unit.prototype.setIconScale = function(scale)
 {
     this.icon.setIconScale(scale);
-}
+};
 
 Unit.prototype.createIcon = function()
 {
@@ -108,7 +127,7 @@ Unit.prototype.createIcon = function()
 
     var pos = TileGrid.gameCordinatesTo3d(this.position);
 
-    if (this.owner == window.playerid)
+    if (this.owner == window.gameState.playerId)
         this.icon.setFriendly();
     else
         this.icon.setEnemy();
@@ -123,12 +142,12 @@ Unit.prototype.createIcon = function()
 Unit.prototype.showIcon = function()
 {
     this.icon.show();
-}
+};
 
 Unit.prototype.hideIcon = function()
 {
     this.icon.hide();
-}
+};
 
 
 

@@ -91,3 +91,9 @@ class MoveRouteEvent(userid: Int, eventid: Int, val unitid: Int, val moves: List
         )
     }
 }
+
+class ChangeTurnEvent(userid: Int, eventid: Int)
+    extends Event( "ChangeTurnEvent", eventid, userid)
+{
+
+}

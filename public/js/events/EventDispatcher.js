@@ -23,6 +23,7 @@ Dispatcher.prototype.attach = function(listener, name)
         if ( ! name)
             throw "Could not resolve event name for attaching Event listener.";
 
+        console.log("attaching " + name);
         this._attachListener(listener, name);
     }
 };

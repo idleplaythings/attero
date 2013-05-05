@@ -33,4 +33,9 @@ class InfantryMoveStrategy(movementPointsBase: Double)
 
         (1 + difficulty * 0.01) * distance
     }
+
+    def renew(gameUnit: GameUnit): Unit =
+    {
+        gameUnit.getMoveState.renew;
+    }
 }

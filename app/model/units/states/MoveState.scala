@@ -60,6 +60,15 @@ case class MoveState(
         this.needsUpdate = true;
     }
 
+    def renew(): Unit =
+    {
+        setLastDistanceMoved(getCurrentDistanceMoved);
+        setLastMovePointsUsed(getCurrentMovePointsUsed);
+
+        setCurrentDistanceMoved(0);
+        setCurrentMovePointsUsed(0);
+    }
+
     override def toString: String =
     {
         azimuth+","+turretAzimuth+","+lastMovePointsUsed+","+lastDistanceMoved+","+currentMovePointsUsed+","+currentDistanceMoved;

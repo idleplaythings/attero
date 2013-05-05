@@ -9,7 +9,7 @@ var Landscaping = function Landscaping(dispatcher, tileGrid)
 
     this.offsety = 0;
 
-    dispatcher.attach(new EventListener("ClickTileEvent", $.proxy(this.onTileClicked, this)));
+    //dispatcher.attach(new EventListener("ClickTileEvent", $.proxy(this.onTileClicked, this)));
 
 };
 

@@ -63,7 +63,7 @@ GameTile.prototype.getLosConcealmentInByteScale = function(conc)
 GameTile.prototype.unSubscribeUnitToTile = function(unit)
 {
     if ( ! this.containedUnits[unit.id])
-        throw "Trying to unsubscribe unit from tile that is not subscribed to the tile.";
+        return;
 
     this.containedUnits[unit.id] = null;
     this.nextForSelection = null;
@@ -72,7 +72,7 @@ GameTile.prototype.unSubscribeUnitToTile = function(unit)
 GameTile.prototype.subscribeUnitToTile = function(unit)
 {
     if (this.containedUnits[unit.id])
-        throw "Can't subscribe same unit to same tile more than once";
+        return;
 
     this.containedUnits[unit.id] = unit;
     this.nextForSelection = null;

@@ -1,4 +1,4 @@
-@(userid: Int, gameid: Long, map:String, units:String, tileDefinition:String)(implicit request: RequestHeader)
+@(userid: Int, gameid: Long, activeUserId: Int, activeUserName: String, turn: Int,  map:String, units:String, tileDefinition:String)(implicit request: RequestHeader)
 
 <!DOCTYPE html>
 <html>
@@ -50,6 +50,7 @@
         <script src="@routes.Assets.at("js/animation/AnimationHandler.js")"></script>
         <script src="@routes.Assets.at("js/animation/UnitMoveAnimation.js")"></script>
         <script src="@routes.Assets.at("js/animation/UnitAppearAnimation.js")"></script>
+        <script src="@routes.Assets.at("js/animation/UnitDisappearAnimation.js")"></script>
         <script src="@routes.Assets.at("js/events/EventDispatcher.js")"></script>
         <script src="@routes.Assets.at("js/events/EventListener.js")"></script>
         <script src="@routes.Assets.at("js/events/Event.js")"></script>
@@ -58,12 +59,17 @@
         <script src="@routes.Assets.at("js/events/MoveInterruptEvent.js")"></script>
         <script src="@routes.Assets.at("js/events/MoveInterruptEventListener.js")"></script>
         <script src="@routes.Assets.at("js/events/EnemySpottedEventListener.js")"></script>
+        <script src="@routes.Assets.at("js/events/ChangeTurnEventListener.js")"></script>
+        <script src="@routes.Assets.at("js/events/ChangeTurnEvent.js")"></script>
+        <script src="@routes.Assets.at("js/events/EnemyDisappearEventListener.js")"></script>
         <script src="@routes.Assets.at("js/Interface.js")"></script>
         <script src="@routes.Assets.at("js/Coordinates.js")"></script>
         <script src="@routes.Assets.at("js/UnitTooltip.js")"></script>
         <script src="@routes.Assets.at("js/tileEffects/TileEffect.js")"></script>
         <script src="@routes.Assets.at("js/repository/TileRepository.js")"></script>
         <script src="@routes.Assets.at("js/repository/TileTrait.js")"></script>
+        <script src="@routes.Assets.at("js/button/Button.js")"></script>
+        <script src="@routes.Assets.at("js/GameState.js")"></script>
 
         <script>
 
@@ -75,12 +81,11 @@
                 window.Graphics = new Graphics(UIEventDispatcher);
                 window.landscaping = new Landscaping(UIEventDispatcher, TileGrid);
                 window.UnitManager = new UnitManager(UIEventDispatcher);
+                UIEventDispatcher.attach(new ChangeTurnEventListener());
             }
 
             function init()
             {
-                window.playerid = @userid;
-
                 Graphics.init();
                 Graphics.animate();
                 WaterLayer.init();
@@ -94,6 +99,12 @@
                 var scrolling = new Scrolling(canvas, window.UIEventDispatcher);
                 var zooming = new Zooming(canvas, window.UIEventDispatcher);
 
+                window.gameState = new GameState(
+                    @userid,
+                    @activeUserId,
+                    "@activeUserName",
+                    @turn);
+
                 window.GameEventDispatcher = new Dispatcher();
 
                 GameEventDispatcher.attach(new MoveServerMessageEventLister());
@@ -101,12 +112,21 @@
                 GameEventDispatcher.attach(new UnitMoveAnimationListener(scrolling));
                 GameEventDispatcher.attach(new MoveInterruptEventLister());
                 GameEventDispatcher.attach(new UnitAppearAnimationListener(scrolling));
+                GameEventDispatcher.attach(new ChangeTurnEventListener(window.gameState, GameEventDispatcher));
+                GameEventDispatcher.attach(new EnemyDisappearAnimationListener());
 
                 var tileSize = 20; // this doesn't belong here
                 var coordinasService = new Coordinates(tileSize, TileGrid.getMapSizeInGameTiles().width);
 
-                window.interface = new Interface(coordinasService, TileGrid, canvas, window.UIEventDispatcher);
+                window.interface = new Interface(window.gameState, coordinasService, TileGrid, canvas, window.UIEventDispatcher);
                 window.interface.init();
+
+                var loadIcon = new Button(
+                    $('.menubar.top .center'),
+                    'turnicon.png',
+                     UIEventDispatcher,
+                    new Event("player", "ChangeTurnEvent"));
+
                 scrolling.init();
 
                 window.UnitManager.createFromString("@units");
@@ -251,10 +271,9 @@
                 </td>
                 <td class="center">
                     <h2>
-                        TURN 4:
-                        <span id="playername">Player name</span>
+                        <span id="turn"></span>
+                        <span id="playername"></span>
                     </h2>
-                    <button id="turnsicon" style="background-image:url(/assets/resource/turnicon.png)">
                 </td>
                 <td class="right">
                     <button id="settingsicon" style="background-image:url(/assets/resource/menuicon.png)">

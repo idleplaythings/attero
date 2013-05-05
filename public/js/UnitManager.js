@@ -27,7 +27,7 @@ UnitManager.prototype.onTileClicked = function(event)
     if (toBeSelected !== null) //Select unit
     {
         console.log("unitid: " + toBeSelected.id);
-        if (window.playerid == toBeSelected.owner)
+        if (window.gameState.playerId == toBeSelected.owner)
         {
             this.selectUnit(tile, toBeSelected);
         }
@@ -134,7 +134,11 @@ UnitManager.prototype.createFromJsonIfNeeded = function(unitstring)
     var id = details[0];
 
     if (window.units[id])
+    {
+        window.units[id].setPosition({x:details[3], y:details[4]});
         return window.units[id];
+    }
+
 
     return this.createUnitFromString(unitstring);
 };

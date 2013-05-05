@@ -15,8 +15,7 @@ import play.api.libs.iteratee._
 import akka.actor._
 import scala.concurrent.duration._
 import models.GameManager
-import models.repositories.UnitRepository
-import models.repositories.TileRepository
+import models.repositories._
 import models.tiles.TileDefinition
 import models.MapStorage
 
@@ -35,11 +34,17 @@ object Application extends Controller {
     val gameManager = new GameManager();
     val unitRepository = new UnitRepository(gameid);
 
+    val playerRepository = new PlayerRepository(gameid);
+    val state = new GameState(gameid, playerRepository);
+
     gameManager.loadMap(gameid) match {
         case None =>  Ok("""{"status":"error", "info": "game not found"}""")
         case Some(map) => Ok(views.html.game(
           userid,
           gameid,
+          state.getCurrentPlayerId,
+          playerRepository.getNameForPlayerId(state.getCurrentPlayerId),
+          state.getTurn,
           Json.stringify(map.toJSON),
           unitRepository.loadUnitsForOwner(gameid, userid).map(_.toString).mkString(";"),
           Json.stringify(TileDefinition.getTileDefinitionForClient()))

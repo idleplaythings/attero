@@ -10,6 +10,8 @@ abstract class MoveStrategy( val movementPointsBase: Double )
 
     def move(gameUnit: GameUnit, tile:ActiveGameTile, turretFacing: Int, facing: Int): Unit;
 
+    def renew(gameUnit: GameUnit): Unit;
+
     protected def getCurrentMovePointsLeft(state: MoveState): Double =
     {
         movementPointsBase - state.getCurrentMovePointsUsed;

@@ -16,11 +16,11 @@ class MoveEventListener(val unitRepository: UnitRepository, val tileRepository: 
     def handle(event: Event): Unit = {
 
         event match {
-          case move: MoveEvent => processMoveEvent(move)
+          case move: MoveEvent => processEvent(move)
         }
     }
 
-    private def processMoveEvent(event: MoveEvent) =
+    private def processEvent(event: MoveEvent): Unit =
     {
         val unit:GameUnit = unitRepository.getUnit(event.unitid);
         var tile:ActiveGameTile = tileRepository.getTileByXY(event.x, event.y) match {

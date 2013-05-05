@@ -1,6 +1,7 @@
 
-function Interface(coordinateService, tileGrid, canvas, dispatcher)
+function Interface(gameState, coordinateService, tileGrid, canvas, dispatcher)
 {
+    this.gameState = gameState;
     this.coordinateService = coordinateService;
     this.tileGrid = tileGrid;
     this.canvas = canvas[0];
@@ -40,6 +41,9 @@ Interface.prototype.onScroll = function(event)
 
 Interface.prototype.onClicked = function(event)
 {
+    if ( ! this.gameState.isMyTurn())
+        return;
+
     console.log("tileclick");
     var gameTile = this.getTileFromEvent(event);
 

@@ -28,6 +28,8 @@ CREATE TABLE game (
   "id" serial,
   "leftplayer" integer DEFAULT NULL,
   "rightplayer" integer DEFAULT NULL,
+  "turn"  integer DEFAULT 0,
+  "currentplayer" integer DEFAULT NULL,
   PRIMARY KEY ("id")
 );
 

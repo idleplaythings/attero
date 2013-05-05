@@ -4,18 +4,18 @@ import play.api.libs.json._
 
 object EventFactory
 {
-    def makeEvent(eventName: String, userid: Int, json: JsValue): Event =
+    def makeEvent(eventName: String, eventId: Int, userid: Int, json: JsValue): Event =
     {
         eventName match
         {
-            case move if move == "MoveEvent" => parseMoveEvents(userid, json)
+            case move if move == "MoveEvent" => parseMoveEvents(userid, eventId, json);
+            case turn if turn == "ChangeTurnEvent" => new ChangeTurnEvent(userid, eventId);
         }
     }
 
-    def parseMoveEvents(userid: Int, json: JsValue) : MoveRouteEvent =
+    def parseMoveEvents(userid: Int, eventId: Int, json: JsValue) : MoveRouteEvent =
     {
         var unitId: Int = (json \ "payload" \ "unitId").as[String].toInt
-        var eventId: Int = (json \ "id").as[Int]
         var route: String = (json \ "payload" \ "moveroute").as[String]
 
         new MoveRouteEvent(

@@ -64,9 +64,11 @@ class GameServer extends Actor {
 
         if ( ! games.contains(gameid) )
         {
+          val playerRepository = new PlayerRepository(gameid);
             val newGame: Game = new Game(
               gameid,
-              new PlayerRepository(gameid),
+              new GameState(gameid, playerRepository),
+              playerRepository,
               new TileRepository(gameid),
               new UnitRepository(gameid)
             )
@@ -74,6 +76,12 @@ class GameServer extends Actor {
             newGame.attach(new MoveRouteEventListener(newGame, newGame.getPlayerRepository, newGame.getUnitRepository));
             newGame.attach(new MoveEventListener(newGame.getUnitRepository, newGame.getTileRepository));
             newGame.attach(new MoveEventSpottingListener(newGame.getPlayerRepository, newGame.getUnitRepository, newGame.getTileRepository, newGame));
+
+            newGame.attach(new ChangeTurnEventListener(
+              newGame.getGameState,
+              newGame.getPlayerRepository,
+              newGame.getUnitRepository,
+              newGame.getTileRepository));
 
             games += (gameid -> newGame)
         }

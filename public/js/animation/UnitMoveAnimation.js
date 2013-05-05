@@ -40,7 +40,7 @@ UnitMoveAnimation.prototype.resolveNextTarget = function()
 
 UnitMoveAnimation.prototype.tick = function(time)
 {
-    if (this.unit.owner != window.playerid)
+    if (this.unit.owner != window.gameState.playerId)
     {
         var curCamPos = Graphics.camPosIn3d();
         var unitpos = this.unit.icon.getPositionIn3d();

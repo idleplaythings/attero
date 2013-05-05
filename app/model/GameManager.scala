@@ -72,8 +72,8 @@ class GameManager()
 
     DB.withConnection { implicit c =>
       gameid = SQL("""
-        INSERT INTO game (leftplayer, rightplayer)
-        VALUES (1,2)""").executeInsert().get
+        INSERT INTO game (leftplayer, rightplayer, turn, currentplayer)
+        VALUES (1,2,1,1)""").executeInsert().get
 
       dbName = "game_"+gameid
       SQL("""CREATE SCHEMA """+dbName)
@@ -121,6 +121,7 @@ class GameManager()
         CREATE TABLE """ +dbName+ """.game_player (
           "playerid" integer,
           "team" smallint,
+          "lastEventId" integer,
           PRIMARY KEY ("playerid")
         );
       """).execute();

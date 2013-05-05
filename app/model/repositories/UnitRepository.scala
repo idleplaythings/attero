@@ -9,7 +9,9 @@ import play.api.Play.current
 import states.MoveState
 
 class UnitRepository(gameid: Long) extends Repository(gameid) {
-  lazy val units: Map[Int, GameUnit] = loadUnitsForGame(gameid);
+  private lazy val units: Map[Int, GameUnit] = loadUnitsForGame(gameid);
+
+  def getAllUnits = units;
 
   def getUnit(id: Int): GameUnit = {
     units(id);

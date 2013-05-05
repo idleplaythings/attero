@@ -22,17 +22,20 @@ import scala.collection.mutable
 import models.repositories._
 
 class Game(val gameid: Long,
-           playerRepository: PlayerRepository,
-           tileRepository: TileRepository,
-           unitRepository: UnitRepository) extends EventDispatcher with MessageSender{
+  gameState: GameState,
+  playerRepository: PlayerRepository,
+  tileRepository: TileRepository,
+  unitRepository: UnitRepository) extends EventDispatcher with MessageSender{
 
   var players: Map[Int, PlayerInGame] = Map.empty[Int, PlayerInGame];
+
   var eventMessageList: List[Event] = List.empty[Event];
 
   def canJoin(userid: Int): Boolean = !this.players.contains(userid)
 
   def isEmpty(): Boolean = this.players.isEmpty
 
+  def getGameState = this.gameState;
   def getPlayerRepository() = this.playerRepository
   def getTileRepository() = this.tileRepository
   def getUnitRepository() = this.unitRepository
@@ -65,9 +68,13 @@ class Game(val gameid: Long,
 
   def event(userid: Int, json: JsValue) = {
     //println("message from userid: " + userid + " received.");
-    (json \ "type").asOpt[String] match {
-      case Some(messageType) => dispatch(EventFactory.makeEvent(messageType + "Event", userid, json));
-      case None => sendErrorMessage(userid, "Message type omitted");
+    val eventId: Option[Int] = (json \ "id").asOpt[Int]
+    val eventType: Option[String] = (json \ "type").asOpt[String]
+
+    (eventType, eventId) match {
+      case (Some(eventType: String), Some(eventId: Int)) =>
+          dispatch(EventFactory.makeEvent(eventType + "Event", eventId, userid, json));
+      case _ => sendErrorMessage(userid, "Mandatory message params missing");
     }
   }
 
@@ -80,6 +87,7 @@ class Game(val gameid: Long,
   private def storeUpdatedGameState() = {
     val now = System.nanoTime
     unitRepository.updateUnitStatesIfNeeded();
+    gameState.update();
     val micros = (System.nanoTime - now) / 1000
 
     //println("Updating gamedata took " + micros + " microseconds.");

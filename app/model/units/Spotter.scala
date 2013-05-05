@@ -1,7 +1,6 @@
 package models.units;
 
 import models.units.strategies.SpotStrategy
-import models.Raytrace
 
 trait Spotter
 {

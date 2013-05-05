@@ -13,8 +13,9 @@ ServerConnection =
 
     sendMessage: function(messageObject)
     {
+        console.log(messageObject);
         if (ServerConnection.socket === null) {
-            throw new "You should call connect before trying to send a message";
+            throw "You should call connect before trying to send a message";
         }
 
         ServerConnection.socket.send(JSON.stringify(messageObject));
@@ -35,8 +36,18 @@ ServerConnection =
             if (data.type == "MoveInterrupt")
                 GameEventDispatcher.dispatch(new MoveInterruptEvent("server", data.eventid, data.routeNumber));
 
+             if (data.type == "EnemyDisappear")
+                GameEventDispatcher.dispatch(new EnemyDisappearEvent("server", window.units[data.unitid]));
+
             if (data.type == "EnemySpotted")
                 GameEventDispatcher.dispatch(new EnemySpottedEvent("server", UnitManager.createFromJsonIfNeeded(data.unit)));
+
+            if (data.type == "ChangeTurn")
+                GameEventDispatcher.dispatch(new ChangeTurnEvent(
+                    data.turn,
+                    data.currentPlayerName,
+                    data.currentPlayerId,
+                    data.unitVisibility));
         }
     },
 
@@ -45,7 +56,7 @@ ServerConnection =
         var unit = window.units[data.payload.unitid];
 
         if (! unit)
-            throw "Unit matching message unitid not found"
+            throw "Unit matching message unitid not found";
 
         var route = data.payload.route.split(";");
         for (var i in route)

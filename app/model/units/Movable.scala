@@ -21,4 +21,9 @@ trait Movable
     {
         moveStrategy.move(this.asInstanceOf[GameUnit], tile, turretFacing, facing);
     }
+
+    def renewMovementPoints()
+    {
+        moveStrategy.renew(this.asInstanceOf[GameUnit]);
+    }
 }

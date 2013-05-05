@@ -2,9 +2,10 @@ package models.events;
 
 import play.api.libs.json._
 import models.repositories._
-import models.Raytrace;
+import models.raytracing._
 import models.units._
 import models.MessageSender
+import models.MutualUnitSpotting
 
 class MoveEventSpottingListener(
     val playerRepository: PlayerRepository,
@@ -48,24 +49,17 @@ class MoveEventSpottingListener(
 
     private def spot(event: MoveEvent, mover: GameUnit, enemy: GameUnit)
     {
-        val concealment = new Raytrace(mover.getPosition, enemy.getPosition, tileRepository).run;
+        var spotting = new MutualUnitSpotting(mover, enemy, tileRepository);
 
-        var enemiesSpottedThis: List[GameUnit] = List.empty[GameUnit];
-
-        if (concealment < 100)
+        if ( ! enemy.isSpotted && spotting.wasSpotted(enemy))
         {
-            if ( ! enemy.isSpotted && mover.canSpot(enemy, concealment))
-            {
-                //println("Enemy spotted with concealment: " + concealment);
-                enemy.setSpotted(true);
-                informAboutSpottedEnemy(event, enemy)
-            }
+            enemy.setSpotted(true);
+            informAboutSpottedEnemy(event, enemy)
+        }
 
-            if (enemy.canSpot(mover, concealment))
-            {
-                event.setSpotted();
-                //enemiesSpottedThis :+= enemy;
-            }
+        if (spotting.wasSpotted(mover))
+        {
+            event.setSpotted();
         }
     }
 

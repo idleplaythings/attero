@@ -73,6 +73,7 @@ UnitMoveAnimationListener.prototype = Object.create( MoveEventLister.prototype )
 
 UnitMoveAnimationListener.prototype.handle = function(event)
 {
+    //TODO: split the route by gaps and create disappear/appear animations
     var wait = (event.origin == "player");
 
     event.animation = new UnitMoveAnimation(event.unit, event.route.slice(), wait, this.scrolling);

@@ -7,6 +7,7 @@ import play.api.Play.current
 import models.tiles._
 import play.api.libs.json._
 import play.api.libs.json.Json._
+import models.raytracing.TileDetailsForRaytrace
 
 class TileRepository(gameid: Long) extends Repository(gameid)
 {
@@ -20,7 +21,7 @@ class TileRepository(gameid: Long) extends Repository(gameid)
 
     lazy val tileConcealments: Array[Short] = tiles.map(ActiveGameTile.getTileConcealment(_, tileDefinition)).toArray;
 
-    def getTileConcealment(pos: (Int, Int)): (Int, Int, Int, Int, Boolean) =
+    def getTileDetailsForRaytrace(pos: (Int, Int)): TileDetailsForRaytrace =
     {
         val mask:Short = 2047;
         val tileid = getTileIdFromXY(pos)
@@ -34,7 +35,7 @@ class TileRepository(gameid: Long) extends Repository(gameid)
         val elevation = tile._3.toInt
         val element = tile._2.toInt;
 
-        (concealment, element, elevation, height, cont)
+        new TileDetailsForRaytrace(pos, concealment, element, elevation, height, cont)
     }
 
     def getTileByXY(pos: (Int, Int)): Option[ActiveGameTile] =
