@@ -1,10 +1,13 @@
 'use strict';
 
 angular.module('attero')
-    .directive('tileElementPreview', function ($parse) {
+    .directive('tileElementPreviewxx', function ($parse) {
         return {
             scope: true,
-            templateUrl: '/assets/js/angular/features/editor/tileElementConfig/views/tileElementPreview.html',
+            template:
+                '<div class="tile-element-preview">' +
+                    '<div class="preview"></div>' +
+                '</div>',
             link: function (scope, element, attrs) {
                 var preview = $('.preview', element);
 

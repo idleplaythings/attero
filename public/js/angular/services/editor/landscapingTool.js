@@ -24,6 +24,7 @@ angular.module('attero')
         var brushSize = brushSizes.medium;
         var texture = null;
         var tileElement = null;
+        var tileElementAngle = 0;
 
         return {
             getTool: function() {
@@ -67,6 +68,14 @@ angular.module('attero')
             unsetTileElement: function() {
                 window.landscaping.selectedElement = null;
                 tileElement = null;
+            },
+            setTileElementAngle: function(angle) {
+                angle = 0;
+            },
+            renderTileElementPreview: function(element) {
+                var offsetX, offsetY, angle;
+                console.log('rendering to', element)
+                tileElement.getPreview(element, offsetX=0, offsetY=0, angle=15);
             }
         }
     }]);

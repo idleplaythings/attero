@@ -13,12 +13,23 @@
         <link href="@routes.Assets.at("style/unitstatusicons.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/resourceLoader.css")" rel="stylesheet" type="text/css">
         <link href="@routes.Assets.at("style/TextureContainer.css")" rel="stylesheet" type="text/css">
-        <link href="@routes.Assets.at("style/tileElementGrid.css")" rel="stylesheet" type="text/css">
+
+        <link href="@routes.Assets.at("style/features/tileElementConfig.css")" rel="stylesheet" type="text/css">
+
+        <link href="@routes.Assets.at("style/jquery-ui/jquery-ui.min.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.at("style/jquery-ui/jquery.ui.theme.css")" rel="stylesheet" type="text/css">
+
+        <link href="@routes.Assets.at("style/ui/dialog.css")" rel="stylesheet" type="text/css">
+        <link href="@routes.Assets.at("style/ui/dock.css")" rel="stylesheet" type="text/css">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script src="@routes.Assets.at("js/lib/jquery.ba-throttle-debounce.min.js")"></script>
         <script src="@routes.Assets.at("js/lib/angular/angular.min.js")"></script>
         <script src="@routes.Assets.at("js/lib/angular-ui/build/angular-ui.min.js")"></script>
+        <script src="@routes.Assets.at("js/lib/jquery-ui/ui/minified/jquery.ui.core.min.js")"></script>
+        <script src="@routes.Assets.at("js/lib/jquery-ui/ui/minified/jquery.ui.widget.min.js")"></script>
+        <script src="@routes.Assets.at("js/lib/jquery-ui/ui/minified/jquery.ui.mouse.min.js")"></script>
+        <script src="@routes.Assets.at("js/lib/jquery-ui/ui/minified/jquery.ui.slider.min.js")"></script>
         <script src="@routes.Assets.at("js/requestAnimFrame.js")"></script>
         <script src="@routes.Assets.at("js/ResourceLoader.js")"></script>
         <script src="@routes.Assets.at("js/Loadable.js")"></script>
@@ -66,13 +77,21 @@
         <script src="@routes.Assets.at("js/angular/services/editor/menu/tileElement.js")"></script>
 
 
-        <script src="@routes.Assets.at("js/angular/features/ui/slideMenu/directives/menu.js")"></script>
+        <script src="@routes.Assets.at("js/angular/features/ui/iconMenu/directives/iconMenu.js")"></script>
+        <script src="@routes.Assets.at("js/angular/features/ui/dialog/dialog.js")"></script>
+        <script src="@routes.Assets.at("js/angular/features/ui/backdrop/backdrop.js")"></script>
+        <script src="@routes.Assets.at("js/angular/features/ui/anglePicker/anglePicker.js")"></script>
+        <script src="@routes.Assets.at("js/angular/features/ui/dock/dock.js")"></script>
 
         <script src="@routes.Assets.at("js/angular/features/editor/tileElementConfig/directives/tileElementPreview.js")"></script>
         <script src="@routes.Assets.at("js/angular/features/editor/tileElementConfig/controllers/toolPreview.js")"></script>
         <script src="@routes.Assets.at("js/angular/features/editor/tileElementConfig/directives/tileElementGrid.js")"></script>
+        <script src="@routes.Assets.at("js/angular/features/editor/tileElementConfig/directives/tileElementConfig.js")"></script>
+        <script src="@routes.Assets.at("js/angular/features/editor/tileElementPreview/tileElementPreview.js")"></script>
 
-        <script src="@routes.Assets.at("js/angular/directives/slideMenu.js")"></script>
+        <!-- <script src="@routes.Assets.at("js/angular/directives/slideMenu.js")"></script> -->
+
+        <script src="@routes.Assets.at("js/angular/services/ui/dialogService.js")"></script>
 
         <script>
 
@@ -183,27 +202,23 @@
         <!-- <canvas id="testcanvas" width="40" height="40" style="position:absolute;z-index:200;border:1px solid white;"></canvas> -->
         <div id="texturecontainer"></div>
 
-        <div slide-menu service="brush" dock="left" columns="4" top="60"></div>
-        <div slide-menu service="brushSize" dock="left" columns="4" top="140"></div>
-        <div slide-menu service="texture" dock="right" columns="4" top="60"></div>
-        <div slide-menu service="tileElement" dock="right" columns="4" top="260"></div>
+        <div icon-menu service="brush" columns="4" dock="left" top="60"></div>
+        <div icon-menu service="brushSize" columns="4" dock="left" top="140"></div>
+        <div icon-menu service="texture" columns="4" dock="right" top="60"></div>
+        <div icon-menu service="tileElement" columns="4" dock="right" top="260"></div>
 
-        <div class="menubar bottom" ng-controller="toolPreviewController">
-            <div class="preview-container">
-                <canvas id="tile-element-preview" width="100px" height="100px" style="background-color: black;"></canvas>
-            </div>
-            <div tile-element-selector class="tile-element-selector" ui-if="tileElement">
-                <canvas id="tile-element-preview" width="100px" height="100px" style="background-color: black;"></canvas>
-
-                Angle:
-                <input ng-model="angle" placeholder="Angle" /><br />
-                X offset:
-                <input ng-model="offsetX" placeholder="X offset" /><br />
-                Y offset:
-                <input ng-model="offsetY" placeholder="Y offset" />
-
-
-                <div tile-element-grid source="tileElement" />
+        <div ng-controller="toolPreviewController">
+            <div class="tile-element-config" dock="bottom" peek="40" ui-if="tileElement">
+                <div tile-element-preview></div>
+                <div angle-picker></div>
+                <div class="tile-element-grid">
+                    rows: {{ rowCount }}, columns: {{ columnCount }}
+                    <div class="tile-element-grid-item row" ng-repeat="row in tileSet">
+                        <div class="tile-element-grid-item column" ng-repeat="column in row">
+                            <div tile-element-previewxx />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

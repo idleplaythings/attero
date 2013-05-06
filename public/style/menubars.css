@@ -21,6 +21,9 @@
 {
 	bottom:0px;
 	border-top:5px solid #202020;
+    overflow:auto;
+    width:600px;
+    margin:auto;
 }
 
 .menubar td

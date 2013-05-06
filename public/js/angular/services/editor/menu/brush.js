@@ -3,7 +3,7 @@
 angular.module('attero')
     .factory('brushMenuService', ['landscapingTools', 'landscapingToolService', function(tools, landscapingTool) {
         return {
-            getItems: function(menu) {
+            getItems: function() {
                 var items = [];
 
                 Object.keys(tools).forEach(function(key) {

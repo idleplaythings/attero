@@ -28,15 +28,22 @@ angular.module('attero')
             templateUrl: '/assets/js/angular/features/editor/tileElementConfig/views/tileElementGrid.html',
             replace: true,
             link: function (scope, element, attrs) {
-                var tileElementParser = $parse(attrs.source);
+                // console.log('source', attrs.source)
+                // var tileElementParser = $parse(attrs.source);
 
-                scope.tileElement = tileElementParser(scope);
-                scope.offsetArray = buildOffsetArray(
-                    scope.tileElement.getRowCount(),
-                    scope.tileElement.getColumnCount()
-                );
+                // scope.tileElement = tileElementParser(scope);
 
-                console.log(scope.offsetArray)
+                scope.$watch('tileElement', function(tileElement) {
+                    console.log(tileElement)
+                    if (tileElement) {
+                        scope.offsetArray = buildOffsetArray(
+                            tileElement.getRowCount(),
+                            tileElement.getColumnCount()
+                        );
+                    } else {
+                        scope.offsetArray = [];
+                    }
+                });
             }
         };
     }]);

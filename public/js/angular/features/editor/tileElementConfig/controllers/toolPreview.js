@@ -1,34 +1,40 @@
 'use strict';
 
 angular.module('attero')
-    .factory('tileElementPreviewService', function() {
-        var domElement = $('#tile-element-preview')[0];
-        return {
-            renderPreviewForTileElement: function(tileElement, offsetX, offsetY, angle) {
-                tileElement.getPreview(domElement, offsetX, offsetY, angle);
+    .factory('tileSetBuilder', function() {
+        return function (rowCount, columnCount) {
+            var rows = [];
+            var rowOffset = 0;
+
+            for (var i=0; i<rowCount; i++) {
+                var row = [];
+                var columnOffset = 0;
+
+                for (var j=0; j<columnCount; j++) {
+                    row.push({ x: columnOffset, y: rowOffset });
+                    columnOffset += 40;
+                }
+
+                rows.push(row);
+                rowOffset += 40;
             }
+
+            return rows;
         }
     })
-    .controller('toolPreviewController', [ '$scope', 'landscapingToolService', 'tileElementPreviewService', function($scope, landscapingToolService, tileElementPreviewService) {
-        $scope.landscapingToolService = landscapingToolService;
+    .controller('toolPreviewController', ['$scope', 'landscapingToolService', 'tileSetBuilder', function($scope, landscapingToolService, tileSetBuilder) {
         $scope.tileElement = null;
-        $scope.angle = 0;
-        $scope.offsetX = 0;
-        $scope.offsetY = 0;
 
-        var renderPreview = function renderPreview() {
-            if ($scope.tileElement === null) {
-                return false;
-            }
-
-            tileElementPreviewService.renderPreviewForTileElement($scope.tileElement, $scope.offsetX, $scope.offsetY, $scope.angle);
-        };
-
-        $scope.$watch('landscapingToolService.getTileElement()', function(tileElement) {
+        $scope.$watch(landscapingToolService.getTileElement, function(tileElement) {
             $scope.tileElement = tileElement;
-            renderPreview();
+
+            if ($scope.tileElement) {
+                $scope.tileSet = tileSetBuilder(
+                    tileElement.getRowCount(),
+                    tileElement.getColumnCount()
+                );
+            } else {
+                $scope.tileSet = [];
+            }
         });
-        $scope.$watch('angle', renderPreview);
-        $scope.$watch('offsetX', renderPreview);
-        $scope.$watch('offsetY', renderPreview);
     }]);
