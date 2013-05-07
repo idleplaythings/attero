@@ -27,7 +27,6 @@
         <script src="@routes.Assets.at("js/Graphics.js")"></script>
         <script src="@routes.Assets.at("js/Scrolling.js")"></script>
         <script src="@routes.Assets.at("js/Zooming.js")"></script>
-        <script src="@routes.Assets.at("js/Landscaping.js")"></script>
         <script src="@routes.Assets.at("js/SideSlideMenu.js")"></script>
         <script src="@routes.Assets.at("js/TileElement.js")"></script>
         <script src="@routes.Assets.at("js/ImageManipulation.js")"></script>
@@ -70,6 +69,9 @@
         <script src="@routes.Assets.at("js/repository/TileTrait.js")"></script>
         <script src="@routes.Assets.at("js/button/Button.js")"></script>
         <script src="@routes.Assets.at("js/GameState.js")"></script>
+        <script src="@routes.Assets.at("js/raytracing/BresenhamRoute.js")"></script>
+        <script src="@routes.Assets.at("js/raytracing/TileDetailsForRaytrace.js")"></script>
+        <script src="@routes.Assets.at("js/raytracing/UnitToUnitRaytrace.js")"></script>
 
         <script>
 
@@ -77,10 +79,15 @@
 
             function constructControllers()
             {
+                window.gameState = new GameState(
+                    @userid,
+                    @activeUserId,
+                    "@activeUserName",
+                    @turn);
+
                 window.UIEventDispatcher = new Dispatcher();
                 window.Graphics = new Graphics(UIEventDispatcher);
-                window.landscaping = new Landscaping(UIEventDispatcher, TileGrid);
-                window.UnitManager = new UnitManager(UIEventDispatcher);
+                window.UnitManager = new UnitManager(window.gameState, UIEventDispatcher);
                 UIEventDispatcher.attach(new ChangeTurnEventListener());
             }
 
@@ -99,12 +106,6 @@
                 var scrolling = new Scrolling(canvas, window.UIEventDispatcher);
                 var zooming = new Zooming(canvas, window.UIEventDispatcher);
 
-                window.gameState = new GameState(
-                    @userid,
-                    @activeUserId,
-                    "@activeUserName",
-                    @turn);
-
                 window.GameEventDispatcher = new Dispatcher();
 
                 GameEventDispatcher.attach(new MoveServerMessageEventLister());
@@ -118,7 +119,7 @@
                 var tileSize = 20; // this doesn't belong here
                 var coordinasService = new Coordinates(tileSize, TileGrid.getMapSizeInGameTiles().width);
 
-                window.interface = new Interface(window.gameState, coordinasService, TileGrid, canvas, window.UIEventDispatcher);
+                window.interface = new Interface(coordinasService, TileGrid, canvas, window.UIEventDispatcher);
                 window.interface.init();
 
                 var loadIcon = new Button(

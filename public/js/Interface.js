@@ -1,7 +1,6 @@
 
-function Interface(gameState, coordinateService, tileGrid, canvas, dispatcher)
+function Interface(coordinateService, tileGrid, canvas, dispatcher)
 {
-    this.gameState = gameState;
     this.coordinateService = coordinateService;
     this.tileGrid = tileGrid;
     this.canvas = canvas[0];
@@ -41,9 +40,6 @@ Interface.prototype.onScroll = function(event)
 
 Interface.prototype.onClicked = function(event)
 {
-    if ( ! this.gameState.isMyTurn())
-        return;
-
     console.log("tileclick");
     var gameTile = this.getTileFromEvent(event);
 
@@ -73,6 +69,15 @@ Interface.prototype.gameTileHighlighter = function(event)
         //+ ' e: ' + gameTile.elevation + ' elevation string: ' + gameTile.getElevationDifferenceString());
 
         //Contours.testMatches(gameTile.getElevationDifferenceString());
+
+        var selected = window.UnitManager.selectedUnit;
+
+        if (selected)
+        {
+            var route = new BresenhamRoute(selected.position, gameTile.position, window.TileGrid);
+            var trace = new UnitToUnitRaytrace(1.5, 0.5, route.getRouteWithDetails(), 0.0, 0.75);
+            console.log("line of sight: " + trace.run());
+        }
 
         this.dispatchMouseTileEvent(gameTile, false);
         this.mouseoverTile = gameTile;

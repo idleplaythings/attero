@@ -9,7 +9,6 @@ ChangeTurnEventListener.prototype = Object.create( EventListener.prototype );
 
 ChangeTurnEventListener.prototype.handle = function(event)
 {
-    console.log(event.name);
     if (event.name == "ChangeTurnEvent" && event.origin == "player")
     {
         if (gameState.isMyTurn())

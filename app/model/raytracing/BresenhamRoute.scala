@@ -38,7 +38,7 @@ class BresenhamRoute(
 
         route :+= Array((x0, y0));
 
-        while((x0 != x1) && (y0 != y1))
+        while((x0 != x1) || (y0 != y1))
         {
             var e2:Int = 2*err;
 

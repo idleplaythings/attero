@@ -9,7 +9,7 @@ var TileDetailsForRaytrace = function TileDetailsForRaytrace(
     this.position = position;
     this.concealment = concealment;
     this.element = element;
-    this.elevation = tileElevation;
+    this.elevation = elevation;
     this.elementHeight = height;
     this.unique = unique;
 };

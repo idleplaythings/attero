@@ -1,6 +1,7 @@
-var UnitManager = function UnitManager(dispatcher)
+var UnitManager = function UnitManager(gameState, dispatcher)
 {
     window.units = Array();
+    this.gameState = gameState;
 
     this.selectedUnit = null;
 

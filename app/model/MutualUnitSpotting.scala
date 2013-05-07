@@ -12,6 +12,8 @@ class MutualUnitSpotting(unitA: GameUnit, unitB: GameUnit, tileRepository: TileR
     private var aSpotted = false;
     private var bSpotted = false;
 
+    resolve();
+
     def wasSpotted(unit:GameUnit): Boolean =
     {
         (unitA.id == unit.id && aSpotted) || (unitB.id == unit.id && bSpotted)
@@ -20,12 +22,21 @@ class MutualUnitSpotting(unitA: GameUnit, unitB: GameUnit, tileRepository: TileR
     private def resolve(): Unit =
     {
         var route: List[Array[TileDetailsForRaytrace]] =
-        new BresenhamRoute(unitA.getPosition, unitB.getPosition, tileRepository).getRouteWithTileDetails;
+            new BresenhamRoute(unitA.getPosition, unitB.getPosition, tileRepository).getRouteWithTileDetails;
+
+        if (route.length < 2)
+        {
+            println("a id: " + unitA.id + " b id: " + unitB.id);
+            println("route too short")
+            println(route);
+        }
 
         val partialUnitHeight: Double = 0;
         val fullUnitHeight: Double = 0.75;
 
         val concealment = new Raytrace(unitheight, degradation, route, partialUnitHeight, fullUnitHeight).run;
+
+        println(concealment);
 
         var enemiesSpottedThis: List[GameUnit] = List.empty[GameUnit];
 

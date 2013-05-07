@@ -21,10 +21,10 @@ BresenhamRoute.prototype.getRouteWithDetails = function()
 
     route.every(function(step)
     {
-        if (step.isArray)
+        if (Array.isArray(step))
         {
-            var tileA = this.tileRepository.getGameTileByXY(step[1].x, step[1].y);
-            var tileB = this.tileRepository.getGameTileByXY(step[2].x, step[2].y);
+            var tileA = this.tileRepository.getGameTileByXY(step[0].x, step[0].y);
+            var tileB = this.tileRepository.getGameTileByXY(step[1].x, step[1].y);
 
             //if either corner is out of the map, ignore.
             if ( ! tileA || ! tileB)
@@ -44,7 +44,7 @@ BresenhamRoute.prototype.getRouteWithDetails = function()
         }
 
         return true;
-    });
+    }, this);
 
     return newRoute;
 };
@@ -76,7 +76,7 @@ BresenhamRoute.prototype.bresenhamRaytrace = function(start, end)
 
     var route = [];
 
-    this.route.push({x:x0, y:y0});
+    route.push({x:x0, y:y0});
 
     while(true)
     {
@@ -84,7 +84,7 @@ BresenhamRoute.prototype.bresenhamRaytrace = function(start, end)
 
         if (e2 >-dy && e2 < dx)
         {
-            this.route.push([{x:x0+sx, y:y0}, {x:x0, y:y0+sy}]);
+            route.push([{x:x0+sx, y:y0}, {x:x0, y:y0+sy}]);
         }
 
         if (e2 >-dy)
@@ -99,7 +99,7 @@ BresenhamRoute.prototype.bresenhamRaytrace = function(start, end)
             y0  += sy;
         }
 
-        this.route.push({x:x0, y:y0});
+        route.push({x:x0, y:y0});
 
         if ((x0==x1) && (y0==y1))
             break;
